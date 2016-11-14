@@ -6,6 +6,7 @@ import os from 'os'; // native node.js module
 import { remote } from 'electron'; // native electron module
 import jetpack from 'fs-jetpack'; // module loaded from npm
 import { greet } from './hello_world/hello_world'; // code authored by you in this project
+import { WelcomeView } from './views/welcomeView';
 import env from './env';
 
 console.log('Loaded environment variables:', env);
@@ -21,4 +22,6 @@ document.addEventListener('DOMContentLoaded', function () {
     //document.getElementById('greet').innerHTML = greet();
     //document.getElementById('platform-info').innerHTML = os.platform();
     //document.getElementById('env-name').innerHTML = env.name;
+    var welcomeView = new WelcomeView();
+    document.getElementById('appWindow').innerHTML = welcomeView.render();
 });

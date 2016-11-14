@@ -34,15 +34,18 @@ app.on('ready', function () {
     setApplicationMenu();
 
     var mainWindow = createWindow('main', {
-        width: 1280,
+        width: 1024,
         height: 720
     });
+    mainWindow.maximize();
+    //mainWindow.setFullScreen(true);
 
     mainWindow.loadURL('file://' + __dirname + '/app.html');
 
     if (env.name === 'development') {
         mainWindow.openDevTools();
     }
+    //mainWindow.openDevTools();
 });
 
 app.on('window-all-closed', function () {

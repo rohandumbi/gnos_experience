@@ -3,8 +3,16 @@
 <head>
     <meta charset="utf-8">
     <title>Electron Boilerplate</title>
+    <!-- jQuery library -->
+    <script>
+        window.$ = window.jQuery = require('./helpers/jquery.js');
+    </script>
 
     <link href="stylesheets/main.css" rel="stylesheet" type="text/css">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.js"></script>
 
     <script src="helpers/context_menu.js"></script>
     <script src="helpers/external_links.js"></script>
@@ -12,11 +20,7 @@
     <script src="app.js"></script>
 </head>
 <body>
-
-    <div class="container">
-        <h2>GNOS!!! New Age Mining</h2>
-        <a id="close" href="javascript:window.close()">Close this Window</a>
+    <div id="appWindow">
     </div>
-
 </body>
 </html>
