@@ -7,6 +7,7 @@ import { remote } from 'electron'; // native electron module
 import jetpack from 'fs-jetpack'; // module loaded from npm
 import { greet } from './hello_world/hello_world'; // code authored by you in this project
 import { LoginView } from './views/loginView';
+import { DashBoardView } from './views/dashBoardView';
 import env from './env';
 
 console.log('Loaded environment variables:', env);
@@ -16,11 +17,23 @@ var appDir = jetpack.cwd(app.getAppPath());
 
 // Holy crap! This is browser window with HTML and stuff, but I can read
 // here files like it is node.js! Welcome to Electron world :)
-//console.log('The author of this app is:', appDir.read('package.json', 'json').author);
 
 document.addEventListener('DOMContentLoaded', function () {
     var loginView = new LoginView();
     loginView.render();
-    //document.getElementById('appWindow').innerHTML = welcomeView.$el.html();
-    $('#appWindow').append(loginView.$el);
+    loginView.on('login:successful', function(event, options){
+        loginComplete();
+    });
+    $('#appWindow').html(loginView.$el);
 });
+
+var loginComplete = () => {
+    console.log("Login successful");
+    loadProjectDashboard();
+}
+
+var loadProjectDashboard = () => {
+    var dashboardView = new DashBoardView();
+    dashboardView.render();
+    $('#appWindow').html(dashboardView.$el);
+}

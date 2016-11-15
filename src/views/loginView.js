@@ -27,9 +27,13 @@ export class LoginView extends View{
 
     bindDomEvents() {
         var $loginButton = this.$el.find('#loginBtn');
+        //var event = new CustomEvent('login:successful',{});
+        var me = this;
         $loginButton.click(function(e){
             e.preventDefault();
             console.log('Got click...');
+            //me.$el.trigger('login:successful',[{}]);
+            me.trigger('login:successful',[{}]);
         });
     }
 }

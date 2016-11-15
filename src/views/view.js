@@ -17,11 +17,26 @@ export class View {
     }
 
     render() {
-        this.renderToView(this.model.fetch());
+        var model = this.model || {fetch: ()=>{}};
+        this.renderToView(model.fetch());
         this.bindDomEvents();
         return this;
     }
 
     bindDomEvents() {
+    }
+
+    trigger(eventName, options) {
+        this.$el.trigger(eventName,[options]);
+    }
+
+    on(eventName, callback) {
+        this.$el.on(eventName, function(event, options){
+            callback(options);
+        });
+    }
+
+    off(eventName) {
+        this.$el.off(eventName);
     }
 }
