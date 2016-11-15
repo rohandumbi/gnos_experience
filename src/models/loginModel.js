@@ -1,4 +1,4 @@
-export class WelcomeViewModel {
+export class LoginModel {
     constructor(properties) {
         this.properties = properties;
     }

@@ -1,10 +1,10 @@
 import { View } from './view';
-import { WelcomeViewModel } from '../models/welcomeViewModel';
-export class WelcomeView extends View{
+import { LoginModel } from '../models/loginModel';
+export class LoginView extends View{
 
     constructor(options) {
         super();
-        this.model = new WelcomeViewModel({});
+        this.model = new LoginModel({});
     }
 
     getHtml() {
