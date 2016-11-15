@@ -8,6 +8,7 @@ export class DashBoardView extends View{
     getHtml() {
         var htmlContent =  (
             '<div id="dashBoardView">' +
+            '<p class="caption">Listed Projects</p>' +
             '<div class="container"> ' +
             '<div class="notice notice-success notice-lg"> <strong>Create New</strong> + </div> ' +
             '<div class="notice notice-success notice-lg"> <strong>Project A</strong> DD/MM/YYYY </div> ' +
