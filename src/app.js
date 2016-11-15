@@ -23,5 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
     //document.getElementById('platform-info').innerHTML = os.platform();
     //document.getElementById('env-name').innerHTML = env.name;
     var welcomeView = new WelcomeView();
-    document.getElementById('appWindow').innerHTML = welcomeView.render();
+    welcomeView.render();
+    //document.getElementById('appWindow').innerHTML = welcomeView.$el.html();
+    $('#appWindow').append(welcomeView.$el);
 });

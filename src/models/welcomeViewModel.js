@@ -5,6 +5,6 @@ export class WelcomeViewModel {
 
     fetch() {
         // do some AJAX calls and return data
-        return {message: 'GNOS!!! New Age Mining'};
+        return {message: 'GNOS - Hi-Tech Mining'};
     }
 }
