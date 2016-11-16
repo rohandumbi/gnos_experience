@@ -8,7 +8,12 @@ export class DashBoardView extends View{
     getHtml() {
         var htmlContent =  (
             '<div id="dashBoardView">' +
-                '<p class="caption">Listed Projects</p>' +
+                '<div id="pageName">'+
+                    '<p class="caption">Projects</p>' +
+                '</div>' +
+                '<div id="description">'+
+                    '<p class="caption"><span class="glyphicon glyphicon-exclamation-sign text-info pull-left icon-style"></span><span style="padding: 20px">Select your project or create a new one</span></p>' +
+                '</div>' +
                 '<div id="dashboardPane">' +
                     '<div id="projectListPane">' +
                         this.getCards() +
