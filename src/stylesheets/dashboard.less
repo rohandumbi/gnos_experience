@@ -1,50 +1,123 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto');
-.notice {
-    padding: 15px;
-    background-color: #fafafa;
-    border-left: 6px solid #7f7f84;
-    margin-bottom: 10px;
-    -webkit-box-shadow: 0 5px 8px -6px rgba(0,0,0,.2);
-    -moz-box-shadow: 0 5px 8px -6px rgba(0,0,0,.2);
-    box-shadow: 0 5px 8px -6px rgba(0,0,0,.2);
+
+#newProjectPane {
+    width: 50%;
+    padding: 20px;
+    display: inline-block;
+    vertical-align: top;
+    border: 1px solid white;
+    legend{
+        color: #74b1be ;
+    }
 }
-.notice-sm {
-    padding: 10px;
-    font-size: 80%;
+
+#projectCardContainer {
+    .well {
+        min-height: 20px;
+        padding: 0px;
+        margin-bottom: 20px;
+        margin-top: 20px;
+        background-color: #D9D9D9;
+        border: 1px solid #D9D9D9;
+        border-radius: 0px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+        box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+        padding-left: 15px;
+        border:0px;
+    }
+    .thumbnail .caption {
+        padding: 9px;
+        color: #333;
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+    .icon-style
+    {
+        margin-right:15px;
+        font-size:18px;
+        margin-top:20px;
+    }
+    p
+    {
+        margin:3px;
+    }
+    .well-add-card
+    {
+        margin-bottom:10px;
+    }
+    .btn-add-card
+    {
+        margin-top:20px;
+    }
+    .thumbnail {
+        display: block;
+        padding: 4px;
+        margin-bottom: 20px;
+        line-height: 1.42857143;
+        background-color: #fff;
+        border: 6px solid #D9D9D9;
+        border-radius: 15px;
+        -webkit-transition: border .2s ease-in-out;
+        -o-transition: border .2s ease-in-out;
+        transition: border .2s ease-in-out;
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+    .btn
+    {
+        border-radius:0px;
+    }
+    .btn-update
+    {
+        margin-left:15px;
+    }
 }
-.notice-lg {
-    padding: 35px;
-    font-size: large;
-}
-.notice-success {
-    border-color: #80D651;
-}
-.notice-success>strong {
-    color: #80D651;
-}
-.notice-info {
-    border-color: #45ABCD;
-}
-.notice-info>strong {
-    color: #45ABCD;
-}
-.notice-warning {
-    border-color: #FEAF20;
-}
-.notice-warning>strong {
-    color: #FEAF20;
-}
-.notice-danger {
-    border-color: #d73814;
-}
-.notice-danger>strong {
-    color: #d73814;
-}
+
 #dashBoardView {
     color: #74b1be;
     background-color: #2b2e3b;
     //font-size: 40px;
     height: 100%;
     //font-size: 30px;
-    text-align: center;
+    //text-align: center;
 }
+#projectListPane{
+    width: 50%;
+    display: inline-block;
+    padding: 20px;
+}
+/*#dashboardPane {
+    background-color:lightyellow;
+    padding:10px;
+
+    !* CSS3 *!
+    column-count: 3;
+    column-rule: 2px dotted coral;
+
+    !* Safari and Chrome *!
+    -webkit-column-count: 3;
+    -webkit-column-rule: 2px dotted coral;
+
+    !* Firefox *!
+    -moz-column-count: 3;
+    -moz-column-rule: 2px dotted coral;
+
+    !* Internet Explorer *!
+    -ms-column-count: 3;
+    -ms-column-rule: 2px dotted coral;
+
+    !* Opera *!
+    -o-column-count: 3;
+    -o-column-rule: 2px dotted coral;
+
+    vertical-align:text-top;
+    max-height:100px;
+}
+
+#dashboardPane div {
+    break-before: column;
+    -webkit-column-break-before: column;
+    -moz-column-break-before: column;
+    -ms-column-break-before: column;
+    -o-column-break-before: column;
+}*/

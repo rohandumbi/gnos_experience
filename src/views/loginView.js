@@ -9,7 +9,7 @@ export class LoginView extends View{
 
     getHtml() {
         var htmlContent =  (
-            '<div id="welcomeView">' +
+            '<div id="loginView">' +
             '<img id="logo" src="../resources/img/logo.png"/>' +
             '<p class="caption"><%= message %></p>' +
             '<div class="modal-dialog">'+
