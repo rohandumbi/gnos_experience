@@ -32,7 +32,7 @@ export class View {
 
     on(eventName, callback) {
         this.$el.on(eventName, function(event, options){
-            callback(options);
+            callback(event, options);
         });
     }
 

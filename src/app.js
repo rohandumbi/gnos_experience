@@ -5,9 +5,10 @@
 import os from 'os'; // native node.js module
 import { remote } from 'electron'; // native electron module
 import jetpack from 'fs-jetpack'; // module loaded from npm
-import { greet } from './hello_world/hello_world'; // code authored by you in this project
 import { LoginView } from './views/loginView';
 import { DashBoardView } from './views/dashBoardView';
+import { MainView } from './views/mainView';
+
 import env from './env';
 
 console.log('Loaded environment variables:', env);
@@ -25,6 +26,10 @@ document.addEventListener('DOMContentLoaded', function () {
         loginComplete();
     });
     $('#appWindow').html(loginView.$el);
+    setTimeout(function(){
+        loginComplete();
+    }, 1000);
+
 });
 
 var loginComplete = () => {
@@ -36,4 +41,14 @@ var loadProjectDashboard = () => {
     var dashboardView = new DashBoardView();
     dashboardView.render();
     $('#appWindow').html(dashboardView.$el);
+    dashboardView.on('open:project', function(event, options) {
+        loadProject(options);
+    });
+}
+
+var loadProject = (options) => {
+    console.log('Opening project: ' + options.projectId)
+    var mainView = new MainView({projectId: options.projectId});
+    mainView.render();
+    $('#appWindow').html(mainView.$el);
 }

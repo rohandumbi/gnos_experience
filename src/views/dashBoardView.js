@@ -74,12 +74,12 @@ export class DashBoardView extends View{
                                         '<span class="glyphicon glyphicon-trash pull-right text-primary"></span>' +
                                     '</div>' +
                                     '<div class="col-lg-12 well well-add-card"> ' +
-                                        '<h4>' + 'Project: ' + (i+1) + '</h4> ' +
+                                        '<h4>' + 'Project ' + (i+1) + '</h4> ' +
                                     '</div>' +
                                     '<div class="col-lg-12">' +
                                         '<p class"text-muted">Created On: DD-MM-YYYY</p>' +
                                     '</div>' +
-                                    '<button type="button" class="btn btn-primary btn-xs btn-update btn-add-card">Open</button> ' +
+                                    '<button type="button" data-projectid="'+ 'Project ' + (i+1) +'" class=" openProjectBtn btn btn-primary btn-xs btn-update btn-add-card">Open</button> ' +
                                     '<span title="Project notes will come here" class="glyphicon glyphicon-exclamation-sign text-danger pull-right icon-style"></span> ' +
                                 '</div>' +
                             '</div> ' +
@@ -91,14 +91,9 @@ export class DashBoardView extends View{
 
 
     bindDomEvents() {
-        /*var $loginButton = this.$el.find('#loginBtn');
-        //var event = new CustomEvent('login:successful',{});
         var me = this;
-        $loginButton.click(function(e){
-            e.preventDefault();
-            console.log('Got click...');
-            //me.$el.trigger('login:successful',[{}]);
-            me.trigger('login:successful',[{}]);
-        });*/
+        this.$el.find('.openProjectBtn').click(function() {
+            me.trigger('open:project', {projectId: $(this).data('projectid')})
+        });
     }
 }
