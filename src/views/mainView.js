@@ -1,5 +1,7 @@
 import { View } from './view';
 import { SideNavView } from './sideNavView';
+import { DataMappingView } from './dataMappingView';
+
 export class MainView extends View{
 
     constructor(options) {
@@ -15,7 +17,10 @@ export class MainView extends View{
     }
 
     initializeDatatypeDefinition(){
-        console.log("there there");
+        //console.log("there there");
+        this.dataMappingView = new DataMappingView();
+        this.dataMappingView.render();
+        this.$el.find("#page-content-wrapper").html(this.dataMappingView.$el);
     }
     initializeRequiredFieldDefinition(){
 
@@ -128,8 +133,6 @@ export class MainView extends View{
 
     render() {
         super.render();
-        console.log("My own render");
-        //this.sideNavView.render();
         this.$el.find("#sidebar-wrapper").html(this.sideNavView.$el);
         return this;
     }
