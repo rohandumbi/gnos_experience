@@ -17,39 +17,31 @@ export class SideNavView extends View{
                                 '</a>' +
                             '</li>' +
                             '<ul class="sub-menu collapse" id="variables">' +
-                                '<li>' +
-                                    '<a href="#">Datatype Mapping</a>' +
-                                '</li>' +
-                                '<li>' +
-                                    '<a href="#">Required Field Mapping</a>' +
-                                '</li>' +
-                                '<li>' +
-                                    '<a href="#">Expression Definition</a>' +
-                                '</li>' +
-                                '<li>' +
-                                    '<a href="#">Reserve Display</a>' +
-                                '</li>' +
+                                '<li data-category="datatype">Datatype Mapping</li>' +
+                                '<li data-category="requiredField">Required Field Mapping</li>' +
+                                '<li data-category="expression">Expression Definition</li>' +
+                                '<li data-category="reserve">Reserve Display</li>' +
                             '</ul>' +
                             '<li data-toggle="collapse" data-target="#projectOptions" class="category collapsed">' +
                                 '<a href="#"><i class="fa fa-globe fa-lg"></i> Project Configuration <span class="glyphicon glyphicon-chevron-down"></span></a>' +
                             '</li>' +
                             '<ul class="sub-menu collapse" id="projectOptions">' +
-                                '<li>Model Definition</li>' +
-                                '<li>Material Workflow</li>' +
-                                '<li>Pit Group, Dump and Stockpile</li>' +
+                                '<li data-category="model">Model Definition</li>' +
+                                '<li data-category="workflow">Material Workflow</li>' +
+                                '<li data-category="grouping">Pit Group, Dump and Stockpile</li>' +
                             '</ul>' +
                             '<li data-toggle="collapse" data-target="#scenarioOptions" class="category collapsed">' +
                                 '<a href="#"><i class="fa fa-car fa-lg"></i>Scenario Configuration<span class="glyphicon glyphicon-chevron-down"></span></a>' +
                             '</li>' +
                             '<ul class="sub-menu collapse" id="scenarioOptions">' +
-                                '<li>Opex</li>' +
-                                '<li>Material Constraint</li>' +
-                                '<li>Grade Constraint</li>' +
-                                '<li>Bench Constraint</li>' +
-                                '<li>Pit Dependency</li>' +
-                                '<li>Dump Dependency</li>' +
-                                '<li>Capex</li>' +
-                                '<li>Control Screen</li>' +
+                                '<li data-category="opex">Opex</li>' +
+                                '<li data-category="material">Material Constraint</li>' +
+                                '<li data-category="grade">Grade Constraint</li>' +
+                                '<li data-category="bench">Bench Constraint</li>' +
+                                '<li data-category="pit">Pit Dependency</li>' +
+                                '<li data-category="dump">Dump Dependency</li>' +
+                                '<li data-category="capex">Capex</li>' +
+                                '<li data-category="control">Control Screen</li>' +
                             '</ul>' +
                             '<li data-toggle="collapse" data-target="#reports" class="category collapsed">' +
                                 '<a href="#"><i class="fa fa-car fa-lg"></i>Reports<span class="glyphicon glyphicon-chevron-down"></span></a>' +
@@ -70,6 +62,7 @@ export class SideNavView extends View{
         this.$el.find('.sub-menu > li').click(function(e){
                 me.$el.find('.sub-menu > li').removeClass('active');
                 $(e.currentTarget).addClass('active');
+                me.trigger('selected:category', {$category:$(e.currentTarget)});
             }
         );
         this.$el.find('.category').click(function(e){

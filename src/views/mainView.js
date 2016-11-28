@@ -6,20 +6,99 @@ export class MainView extends View{
         super();
         this.projectId = options.projectId;
         this.initializeSideNavView();
-        this.initializeContentView();
+        //this.initializeContentView();
     }
 
     initializeSideNavView() {
         this.sideNavView = new SideNavView();
-    }
-
-    getSideNavViewContent() {
         this.sideNavView.render();
-        return this.sideNavView.$el;
     }
 
-    initializeContentView() {
+    initializeDatatypeDefinition(){
+        console.log("there there");
+    }
+    initializeRequiredFieldDefinition(){
 
+    }
+    initializeExpressionDefinition(){
+
+    }
+    initializeReserveDefinition(){
+
+    }
+    initializeModelDefinition(){
+
+    }
+    initializeWorkflowDefinition(){
+
+    }
+    initializeGroupingDefinition(){
+
+    }
+    initializeOpexDefinition(){
+
+    }
+    initializeMaterialConstrainr(){
+
+    }
+    initializeGradeConstraint(){
+
+    }
+    initializeBenchConstraint(){
+
+    }
+    initializeDumpConstraint(){
+
+    }
+    initializeCapexConstraint(){
+
+    }
+
+    initializeContentView($el) {
+        console.log($el);
+        var category = $el.data("category");
+        switch(category){
+            case "datatype":
+                this.initializeDatatypeDefinition();
+                break;
+            case "requiredField":
+                this.initializeRequiredFieldDefinition();
+                break;
+            case "expression":
+                this.initializeExpressionDefinition();
+                break;
+            case "reserve":
+                this.initializeReserveDefinition();
+                break;
+            case "model":
+                this.initializeModelDefinition();
+                break;
+            case "workflow":
+                this.initializeWorkflowDefinition();
+                break;
+            case "grouping":
+                this.initializeGroupingDefinition();
+                break;
+            case "opex":
+                this.initializeOpexDefinition();
+                break;
+            case "material":
+                this.initializeMaterialConstrainr();
+                break;
+            case "grade":
+                this.initializeGradeConstraint();
+                break;
+            case "bench":
+                this.initializeBenchConstraint();
+                break;
+            case "dump":
+                this.initializeDumpConstraint();
+                break;
+            case "capex":
+                this.initializeCapexConstraint();
+                break;
+
+        }
     }
 
     getHtml() {
@@ -40,46 +119,7 @@ export class MainView extends View{
                 ' <div id="wrapper">' +
                     '<div id="sidebar-wrapper" class="nav-side-menu"></div>' +
                     '<div id="page-content-wrapper"></div>' +
-                    /*'<div id="sidebar-wrapper">' +
-                        '<ul class="sidebar-nav">' +
-                            '<li class="sidebar-brand">' +
-                                '<a href="#">Start Bootstrap</a>' +
-                            '</li>' +
-                            '<li>' +
-                                '<a href="#">Dashboard</a>' +
-                            '</li>' +
-                            '<li>' +
-                                '<a href="#">Shortcuts</a>' +
-                            '</li>' +
-                            '<li>' +
-                                '<a href="#">Overview</a>' +
-                            '</li>' +
-                            '<li>' +
-                                '<a href="#">Events</a>' +
-                            '</li>' +
-                            '<li>' +
-                                '<a href="#">About</a>' +
-                            '</li>' +
-                            '<li>' +
-                                '<a href="#">Services</a>' +
-                            '</li>' +
-                            '<li>' +
-                            '<a href="#">Contact</a>' +
-                            '</li>' +
-                        '</ul>' +
-                    '</div>' +*/
-                    /*'<div id="page-content-wrapper">' +
-                        '<div class="container-fluid">' +
-                            '<div class="row">' +
-                                '<div class="col-lg-12">' +
-                                    '<h1>Simple Sidebar</h1>' +
-                                    '<p>This template has a responsive menu toggling system. The menu will appear collapsed on smaller screens, and will appear non-collapsed on larger screens. When toggled using the button below, the menu will appear/disappear. On small screens, the page content will be pushed off canvas.</p>' +
-                                    '<p>Make sure to keep all page content within the <code>#page-content-wrapper</code>.</p>' +
-                                    '<a href="#menu-toggle" class="btn btn-default" id="menu-toggle">Toggle Menu</a>' +
-                                '</div>' +
-                            '</div>' +
-                        '</div>' +
-                    '</div>' +*/
+
                 '</div>' +
             '</div>'
         );
@@ -89,7 +129,7 @@ export class MainView extends View{
     render() {
         super.render();
         console.log("My own render");
-        this.sideNavView.render();
+        //this.sideNavView.render();
         this.$el.find("#sidebar-wrapper").html(this.sideNavView.$el);
         return this;
     }
@@ -100,5 +140,8 @@ export class MainView extends View{
             e.preventDefault();
             me.$el.find("#wrapper").toggleClass("toggled");
         });
+        this.sideNavView.on('selected:category', (event, options)=>{
+            this.initializeContentView(options.$category);
+        }, this);
     }
 }
