@@ -11,7 +11,7 @@ export class DataMappingView extends View{
     getHtml() {
         var htmlContent =  (
             '<div id="dataMappingView">' +
-                '<table id="grid-basic" class="table table-condensed table-hover table-striped">' +
+                '<table id="datatype-grid-basic" class="table table-condensed table-hover table-striped">' +
                     '<thead>' +
                         '<tr>' +
                             '<th data-column-id="datafield">CSV Data Field</th>' +
@@ -42,7 +42,7 @@ export class DataMappingView extends View{
             )
         }
         this.$el.find("#tableBody").append($(row));
-        this.$el.find("#grid-basic").bootgrid({
+        this.$el.find("#datatype-grid-basic").bootgrid({
             /*rowCount: 15,*/
             formatters: {
                 "datatype": function(column, row){
@@ -62,7 +62,6 @@ export class DataMappingView extends View{
                 }
             }
         });
-        this.$el.find()
         return this;
     }
 

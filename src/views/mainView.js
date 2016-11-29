@@ -1,6 +1,7 @@
 import { View } from './view';
 import { SideNavView } from './sideNavView';
 import { DataMappingView } from './dataMappingView';
+import { RequiredFieldMappingView } from './requiredFieldMappingView';
 
 export class MainView extends View{
 
@@ -23,7 +24,9 @@ export class MainView extends View{
         this.$el.find("#page-content-wrapper").html(this.dataMappingView.$el);
     }
     initializeRequiredFieldDefinition(){
-
+        this.requiredFieldMappingView = new RequiredFieldMappingView();
+        this.requiredFieldMappingView.render();
+        this.$el.find("#page-content-wrapper").html(this.requiredFieldMappingView.$el);
     }
     initializeExpressionDefinition(){
 
