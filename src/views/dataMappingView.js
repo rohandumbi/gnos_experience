@@ -29,6 +29,7 @@ export class DataMappingView extends View{
 
     render() {
         super.render();
+        var me = this;
         var data = this.model.fetch();
         var row = '';
         for(var i=0; i<data.fields.length; i++){
@@ -42,7 +43,7 @@ export class DataMappingView extends View{
             )
         }
         this.$el.find("#tableBody").append($(row));
-        this.$el.find("#datatype-grid-basic").bootgrid({
+        var grid = this.$el.find("#datatype-grid-basic").bootgrid({
             /*rowCount: 15,*/
             formatters: {
                 "datatype": function(column, row){
@@ -61,7 +62,12 @@ export class DataMappingView extends View{
                     );
                 }
             }
-        });
+        }).on("loaded.rs.jquery.bootgrid", function()
+        {
+            /* Executes after data is loaded and rendered */
+            me.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
+            me.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
+        });;
         return this;
     }
 

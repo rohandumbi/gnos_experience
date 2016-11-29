@@ -30,6 +30,7 @@ export class RequiredFieldMappingView extends View{
 
     render() {
         super.render();
+        var me = this;
         var data = this.model.fetch();
         var allFields = this.allFieldsModel.fetch();
         var row = '';
@@ -63,7 +64,12 @@ export class RequiredFieldMappingView extends View{
                         '</select>') ;
                 }
             }
-        });
+        }).on("loaded.rs.jquery.bootgrid", function()
+        {
+            /* Executes after data is loaded and rendered */
+            me.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
+            me.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
+        });;;
         return this;
     }
 
