@@ -2,6 +2,7 @@ import { View } from './view';
 import { SideNavView } from './sideNavView';
 import { DataMappingView } from './dataMappingView';
 import { RequiredFieldMappingView } from './requiredFieldMappingView';
+import { WorkflowView } from './workflowView';
 
 export class MainView extends View{
 
@@ -38,7 +39,9 @@ export class MainView extends View{
 
     }
     initializeWorkflowDefinition(){
-
+        this.workflowView = new WorkflowView();
+        this.workflowView.render();
+        this.$el.find("#page-content-wrapper").html(this.workflowView.$el);
     }
     initializeGroupingDefinition(){
 

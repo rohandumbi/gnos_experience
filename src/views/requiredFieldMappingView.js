@@ -6,7 +6,7 @@ export class RequiredFieldMappingView extends View{
 
     constructor(options) {
         super();
-        this.model = new RequiredFieldModel({});
+        this.requiredFieldModel = new RequiredFieldModel({});
         this.allFieldsModel = new AllFieldsModel({});
     }
 
@@ -31,7 +31,7 @@ export class RequiredFieldMappingView extends View{
     render() {
         super.render();
         var me = this;
-        var data = this.model.fetch();
+        var data = this.requiredFieldModel.fetch();
         var allFields = this.allFieldsModel.fetch();
         var row = '';
         var sourceOptions = '';
@@ -69,7 +69,7 @@ export class RequiredFieldMappingView extends View{
             /* Executes after data is loaded and rendered */
             me.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
             me.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
-        });;;
+        });
         return this;
     }
 
