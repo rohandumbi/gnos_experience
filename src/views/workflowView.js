@@ -1,4 +1,4 @@
-import { View } from './view';
+import { View } from '../core/view';
 import { ProcessModel } from '../models/processModel';
 
 export class WorkflowView extends View{
@@ -9,12 +9,12 @@ export class WorkflowView extends View{
     }
 
     getHtml() {
-        var htmlContent =  (
-            '<div id="workflowView">' +
-                '<canvas id="viewport" width="1500" height="600"></canvas>' +
-            '</div>'
-        );
-        return htmlContent;
+        var promise = new Promise(function(resolve, reject){
+            $.get( "../content/workflowView.html", function( data ) {
+                resolve(data);
+            })
+        });
+        return promise;
     }
 
     addProcessToGraph(system, parent, processes) {
@@ -28,9 +28,11 @@ export class WorkflowView extends View{
         })
     }
 
-    render() {
-        super.render();
-        //var sys = arbor.ParticleSystem(2600, 512, 0.5);
+    onDomLoaded() {
+        this.initializeGraph();
+    }
+
+    initializeGraph() {
         var sys = arbor.ParticleSystem(1000, 400,1);
         sys.parameters({gravity:true});
         sys.renderer = Renderer(this.$el.find("#viewport"));
@@ -40,16 +42,5 @@ export class WorkflowView extends View{
 
         var block = sys.addNode('Block',{'color':'red','shape':'dot','label':'BLOCK'});
         this.addProcessToGraph(sys, block, data.processes);
-
-        /*var dog = sys.addNode('dog',{'color':'green','shape':'dot','label':'dog'});
-        var cat = sys.addNode('cat',{'color':'blue','shape':'dot','label':'cat'});
-
-        sys.addEdge(animals, dog, {directed: true, weight: 2});
-        sys.addEdge(animals, cat, {directed: true, weight: 2});*/
-        return this;
-    }
-
-    bindDomEvents() {
-
     }
 }

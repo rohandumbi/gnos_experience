@@ -1,4 +1,4 @@
-import { View } from './view';
+import { View } from '../core/view';
 import { SideNavView } from './sideNavView';
 import { DataMappingView } from './dataMappingView';
 import { RequiredFieldMappingView } from './requiredFieldMappingView';
@@ -9,13 +9,14 @@ export class MainView extends View{
     constructor(options) {
         super();
         this.projectId = options.projectId;
-        this.initializeSideNavView();
+        //this.initializeSideNavView();
         //this.initializeContentView();
     }
 
     initializeSideNavView() {
         this.sideNavView = new SideNavView();
         this.sideNavView.render();
+        this.$el.find("#sidebar-wrapper").html(this.sideNavView.$el);
     }
 
     initializeDatatypeDefinition(){
@@ -113,43 +114,26 @@ export class MainView extends View{
     }
 
     getHtml() {
-        var htmlContent =  (
-            '<div id="mainView">' +
-                '<nav class="navbar navbar-default"> ' +
-                    '<div class="container-fluid"> ' +
-                        '<div class="navbar-header">' +
-                            '<button id="toggleBtn" type="button" class="btn btn-default" aria-label="Left Align">' +
-                                '<span style="color:white" class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>' +
-                            '</button>' +
-                            '<a class="navbar-brand" href="#">' +
-                                '<img class="brand" alt="Brand" src="../resources/icons/brand.png">' +
-                            '</a>' +
-                        '</div>' +
-                    '</div>' +
-                '</nav>' +
-                ' <div id="wrapper">' +
-                    '<div id="sidebar-wrapper" class="nav-side-menu"></div>' +
-                    '<div id="page-content-wrapper"></div>' +
-
-                '</div>' +
-            '</div>'
-        );
-        return htmlContent;
+        var promise = new Promise(function(resolve, reject){
+            $.get( "../content/mainView.html", function( data ) {
+                resolve(data);
+            })
+        });
+        return promise;
     }
 
-    render() {
-        super.render();
-        this.$el.find("#sidebar-wrapper").html(this.sideNavView.$el);
-        return this;
+    onDomLoaded() {
+        this.initializeSideNavView();
+        this.bindEvents();
     }
 
-    bindDomEvents() {
-        var me = this;
+    bindEvents() {
+        var that = this;
         this.$el.find("#toggleBtn").click(function(e) {
             e.preventDefault();
-            me.$el.find("#wrapper").toggleClass("toggled");
+            that.$el.find("#wrapper").toggleClass("toggled");
         });
-        this.sideNavView.on('selected:category', (event, options)=>{
+        this.sideNavView.on('selected:category', (options)=>{
             this.initializeContentView(options.$category);
         }, this);
     }

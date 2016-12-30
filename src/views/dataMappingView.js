@@ -1,4 +1,4 @@
-import { View } from './view';
+import { View } from '../core/view';
 import { DatatypeModel } from '../models/datatypeModel';
 
 export class DataMappingView extends View{
@@ -9,27 +9,20 @@ export class DataMappingView extends View{
     }
 
     getHtml() {
-        var htmlContent =  (
-            '<div id="dataMappingView">' +
-                '<table id="datatype-grid-basic" class="table table-condensed table-hover table-striped">' +
-                    '<thead>' +
-                        '<tr>' +
-                            '<th data-column-id="datafield">CSV Data Field</th>' +
-                            '<th data-column-id="datatype" data-formatter="datatype">Datatype</th>' +
-                            '<th data-column-id="weightedunit" data-formatter="weightedunit" >Weighted Unit</th>' +
-                        '</tr>' +
-                    '</thead>' +
-                    '<tbody id="tableBody">' +
-                    '</tbody>' +
-                '</table>' +
-            '</div>'
-        );
-        return htmlContent;
+        var promise = new Promise(function(resolve, reject){
+            $.get( "../content/dataMappingView.html", function( data ) {
+                resolve(data);
+            })
+        });
+        return promise;
     }
 
-    render() {
-        super.render();
-        var me = this;
+    onDomLoaded() {
+        this.initializeGrid();
+    }
+
+    initializeGrid() {
+        var that = this;
         var data = this.model.fetch();
         var row = '';
         for(var i=0; i<data.fields.length; i++){
@@ -48,13 +41,13 @@ export class DataMappingView extends View{
             formatters: {
                 "datatype": function(column, row){
                     return (
-                        '<select value="test">' +
-                            '<option selected disabled hidden>' + row.datatype + '</option>'+
-                            '<option value="grouptext">Group By(Text)</option>' +
-                            '<option value="groupnumeric">Group By(Numeric)</option>' +
-                            '<option value="unit">Unit</option>' +
-                            '<option value="grade">Grade</option>' +
-                        '</select>') ;
+                    '<select value="test">' +
+                    '<option selected disabled hidden>' + row.datatype + '</option>'+
+                    '<option value="grouptext">Group By(Text)</option>' +
+                    '<option value="groupnumeric">Group By(Numeric)</option>' +
+                    '<option value="unit">Unit</option>' +
+                    '<option value="grade">Grade</option>' +
+                    '</select>') ;
                 },
                 "weightedunit": function(column, row){
                     return (
@@ -65,12 +58,8 @@ export class DataMappingView extends View{
         }).on("loaded.rs.jquery.bootgrid", function()
         {
             /* Executes after data is loaded and rendered */
-            me.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
-            me.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
-        });;
-        return this;
-    }
-
-    bindDomEvents() {
+            that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
+            that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
+        });
     }
 }

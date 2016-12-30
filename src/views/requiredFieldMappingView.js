@@ -1,4 +1,4 @@
-import { View } from './view';
+import { View } from '../core/view';
 import { RequiredFieldModel } from '../models/requiredFieldModel';
 import { AllFieldsModel } from '../models/allFieldsModel';
 
@@ -11,26 +11,20 @@ export class RequiredFieldMappingView extends View{
     }
 
     getHtml() {
-        var htmlContent =  (
-            '<div id="requiredFieldMappingView">' +
-                '<table id="requiredField-grid-basic" class="table table-condensed table-hover table-striped">' +
-                    '<thead>' +
-                        '<tr>' +
-                            '<th data-column-id="datafield">Required Fields</th>' +
-                            '<th data-column-id="source" data-formatter="source">Source</th>' +
-                        '</tr>' +
-                    '</thead>' +
-                    '<tbody id="tableBody">' +
-                    '</tbody>' +
-                '</table>' +
-            '</div>'
-        );
-        return htmlContent;
+        var promise = new Promise(function(resolve, reject){
+            $.get( "../content/requiredFieldMappingView.html", function( data ) {
+                resolve(data);
+            })
+        });
+        return promise;
     }
 
-    render() {
-        super.render();
-        var me = this;
+    onDomLoaded() {
+        this.initializeGrid();
+    }
+
+    initializeGrid() {
+        var that = this;
         var data = this.requiredFieldModel.fetch();
         var allFields = this.allFieldsModel.fetch();
         var row = '';
@@ -40,8 +34,8 @@ export class RequiredFieldMappingView extends View{
             var field = data.fields[i];
             row += (
                 '<tr>' +
-                    '<td>' + field.name + '</td>' +
-                    '<td>' + field.source + '</td>' +
+                '<td>' + field.name + '</td>' +
+                '<td>' + field.source + '</td>' +
                 '</tr>'
             )
         }
@@ -58,21 +52,17 @@ export class RequiredFieldMappingView extends View{
             formatters: {
                 "source": function(column, row){
                     return (
-                        '<select value="test">' +
-                            '<option selected disabled hidden>' + row.source + '</option>'+
-                            sourceOptions +
-                        '</select>') ;
+                    '<select value="test">' +
+                    '<option selected disabled hidden>' + row.source + '</option>'+
+                    sourceOptions +
+                    '</select>') ;
                 }
             }
         }).on("loaded.rs.jquery.bootgrid", function()
         {
             /* Executes after data is loaded and rendered */
-            me.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
-            me.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
+            that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
+            that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
         });
-        return this;
-    }
-
-    bindDomEvents() {
     }
 }

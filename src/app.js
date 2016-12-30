@@ -22,13 +22,13 @@ var appDir = jetpack.cwd(app.getAppPath());
 document.addEventListener('DOMContentLoaded', function () {
     var loginView = new LoginView();
     loginView.render();
-    loginView.on('login:successful', function(event, options){
+    loginView.on('login:successful', function(options){
         loginComplete();
     });
     $('#appWindow').html(loginView.$el);
     setTimeout(function(){
         loginComplete();
-    }, 1000);
+    }, 2000);
 
 });
 
@@ -41,7 +41,7 @@ var loadProjectDashboard = () => {
     var dashboardView = new DashBoardView();
     dashboardView.render();
     $('#appWindow').html(dashboardView.$el);
-    dashboardView.on('open:project', function(event, options) {
+    dashboardView.on('open:project', function(options) {
         loadProject(options);
     });
 }

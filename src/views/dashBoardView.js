@@ -1,4 +1,4 @@
-import { View } from './view';
+import { View } from '../core/view';
 export class DashBoardView extends View{
 
     constructor(options) {
@@ -24,7 +24,9 @@ export class DashBoardView extends View{
                 '</div>' +
             '</div>'
         );
-        return htmlContent;
+        return new Promise(function(resolve, reject){
+            resolve(htmlContent);
+        });
     }
 
     getNewProjectCard(){
@@ -86,14 +88,19 @@ export class DashBoardView extends View{
                         '</div>'
         }
         return containerDiv + cards + '</div>';
+
     }
 
 
 
-    bindDomEvents() {
-        var me = this;
+    onDomLoaded() {
+        this.bindEvents();
+    }
+
+    bindEvents() {
+        var that = this;
         this.$el.find('.openProjectBtn').click(function() {
-            me.trigger('open:project', {projectId: $(this).data('projectid')})
+            that.trigger('open:project', {projectId: $(this).data('projectid')})
         });
     }
 }
