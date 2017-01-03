@@ -78,6 +78,13 @@ export class GnosModel {
 
                 },
                 {
+                    name: "model 11",
+                    id: 11,
+                    expressionId: 11,
+                    filter:""
+
+                },
+                {
                     name: "model 12",
                     id: 12,
                     expressionId: 12,

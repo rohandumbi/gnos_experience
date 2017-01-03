@@ -41,16 +41,22 @@ export class WorkflowView extends View{
         var $liGroup = this.$el.find('ul.list-group');
         var $li;
         data.models.forEach(function(model) {
-            $li = $('<li>' + model.name + '</li>');
+            $li = $('<li draggable="true">' + model.name + '</li>');
+            $li.attr('title', model.name);
             $li.addClass('list-group-item list-group-item-info');
             $liGroup.append($li);
         });
     }
 
     initializeGraph() {
+        var $canvas = this.$el.find("#viewport");
+        //var $container = $canvas.parent();
+        $canvas.attr('width', '1200');
+        $canvas.attr('height', '700');
+
         this.system = arbor.ParticleSystem(1000, 400,1);
         this.system.parameters({gravity:true});
-        this.system.renderer = Renderer(this.$el.find("#viewport"));
+        this.system.renderer = Renderer($canvas);
         this.system.screenPadding(20);
 
         var data = this.processModel.fetch();
@@ -59,7 +65,48 @@ export class WorkflowView extends View{
         this.addProcessToGraph(block, data.processes);
     }
 
-    bindDomEvents() {
+    handleDragStart(e) {
+        e.target.style.opacity = '0.4';  // this / e.target is the source node.
+    }
 
+    handleDragEnd(e) {
+        console.log('Dragged model: ' + e.target.innerHTML);
+        var draggedModel = this.getModelWithName(e.target.innerHTML);
+        e.target.style.opacity = '1';
+        var pos = this.$el.find('#viewport').offset();
+        var p = {x:e.pageX-pos.left, y:e.pageY-pos.top}
+        var selected = this.system.nearest(p);
+
+        if ((selected.node !== null) && (draggedModel!==null)){
+            // dragged.node.tempMass = 10000
+            //dragged.node.fixed = true;
+            console.log('need to add');
+            this.addProcessToGraph(selected.node, [draggedModel]);
+        }
+    }
+
+    bindDomEvents() {
+        this.bindDragEventsOnModels();
+    }
+
+    bindDragEventsOnModels() {
+        var models = document.querySelectorAll('.list-group-item');
+        var that = this;
+        [].forEach.call(models, function(col) {
+            col.addEventListener('dragstart', that.handleDragStart.bind(that), false);
+            col.addEventListener('dragend', that.handleDragEnd.bind(that), false);
+        });
+    }
+
+    getModelWithName(modelName) {
+        var data = this.gnosModel.fetch();
+        var models = data.models;
+        var selectedModel = null;
+        models.forEach(function(model){
+            if(model.name === modelName) {
+                selectedModel = model;
+            }
+        });
+        return selectedModel;
     }
 }
