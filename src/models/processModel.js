@@ -8,50 +8,61 @@ export class ProcessModel {
         return {
             processes:[
                 {
-                    name: "process1",
+                    name: "model 1",
+                    modelId: 1,
                     processes: [
                         {
-                            name: "process11",
+                            name: "model 2",
+                            modelId: 2,
                             processes: []
                         },
                         {
-                            name: "process12",
+                            name: "model 3",
+                            modelId: 3,
                             processes: []
                         },
                         {
-                            name: "process13",
+                            name: "model 4",
+                            modelId: 4,
                             processes: []
                         }
                     ],
                     products: []
                 },
                 {
-                    name: "process2",
+                    name: "model 5",
+                    modelId: 5,
                     processes: [
                         {
-                            name: "process21",
+                            name: "model 6",
+                            modelId: 6,
                             processes: []
                         },
                         {
-                            name: "process22",
+                            name: "model 7",
+                            modelId: 7,
                             processes: []
                         },
                         {
-                            name: "process23",
+                            name: "model 8",
+                            modelId: 8,
                             processes: []
                         }
                     ],
                     products: []
                 },
                 {
-                    name: "process3",
+                    name: "model 9",
+                    modelId: 9,
                     processes: [
                         {
-                            name: "process31",
+                            name: "model 10",
+                            modelId: 10,
                             processes: []
                         },
                         {
-                            name: "process32",
+                            name: "model 11",
+                            modelId: 11,
                             processes: []
                         }
                     ],
