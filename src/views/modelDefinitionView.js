@@ -32,12 +32,17 @@ export class ModelDefinitionView extends View{
                     '<td>' + model.name + '</td>' +
                     '<td>' + model.expressionName + '</td>' +
                     '<td>' + model.filter + '</td>' +
+                    '<td>' + model.id + '</td>' +
                 '</tr>'
             )
         }
         this.$el.find("#tableBody").append($(row));
         this.grid = this.$el.find("#datatype-grid-basic").bootgrid({
             rowCount: [15, 10, 20, 25],
+            selection: true,
+            multiSelect: true,
+            rowSelect: true,
+            keepSelection: true,
             formatters: {
                 "name": function(column, row){
                     return (
@@ -56,13 +61,12 @@ export class ModelDefinitionView extends View{
                 },
                 "filter": function(column, row){
                     return (
-                        '<input type="text" value="' + row.filter + '"' + 'readonly>'
+                        '<input type="text" value="' + row.filter + '"' + '>'
                     );
                 },
                 "commands": function(column, row)
                 {
-                    return "<button type=\"button\" class=\"btn btn-xs btn-default command-edit\" data-row-id=\"" + row.id + "\"><span class=\"glyphicon glyphicon-pencil\"></span></button> " +
-                        "<button type=\"button\" class=\"btn btn-xs btn-default command-delete\" data-row-id=\"" + row.id + "\"><span class=\"glyphicon glyphicon-trash\"></span></button>";
+                    return "<button type=\"button\" class=\"btn btn-xs btn-default command-delete\" data-row-id=\"" + row.id + "\"><span class=\"glyphicon glyphicon-trash\"></span></button>";
                 }
             }
         }).on("loaded.rs.jquery.bootgrid", function()
@@ -71,17 +75,29 @@ export class ModelDefinitionView extends View{
             that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
             that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
 
-            that.grid.find(".command-edit").on("click", function(e){
+            /*that.grid.find(".command-edit").on("click", function(e){
                 alert("You pressed edit on row: " + $(this).data("row-id"));
             }).end().find(".command-delete").on("click", function(e){
                 alert("You pressed delete on row: " + $(this).data("row-id"));
-            });
+            });*/
+            that.grid.find(".command-delete").on("click", function(e){
+                alert("You pressed delete on row: " + $(this).data("row-id"));
+                that.deleteRows([$(this).data("row-id")]);
+            })
         });
         var $addButton = $('<button type="button" class="btn btn-default"></button>');
         $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
+
+        var $removeButton = $('<button type="button" class="btn btn-default"></button>');
+        $removeButton.append('<span class="glyphicon glyphicon-trash"></span>');
+
         this.$el.find(".actionBar").append($addButton);
+        this.$el.find(".actionBar").append($removeButton);
         $addButton.click(function(){
             that.addRowToGrid();
+        });
+        $removeButton.click(function(){
+            that.deleteRows();
         });
     }
 
@@ -93,5 +109,9 @@ export class ModelDefinitionView extends View{
             expressionName: "",
             filter:""
         }]);
+    }
+
+    deleteRows(rowIds) {
+        this.$el.find("#datatype-grid-basic").bootgrid("remove");
     }
 }
