@@ -3,6 +3,7 @@ import { SideNavView } from './sideNavView';
 import { DataMappingView } from './dataMappingView';
 import { RequiredFieldMappingView } from './requiredFieldMappingView';
 import { WorkflowView } from './workflowView';
+import { ModelDefinitionView } from './modelDefinitionView';
 
 export class MainView extends View{
 
@@ -37,7 +38,9 @@ export class MainView extends View{
 
     }
     initializeModelDefinition(){
-
+        this.modelDefinitionView = new ModelDefinitionView();
+        this.modelDefinitionView.render();
+        this.$el.find("#page-content-wrapper").html(this.modelDefinitionView.$el);
     }
     initializeWorkflowDefinition(){
         this.workflowView = new WorkflowView();
