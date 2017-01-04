@@ -58,6 +58,11 @@ export class ModelDefinitionView extends View{
                     return (
                         '<input type="text" value="' + row.filter + '"' + 'readonly>'
                     );
+                },
+                "commands": function(column, row)
+                {
+                    return "<button type=\"button\" class=\"btn btn-xs btn-default command-edit\" data-row-id=\"" + row.id + "\"><span class=\"glyphicon glyphicon-pencil\"></span></button> " +
+                        "<button type=\"button\" class=\"btn btn-xs btn-default command-delete\" data-row-id=\"" + row.id + "\"><span class=\"glyphicon glyphicon-trash\"></span></button>";
                 }
             }
         }).on("loaded.rs.jquery.bootgrid", function()
@@ -65,6 +70,12 @@ export class ModelDefinitionView extends View{
             /* Executes after data is loaded and rendered */
             that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
             that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
+
+            that.grid.find(".command-edit").on("click", function(e){
+                alert("You pressed edit on row: " + $(this).data("row-id"));
+            }).end().find(".command-delete").on("click", function(e){
+                alert("You pressed delete on row: " + $(this).data("row-id"));
+            });
         });
         var $addButton = $('<button type="button" class="btn btn-default"></button>');
         $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
