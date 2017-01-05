@@ -44,11 +44,11 @@ export class ModelDefinitionView extends View{
             rowSelect: true,
             keepSelection: true,
             formatters: {
-                "name": function(column, row){
+                /*"name": function(column, row){
                     return (
                         '<input type="text" value="' + row.name + '"' + 'readonly>'
                     );
-                },
+                },*/
                 "expression": function(column, row){
                     return (
                     '<select value="test">' +
@@ -85,7 +85,7 @@ export class ModelDefinitionView extends View{
                 that.deleteRows([$(this).data("row-id")]);
             })*/
         });
-        var $addButton = $('<button type="button" class="btn btn-default"></button>');
+        var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#modelDefinitionModal"></button>');
         $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
 
         var $removeButton = $('<button type="button" class="btn btn-default"></button>');
@@ -93,22 +93,29 @@ export class ModelDefinitionView extends View{
 
         this.$el.find(".actionBar").append($addButton);
         this.$el.find(".actionBar").append($removeButton);
-        $addButton.click(function(){
+        /*$addButton.click(function(){
             that.addRowToGrid();
-        });
+        });*/
         $removeButton.click(function(){
             that.deleteRows();
+        });
+        this.$el.find('#addModel').click(function(){
+            that.addRowToGrid();
         });
     }
 
     addRowToGrid() {
-        this.$el.find("#datatype-grid-basic").bootgrid("append", [{
-            name: "",
-            id: -1,
-            expressionId: -1,
-            expressionName: "",
-            filter:""
-        }]);
+        var modelName = this.$el.find('#model_name').val();
+        if(modelName) {
+            this.$el.find("#datatype-grid-basic").bootgrid("append", [{
+                name: modelName,
+                id: -1,
+                expressionId: -1,
+                expressionName: "",
+                filter:""
+            }]);
+            this.$el.find('#model_name').val('');
+        }
     }
 
     deleteRows(rowIds) {

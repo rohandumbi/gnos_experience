@@ -50,10 +50,14 @@ export class MainView extends View{
     initializeGroupingDefinition(){
 
     }
+
+    initializeScenarioDefinition() {
+
+    }
     initializeOpexDefinition(){
 
     }
-    initializeMaterialConstrainr(){
+    initializeMaterialConstraint(){
 
     }
     initializeGradeConstraint(){
@@ -94,11 +98,14 @@ export class MainView extends View{
             case "grouping":
                 this.initializeGroupingDefinition();
                 break;
+            case "scenario_definition":
+                this.initializeScenarioDefinition();
+                break;
             case "opex":
                 this.initializeOpexDefinition();
                 break;
             case "material":
-                this.initializeMaterialConstrainr();
+                this.initializeMaterialConstraint();
                 break;
             case "grade":
                 this.initializeGradeConstraint();
