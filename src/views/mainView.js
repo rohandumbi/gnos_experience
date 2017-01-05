@@ -4,6 +4,7 @@ import { DataMappingView } from './dataMappingView';
 import { RequiredFieldMappingView } from './requiredFieldMappingView';
 import { WorkflowView } from './workflowView';
 import { ModelDefinitionView } from './modelDefinitionView';
+import { ScenarioDefinitionView } from './scenarioDefinitionView';
 
 export class MainView extends View{
 
@@ -52,7 +53,9 @@ export class MainView extends View{
     }
 
     initializeScenarioDefinition() {
-
+        this.scenarioDefinitionView = new ScenarioDefinitionView();
+        this.scenarioDefinitionView.render();
+        this.$el.find("#page-content-wrapper").html(this.scenarioDefinitionView.$el);
     }
     initializeOpexDefinition(){
 
