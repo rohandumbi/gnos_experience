@@ -1,16 +1,18 @@
 import { View } from '../core/view';
-import { ScenarioCollection } from '../models/scenarioCollection';
+import { ScenarioModel } from '../models/scenarioModel';
+import { FixedCostModel } from '../models/fixedCostModel';
 
-export class ScenarioDefinitionView extends View{
+export class FixedCostDefinitionView extends View{
 
     constructor(options) {
         super();
-        this.model = new ScenarioCollection({});
+        this.model = new ScenarioModel({});
+        this.fixedCostModel = new FixedCostModel({});
     }
 
     getHtml() {
         var promise = new Promise(function(resolve, reject){
-            $.get( "../content/scenarioDefinitionView.html", function( data ) {
+            $.get( "../content/fixedCostDefinitionView.html", function( data ) {
                 resolve(data);
             })
         });
@@ -23,18 +25,18 @@ export class ScenarioDefinitionView extends View{
 
     initializeGrid() {
         var that = this;
-        var data = this.model.fetch();
+        var data = this.fixedCostModel.fetch();
         var row = '';
-        for(var i=0; i<data.scenarios.length; i++){
-            var scenario = data.scenarios[i];
+        for(var i=0; i<data.fixedCosts.length; i++){
+            var fixedCost = data.fixedCosts[i];
             row += (
                 '<tr>' +
-                '<td>' + scenario.name + '</td>' +
-                '<td>' + scenario.startYear + '</td>' +
-                '<td>' + scenario.timePeriod + '</td>' +
-                '<td>' + scenario.discountFactor + '</td>' +
-                '</tr>'
+                '<td>' + fixedCost.name + '</td>'
             )
+            fixedCost.values.forEach(function(fixedCost){
+                row += '<td>' + fixedCost.value + '</td>';
+            });
+            row += '</tr>';
         }
         this.$el.find("#tableBody").append($(row));
         this.grid = this.$el.find("#datatype-grid-basic").bootgrid({
@@ -42,13 +44,13 @@ export class ScenarioDefinitionView extends View{
             selection: true,
             multiSelect: true,
             rowSelect: true,
-            keepSelection: true,
+            keepSelection: false,
             formatters: {
-                /*"name": function(column, row){
+                /*"year": function(column, row){
                     return (
-                    '<input type="text" value="' + row.name + '"' + 'readonly>'
+                    '<input type="text" value="' + row.year + '"' + 'readonly>'
                     );
-                },*/
+                }*/
                 /*"expression": function(column, row){
                     return (
                     '<select value="test">' +
@@ -64,9 +66,9 @@ export class ScenarioDefinitionView extends View{
                         '<input type="text" value="' + row.filter + '"' + '>'
                     );
                 }*/
-                "commands": function(column, row){
+                /*"commands": function(column, row){
                     return "<button title='Load Scenario' type=\"button\" class=\"btn btn-xs btn-default command-upload\" data-row-id=\"" + row.name + "\"><span class=\"glyphicon glyphicon-upload\"></span></button>";
-                }
+                }*/
             }
         }).on("loaded.rs.jquery.bootgrid", function()
         {
@@ -74,9 +76,9 @@ export class ScenarioDefinitionView extends View{
             that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
             that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
 
-            that.grid.find(".command-upload").on("click", function(e){
+            /*that.grid.find(".command-upload").on("click", function(e){
                 that.loadScenario($(this).data("row-id"));
-            })
+            })*/
         });
         var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#modelDefinitionModal"></button>');
         $addButton.append('<span class="glyphicon glyphicon-plus"></span>');

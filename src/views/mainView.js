@@ -5,6 +5,7 @@ import { RequiredFieldMappingView } from './requiredFieldMappingView';
 import { WorkflowView } from './workflowView';
 import { ModelDefinitionView } from './modelDefinitionView';
 import { ScenarioDefinitionView } from './scenarioDefinitionView';
+import { FixedCostDefinitionView } from './fixedCostDefinitionView';
 
 export class MainView extends View{
 
@@ -60,6 +61,11 @@ export class MainView extends View{
     initializeOpexDefinition(){
 
     }
+    initializeFixedCostDefinition(){
+        this.fixedCostDefinitionView = new FixedCostDefinitionView();
+        this.fixedCostDefinitionView.render();
+        this.$el.find("#page-content-wrapper").html(this.fixedCostDefinitionView.$el);
+    }
     initializeMaterialConstraint(){
 
     }
@@ -106,6 +112,9 @@ export class MainView extends View{
                 break;
             case "opex":
                 this.initializeOpexDefinition();
+                break;
+            case "fixed_cost":
+                this.initializeFixedCostDefinition();
                 break;
             case "material":
                 this.initializeMaterialConstraint();
