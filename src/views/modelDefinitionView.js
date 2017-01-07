@@ -52,11 +52,11 @@ export class ModelDefinitionView extends View{
                 "expression": function(column, row){
                     return (
                     '<select value="test">' +
-                    '<option selected disabled hidden>' + row.expressionName + '</option>'+
-                    '<option value="grouptext">Group By(Text)</option>' +
-                    '<option value="groupnumeric">Group By(Numeric)</option>' +
-                    '<option value="unit">Unit</option>' +
-                    '<option value="grade">Grade</option>' +
+                        '<option selected disabled hidden>' + row.expressionName + '</option>'+
+                        '<option value="grouptext">Group By(Text)</option>' +
+                        '<option value="groupnumeric">Group By(Numeric)</option>' +
+                        '<option value="unit">Unit</option>' +
+                        '<option value="grade">Grade</option>' +
                     '</select>') ;
                 },
                 "filter": function(column, row){

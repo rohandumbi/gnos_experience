@@ -1,18 +1,18 @@
 import { View } from '../core/view';
 import { ScenarioModel } from '../models/scenarioModel';
-import { BenchConstraintModel } from '../models/benchConstraintModel';
+import { OpexModel } from '../models/opexModel';
 
-export class BenchConstraintView extends View{
+export class OpexDefinitionView extends View{
 
     constructor(options) {
         super();
         this.model = new ScenarioModel({});
-        this.benchConstraintModel = new BenchConstraintModel({});
+        this.opexModel = new OpexModel({});
     }
 
     getHtml() {
         var promise = new Promise(function(resolve, reject){
-            $.get( "../content/benchConstraintView.html", function( data ) {
+            $.get( "../content/opexDefinitionView.html", function( data ) {
                 resolve(data);
             })
         });
@@ -25,16 +25,19 @@ export class BenchConstraintView extends View{
 
     initializeGrid() {
         var that = this;
-        var data = this.benchConstraintModel.fetch();
+        var data = this.opexModel.fetch();
         var row = '';
-        for(var i=0; i<data.benchConstraints.length; i++){
-            var benchConstraint = data.benchConstraints[i];
+        for(var i=0; i<data.opex.length; i++){
+            var opex = data.opex[i];
             row += (
                 '<tr>' +
-                '<td>' + benchConstraint.pitName + '</td>'
+                '<td>' + opex.isRevenue + '</td>' +
+                '<td>' + opex.inUse + '</td>' +
+                '<td>' + opex.processName + '</td>' +
+                '<td>' + opex.expressionName + '</td>'
             )
-            row += '<td>' + benchConstraint.inUse + '</td>';
-            benchConstraint.values.forEach(function(data){
+            //row += '<td>' + benchConstraint.inUse + '</td>';
+            opex.values.forEach(function(data){
                 row += '<td>' + data.value + '</td>';
             });
             row += '</tr>';
@@ -47,12 +50,38 @@ export class BenchConstraintView extends View{
             rowSelect: true,
             keepSelection: false,
             formatters: {
-                "pit_name": function(column, row){
+                "classification": function(column, row){
+                    if(row.classification.toString() === "true"){
+                        return (
+                        '<select value="test"  style="max-width: 120px">' +
+                            '<option selected disabled hidden>' + 'Revenue' + '</option>'+
+                            '<option value="revenue">Revenue</option>' +
+                            '<option value="pcost">PCost</option>'+
+                        '</select>') ;
+                    }else{
+                        return (
+                        '<select value="test"  style="max-width: 120px">' +
+                        '<option selected disabled hidden>' + 'PCost' + '</option>'+
+                        '<option value="revenue">Revenue</option>' +
+                        '<option value="pcost">PCost</option>'+
+                        '</select>') ;
+                    }
+                },
+
+                "identifier": function(column, row) {
                     return (
                     '<select value="test"  style="max-width: 120px">' +
-                        '<option selected disabled hidden>' + row.pit_name + '</option>'+
-                        '<option value="default">Default</option>' +
-                        '<option value="b1p12">b1p12</option>'+
+                        '<option selected disabled hidden>' + row.identifier + '</option>'+
+                        '<option value="model 1">Model 1</option>' +
+                        '<option value="model 2">Model 2</option>'+
+                    '</select>') ;
+                },
+                "expression": function(column, row) {
+                    return (
+                    '<select value="test"  style="max-width: 120px">' +
+                        '<option selected disabled hidden>' + row.expression + '</option>'+
+                        '<option value="expression 1">Expression 1</option>' +
+                        '<option value="expression 2">Expression 2</option>'+
                     '</select>') ;
                 },
                 "value": function(column, row){

@@ -7,6 +7,7 @@ import { ModelDefinitionView } from './modelDefinitionView';
 import { ScenarioDefinitionView } from './scenarioDefinitionView';
 import { FixedCostDefinitionView } from './fixedCostDefinitionView';
 import { BenchConstraintView } from './benchConstraintView';
+import { OpexDefinitionView } from './opexDefinitionView';
 
 export class MainView extends View{
 
@@ -60,7 +61,9 @@ export class MainView extends View{
         this.$el.find("#page-content-wrapper").html(this.scenarioDefinitionView.$el);
     }
     initializeOpexDefinition(){
-
+        this.opexDefinitionView = new OpexDefinitionView();
+        this.opexDefinitionView.render();
+        this.$el.find("#page-content-wrapper").html(this.opexDefinitionView.$el);
     }
     initializeFixedCostDefinition(){
         this.fixedCostDefinitionView = new FixedCostDefinitionView();
