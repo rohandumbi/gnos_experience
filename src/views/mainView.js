@@ -6,6 +6,7 @@ import { WorkflowView } from './workflowView';
 import { ModelDefinitionView } from './modelDefinitionView';
 import { ScenarioDefinitionView } from './scenarioDefinitionView';
 import { FixedCostDefinitionView } from './fixedCostDefinitionView';
+import { BenchConstraintView } from './benchConstraintView';
 
 export class MainView extends View{
 
@@ -73,7 +74,9 @@ export class MainView extends View{
 
     }
     initializeBenchConstraint(){
-
+        this.benchConstraintView = new BenchConstraintView();
+        this.benchConstraintView.render();
+        this.$el.find("#page-content-wrapper").html(this.benchConstraintView.$el);
     }
     initializeDumpConstraint(){
 
