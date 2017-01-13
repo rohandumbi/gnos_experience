@@ -6,6 +6,7 @@ import { WorkflowView } from './workflowView';
 import { ModelDefinitionView } from './modelDefinitionView';
 import { ScenarioDefinitionView } from './scenarioDefinitionView';
 import { FixedCostDefinitionView } from './fixedCostDefinitionView';
+import { ProcessConstraintView } from './processConstraintView';
 import { BenchConstraintView } from './benchConstraintView';
 import { OpexDefinitionView } from './opexDefinitionView';
 
@@ -71,7 +72,9 @@ export class MainView extends View{
         this.$el.find("#page-content-wrapper").html(this.fixedCostDefinitionView.$el);
     }
     initializeMaterialConstraint(){
-
+        this.processConstraintView = new ProcessConstraintView({});
+        this.processConstraintView.render();
+        this.$el.find("#page-content-wrapper").html(this.processConstraintView.$el);
     }
     initializeGradeConstraint(){
 

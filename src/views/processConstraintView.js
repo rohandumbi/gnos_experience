@@ -1,18 +1,18 @@
 import { View } from '../core/view';
 import { ScenarioModel } from '../models/scenarioModel';
-import { BenchConstraintModel } from '../models/benchConstraintModel';
+import { ProcessConstraintModel } from '../models/processConstraintModel';
 
-export class BenchConstraintView extends View{
+export class ProcessConstraintView extends View{
 
     constructor(options) {
         super();
         this.model = new ScenarioModel({});
-        this.benchConstraintModel = new BenchConstraintModel({});
+        this.processConstraintModel = new ProcessConstraintModel({});
     }
 
     getHtml() {
         var promise = new Promise(function(resolve, reject){
-            $.get( "../content/benchConstraintView.html", function( data ) {
+            $.get( "../content/processConstraintView.html", function( data ) {
                 resolve(data);
             })
         });
@@ -25,16 +25,18 @@ export class BenchConstraintView extends View{
 
     initializeGrid() {
         var that = this;
-        var data = this.benchConstraintModel.fetch();
+        var data = this.processConstraintModel.fetch();
         var row = '';
-        for(var i=0; i<data.benchConstraints.length; i++){
-            var benchConstraint = data.benchConstraints[i];
+        for(var i=0; i<data.processConstraints.length; i++){
+            var processConstraint = data.processConstraints[i];
             row += (
                 '<tr>' +
-                '<td>' + benchConstraint.pitName + '</td>'
+                '<td>' + processConstraint.expression + '</td>'
             )
-            row += '<td>' + benchConstraint.inUse + '</td>';
-            benchConstraint.values.forEach(function(data){
+            row += '<td>' + processConstraint.inUse + '</td>';
+            row += '<td>' + processConstraint.grouping + '</td>';
+            row += '<td>' + processConstraint.constraint_type + '</td>';
+            processConstraint.values.forEach(function(data){
                 row += '<td>' + data.value + '</td>';
             });
             row += '</tr>';
@@ -47,12 +49,12 @@ export class BenchConstraintView extends View{
             rowSelect: true,
             keepSelection: false,
             formatters: {
-                "pit_name": function(column, row){
+                "expression": function(column, row){
                     return (
                     '<select value="test"  style="max-width: 120px">' +
-                        '<option selected disabled hidden>' + row.pit_name + '</option>'+
-                        '<option value="default">Default</option>' +
-                        '<option value="b1p12">b1p12</option>'+
+                        '<option selected disabled hidden>' + row.expression + '</option>'+
+                        '<option value="default">Expression 1</option>' +
+                        '<option value="b1p12">Expression 2</option>'+
                     '</select>') ;
                 },
                 "value": function(column, row){
@@ -70,6 +72,24 @@ export class BenchConstraintView extends View{
                             '<input type="checkbox" value="' + row.in_use + '"' + '>'
                         )
                     }
+                },
+                "grouping": function(column, row){
+                    return (
+                    '<select value="test"  style="max-width: 120px">' +
+                        '<option selected disabled hidden>' + row.grouping + '</option>'+
+                        '<option value="process 1">process 1</option>' +
+                        '<option value="process 1">process 2</option>' +
+                        '<option value="process 1">process 3</option>' +
+                        '<option value="group 1">group 1</option>'+
+                    '</select>') ;
+                },
+                "constraint_type": function(column, row){
+                    return (
+                    '<select value="test"  style="max-width: 120px">' +
+                        '<option selected disabled hidden>' + row.constraint_type + '</option>'+
+                        '<option value="max">MAX</option>' +
+                        '<option value="min">MIN</option>'+
+                    '</select>') ;
                 }
                 /*"year": function(column, row){
                  return (

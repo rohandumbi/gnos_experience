@@ -1,4 +1,4 @@
-<div id="benchContraintView">
+<div id="processConstraintView">
     <form class="form-inline">
         <div class="form-group">
             <label for="scenario_name">Scenario In Use:</label>
@@ -9,8 +9,10 @@
 <table id="datatype-grid-basic" class="table table-condensed table-hover table-striped">
     <thead>
     <tr>
-        <th data-identifier="true" data-formatter="pit_name" data-column-id="pit_name">Pit Name</th>
+        <th data-formatter="expression" data-column-id="expression">Expression</th>
         <th data-column-id="in_use" data-formatter="inUse">In Use</th>
+        <th data-column-id="grouping" data-formatter="grouping">Grouping</th>
+        <th data-column-id="constraint_type" data-formatter="constraint_type">Max/Min</th>
         <% var counter = timePeriod %>
         <% for(var i=0; i< counter; i++) { %>
         <th data-formatter="value" data-column-id="<%= (startYear + i) %>"><%= (startYear + i) %></th>
