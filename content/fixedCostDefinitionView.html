@@ -12,7 +12,7 @@
             <th data-identifier="true" data-column-id="name">Category</th>
             <% var counter = timePeriod %>
             <% for(var i=0; i< counter; i++) { %>
-                <th data-column-id="<%= (startYear + i) %>"><%= (startYear + i) %></th>
+                <th data-formatter="value" data-column-id="<%= (startYear + i) %>"><%= (startYear + i) %></th>
             <% } %>
         </tr>
         </thead>

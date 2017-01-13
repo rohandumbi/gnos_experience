@@ -46,11 +46,11 @@ export class FixedCostDefinitionView extends View{
             rowSelect: true,
             keepSelection: false,
             formatters: {
-                /*"year": function(column, row){
+                "value": function(column, row){
                     return (
-                    '<input type="text" value="' + row.year + '"' + 'readonly>'
+                        '<input style="max-width: 100px" type="text" value="' + row[column.id] + '"' + 'checked  >'
                     );
-                }*/
+                }
                 /*"expression": function(column, row){
                     return (
                     '<select value="test">' +
