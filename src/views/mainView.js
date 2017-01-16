@@ -2,6 +2,7 @@ import { View } from '../core/view';
 import { SideNavView } from './sideNavView';
 import { DataMappingView } from './dataMappingView';
 import { RequiredFieldMappingView } from './requiredFieldMappingView';
+import { ExpressionDefinitionView } from './expressionDefinitionView';
 import { WorkflowView } from './workflowView';
 import { ModelDefinitionView } from './modelDefinitionView';
 import { ScenarioDefinitionView } from './scenarioDefinitionView';
@@ -38,7 +39,9 @@ export class MainView extends View{
         this.$el.find("#page-content-wrapper").html(this.requiredFieldMappingView.$el);
     }
     initializeExpressionDefinition(){
-
+        this.expressionDefinitionView = new ExpressionDefinitionView();
+        this.expressionDefinitionView.render();
+        this.$el.find("#page-content-wrapper").html(this.expressionDefinitionView.$el);
     }
     initializeReserveDefinition(){
 

@@ -77,12 +77,20 @@ export class OpexDefinitionView extends View{
                     '</select>') ;
                 },
                 "expression": function(column, row) {
-                    return (
-                    '<select value="test"  style="max-width: 120px">' +
-                        '<option selected disabled hidden>' + row.expression + '</option>'+
-                        '<option value="expression 1">Expression 1</option>' +
-                        '<option value="expression 2">Expression 2</option>'+
-                    '</select>') ;
+                    if(row.classification.toString() === "true"){
+                        return (
+                            '<select value="test"  style="max-width: 120px">' +
+                                '<option selected disabled hidden>' + row.expression + '</option>'+
+                                '<option value="expression 1">Expression 1</option>' +
+                                '<option value="expression 2">Expression 2</option>'+
+                            '</select>'
+                        );
+                    }else{
+                        return (
+                            '<select value="test"  style="width: 100px">' +
+                            '</select>'
+                        );
+                    }
                 },
                 "value": function(column, row){
                     return (
