@@ -9,13 +9,13 @@
 <table id="datatype-grid-basic" class="table table-condensed table-hover table-striped">
     <thead>
     <tr>
-        <th data-identifier="true" data-formatter="classification" data-column-id="classification">Classification</th>
-        <th data-column-id="in_use" data-formatter="inUse">In Use</th>
+        <th data-formatter="classification" data-column-id="classification">Classification</th>
+        <th style="width:70px" data-column-id="in_use" data-formatter="inUse">In Use</th>
         <th data-column-id="identifier" data-formatter="identifier">Identifier</th>
         <th data-column-id="expression" data-formatter="expression">Expression</th>
         <% var counter = timePeriod %>
         <% for(var i=0; i< counter; i++) { %>
-        <th data-formatter="value" data-column-id="<%= (startYear + i) %>"><%= (startYear + i) %></th>
+        <th style="width:75px" data-formatter="value" data-column-id="<%= (startYear + i) %>"><%= (startYear + i) %></th>
         <% } %>
     </tr>
     </thead>

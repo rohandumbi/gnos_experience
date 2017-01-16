@@ -30,6 +30,7 @@ export class ExpressionDefinitionView extends View{
             row += (
                 '<tr>' +
                     '<td>' + expression.name + '</td>' +
+                    '<td>' + expression.is_grade + '</td>' +
                     '<td>' + expression.expr_value + '</td>' +
                     '<td>' + expression.filter + '</td>' +
                     /*'<td>' + model.id + '</td>' +*/
@@ -56,8 +57,19 @@ export class ExpressionDefinitionView extends View{
                 },
                 "filter": function(column, row){
                     return (
-                        '<input type="text" value="' + row.filter + '"' + '>'
+                        '<input style="width:200px" type="text" value="' + row.filter + '"' + '>'
                     );
+                },
+                "grade": function(column, row) {
+                    if(row.grade.toString().toLowerCase() === "true"){
+                        return (
+                            '<input type="checkbox" value="' + row.grade + '"' + 'checked  >'
+                        )
+                    }else{
+                        return (
+                            '<input type="checkbox" value="' + row.grade + '"' + '>'
+                        )
+                    }
                 }
                 /*"commands": function(column, row)
                 {

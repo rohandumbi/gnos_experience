@@ -8,55 +8,55 @@ export class ExpressionModel {
         return {
             expressions: [
                 {
-                    name: "expression 1",
+                    name: "uranus_ore",
                     id: 1,
                     is_grade: false,
                     expr_value: "t_t_wt",
-                    filter: "bin>60"
+                    filter: "model='uranus' and bin>=30"
 
                 },
                 {
-                    name: "expression 2",
+                    name: "saturn_ore",
                     id: 2,
                     is_grade: false,
                     expr_value: "t_t_wt",
-                    filter: "bin>60"
+                    filter: "model='saturn' and bin>=30"
 
                 },
                 {
-                    name: "expression 3",
+                    name: "mars_ore",
                     id: 3,
                     is_grade: false,
                     expr_value: "t_t_wt",
-                    filter: "bin>60"
+                    filter: "model='mars' and bin>=30"
 
                 },
                 {
-                    name: "expression 4",
+                    name: "hg_ore",
                     id: 4,
                     is_grade: false,
                     expr_value: "t_t_wt",
-                    filter: ""
+                    filter: "bin>=60"
 
                 },
                 {
-                    name: "expression 5",
+                    name: "lg_ore",
                     id: 5,
                     is_grade: false,
                     expr_value: "t_t_wt",
-                    filter: ""
+                    filter: "bin>=30 and bin<60"
 
                 },
                 {
-                    name: "expression 6",
+                    name: "ore",
                     id: 5,
                     is_grade: false,
                     expr_value: "t_t_wt",
-                    filter: ""
+                    filter: "bin>=30"
 
                 },
                 {
-                    name: "expression 7",
+                    name: "lump_rev",
                     id: 6,
                     is_grade: false,
                     expr_value: "s_l_fe_u",
@@ -64,7 +64,7 @@ export class ExpressionModel {
 
                 },
                 {
-                    name: "expression 8",
+                    name: "fines_rev",
                     id: 7,
                     is_grade: false,
                     expr_value: "s_f_fe_u",
@@ -72,15 +72,15 @@ export class ExpressionModel {
 
                 },
                 {
-                    name: "expression 9",
+                    name: "waste",
                     id: 8,
                     is_grade: false,
                     expr_value: "t_t_wt",
-                    filter: ""
+                    filter: "bin<30"
 
                 },
                 {
-                    name: "expression 10",
+                    name: "sft_wt",
                     id: 9,
                     is_grade: false,
                     expr_value: "s_f_t + s_f_h2o_t",
@@ -88,7 +88,7 @@ export class ExpressionModel {
 
                 },
                 {
-                    name: "expression 11",
+                    name: "slt_wt",
                     id: 10,
                     is_grade: false,
                     expr_value: "s_l_t + s_f_h2o_t",
@@ -96,7 +96,7 @@ export class ExpressionModel {
 
                 },
                 {
-                    name: "expression 12",
+                    name: "fines_fe_d",
                     id: 11,
                     is_grade: true,
                     expr_value: "s_f_fe_u / s_f_t",

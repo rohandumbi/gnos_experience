@@ -8,60 +8,50 @@ export class ProcessModel {
         return {
             processes:[
                 {
-                    name: "model 1",
+                    name: "uranus_cf",
                     modelId: 1,
                     processes: [
                         {
-                            name: "model 2",
+                            name: "uranus_lg",
                             modelId: 2,
                             processes: []
                         },
                         {
-                            name: "model 3",
+                            name: "uranus_hg",
                             modelId: 3,
-                            processes: []
-                        },
-                        {
-                            name: "model 4",
-                            modelId: 4,
                             processes: []
                         }
                     ],
                     products: []
                 },
                 {
-                    name: "model 5",
+                    name: "saturn_cf",
                     modelId: 5,
                     processes: [
                         {
-                            name: "model 6",
+                            name: "saturn_lg",
                             modelId: 6,
                             processes: []
                         },
                         {
-                            name: "model 7",
+                            name: "saturn_hg",
                             modelId: 7,
-                            processes: []
-                        },
-                        {
-                            name: "model 8",
-                            modelId: 8,
                             processes: []
                         }
                     ],
                     products: []
                 },
                 {
-                    name: "model 9",
+                    name: "mars_cf",
                     modelId: 9,
                     processes: [
                         {
-                            name: "model 10",
+                            name: "mars_hg",
                             modelId: 10,
                             processes: []
                         },
                         {
-                            name: "model 11",
+                            name: "mars_lg",
                             modelId: 11,
                             processes: []
                         }

@@ -8,77 +8,77 @@ export class GnosModel {
         return {
             models:[
                 {
-                    name: "model 1",
+                    name: "uranus_ore",
                     id: 1,
                     expressionId: 1,
-                    expressionName: "expression 1",
-                    filter:"bin>60"
+                    expressionName: "uranus_ore",
+                    filter:""
 
                 },
                 {
-                    name: "model 2",
+                    name: "saturn_ore",
                     id: 2,
                     expressionId: 2,
-                    expressionName: "expression 2",
-                    filter:"bin>60"
+                    expressionName: "saturn_ore",
+                    filter:""
 
                 },
                 {
-                    name: "model 3",
+                    name: "mars_ore",
                     id: 3,
                     expressionId: 3,
-                    expressionName: "expression 3",
-                    filter:"bin>60"
+                    expressionName: "mars_ore",
+                    filter:""
 
                 },
                 {
-                    name: "model 4",
+                    name: "uranus_hg_ore",
                     id: 4,
                     expressionId: 4,
-                    expressionName: "expression 4",
+                    expressionName: "hg_ore",
                     filter:""
 
                 },
                 {
-                    name: "model 5",
+                    name: "uranus_lg_ore",
                     id: 5,
                     expressionId: 5,
-                    expressionName: "expression 5",
+                    expressionName: "lg_ore",
                     filter:""
 
                 },
                 {
-                    name: "model 6",
+                    name: "saturn_hg_ore",
                     id: 6,
                     expressionId: 6,
-                    expressionName: "expression 6",
+                    expressionName: "ore",
                     filter:""
 
                 },
                 {
-                    name: "model 7",
+                    name: "saturn_lg_ore",
                     id: 7,
                     expressionId: 7,
-                    expressionName: "expression 7",
+                    expressionName: "ore",
                     filter:""
 
                 },
                 {
-                    name: "model 8",
+                    name: "mars_hg_ore",
                     id: 8,
                     expressionId: 8,
-                    expressionName: "expression 8",
+                    expressionName: "hg_ore",
                     filter:""
 
                 },
                 {
-                    name: "model 9",
+                    name: "uranus_hg_ore_saturn_cr",
                     id: 9,
                     expressionId: 9,
-                    expressionName: "expression 9",
+                    expressionName: "hg_ore",
                     filter:""
 
-                },
+                }/*,
                 {
                     name: "model 10",
                     id: 10,
@@ -134,7 +134,7 @@ export class GnosModel {
                     expressionName: "expression 16",
                     filter:""
 
-                }
+                }*/
             ]
         };
     }

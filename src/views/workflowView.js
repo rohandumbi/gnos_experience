@@ -51,7 +51,7 @@ export class WorkflowView extends View{
     initializeGraph() {
         var $canvas = this.$el.find("#viewport");
         //var $container = $canvas.parent();
-        $canvas.attr('width', '1200');
+        $canvas.attr('width', '1300');
         $canvas.attr('height', '700');
 
         this.system = arbor.ParticleSystem(1000, 400,1);
@@ -63,7 +63,29 @@ export class WorkflowView extends View{
 
         var block = this.system.addNode('Block',{'color':'red','shape':'dot','label':'BLOCK'});
         this.addProcessToGraph(block, data.processes);
+        this.addProcessJoins();
     }
+
+    addProcessJoins() {
+        var join_uranus_cr = this.system.addNode('uranus_cr',{'color':'#2b2e3b','shape':'square','label':'Join: uranus_cr'});
+        var uranus_lg_node = this.system.getNode('uranus_lg');
+        var uranus_hg_node = this.system.getNode('uranus_hg');
+        this.system.addEdge(join_uranus_cr, uranus_lg_node, {directed: true, weight: 2});
+        this.system.addEdge(join_uranus_cr, uranus_hg_node, {directed: true, weight: 2});
+
+
+        var join_saturn_cr = this.system.addNode('saturn_cr',{'color':'#2b2e3b','shape':'square','label':'Join: saturn_cr'});
+        var saturn_hg_node = this.system.getNode('saturn_hg');
+        var saturn_lg_node = this.system.getNode('saturn_lg');
+        var uranus_hg_node = this.system.getNode('uranus_hg');
+        var mars_hg_node = this.system.getNode('mars_hg');
+
+        this.system.addEdge(join_saturn_cr, saturn_hg_node, {directed: true, weight: 2});
+        this.system.addEdge(join_saturn_cr, saturn_lg_node, {directed: true, weight: 2});
+        //this.system.addEdge(join_saturn_cr, uranus_hg_node, {directed: true, weight: 2});
+        this.system.addEdge(join_saturn_cr, mars_hg_node, {directed: true, weight: 2});
+    }
+
 
     handleDragStart(e) {
         e.target.style.opacity = '0.4';  // this / e.target is the source node.
