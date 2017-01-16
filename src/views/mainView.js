@@ -7,6 +7,7 @@ import { ModelDefinitionView } from './modelDefinitionView';
 import { ScenarioDefinitionView } from './scenarioDefinitionView';
 import { FixedCostDefinitionView } from './fixedCostDefinitionView';
 import { ProcessConstraintView } from './processConstraintView';
+import { GradeConstraintView } from './gradeConstraintView';
 import { BenchConstraintView } from './benchConstraintView';
 import { OpexDefinitionView } from './opexDefinitionView';
 
@@ -77,7 +78,9 @@ export class MainView extends View{
         this.$el.find("#page-content-wrapper").html(this.processConstraintView.$el);
     }
     initializeGradeConstraint(){
-
+        this.gradeConstraintView = new GradeConstraintView({});
+        this.gradeConstraintView.render();
+        this.$el.find("#page-content-wrapper").html(this.gradeConstraintView.$el);
     }
     initializeBenchConstraint(){
         this.benchConstraintView = new BenchConstraintView();
