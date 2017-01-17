@@ -11,6 +11,7 @@ import { ProcessConstraintView } from './processConstraintView';
 import { GradeConstraintView } from './gradeConstraintView';
 import { BenchConstraintView } from './benchConstraintView';
 import { OpexDefinitionView } from './opexDefinitionView';
+import { CapexCollectionView } from './capexCollectionView';
 
 export class MainView extends View{
 
@@ -94,7 +95,9 @@ export class MainView extends View{
 
     }
     initializeCapexConstraint(){
-
+        this.capexCollectionView = new CapexCollectionView();
+        this.capexCollectionView.render();
+        this.$el.find("#page-content-wrapper").html(this.capexCollectionView.$el);
     }
 
     initializeContentView($el) {
