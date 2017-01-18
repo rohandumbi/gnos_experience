@@ -1,25 +1,25 @@
 import { View } from '../core/view';
-import { ProcessModel } from '../models/processModel';
-import { GnosModel } from '../models/gnosModel';
+import { PitGroupModel } from '../models/pitGroupModel';
+import { PitModel } from '../models/pitModel';
 
-export class WorkflowView extends View{
+export class PitGroupView extends View{
 
     constructor(options) {
         super();
-        this.processModel = new ProcessModel({});
-        this.gnosModel = new GnosModel({});
+        this.pitGroupModel = new PitGroupModel({});
+        this.pitModel = new PitModel({});
     }
 
     getHtml() {
         var promise = new Promise(function(resolve, reject){
-            $.get( "../content/workflowView.html", function( data ) {
+            $.get( "../content/pitGroupView.html", function( data ) {
                 resolve(data);
             })
         });
         return promise;
     }
 
-    addProcessToGraph(parent, processes) {
+    addGroupToGraph(parent, processes) {
         var that = this;
         processes.forEach(function (process) {
             var processNode = that.system.addNode(process.name,{'color':'#95cde5','shape':'dot','label':process.name});
@@ -31,24 +31,25 @@ export class WorkflowView extends View{
     }
 
     onDomLoaded() {
-        this.initializeModelList();
+        this.initializePitList();
         this.initializeGraph();
         this.bindDomEvents();
     }
 
-    initializeModelList() {
-        var data = this.gnosModel.fetch();
+    initializePitList() {
+        var data = this.pitModel.fetch();
         var $liGroup = this.$el.find('ul.list-group');
         var $li;
-        data.models.forEach(function(model) {
-            $li = $('<li draggable="true">' + model.name + '</li>');
-            $li.attr('title', model.name);
+        data.pits.forEach(function(pit) {
+            $li = $('<li draggable="true">' + pit.name + '</li>');
+            $li.attr('title', pit.name);
             $li.addClass('list-group-item list-group-item-info');
             $liGroup.append($li);
         });
     }
 
     initializeGraph() {
+        var that = this;
         var $canvas = this.$el.find("#viewport");
         //var $container = $canvas.parent();
         $canvas.attr('width', '1300');
@@ -59,11 +60,20 @@ export class WorkflowView extends View{
         this.system.renderer = Renderer($canvas);
         this.system.screenPadding(20);
 
-        var data = this.processModel.fetch();
+        var data = this.pitGroupModel.fetch();
 
-        var block = this.system.addNode('Block',{'color':'red','shape':'dot','label':'BLOCK'});
-        this.addProcessToGraph(block, data.processes);
-        this.addProcessJoins();
+        //var block = this.system.addNode('Block',{'color':'red','shape':'dot','label':'BLOCK'});
+        var pitGroups = data.pitGroups;
+        pitGroups.forEach(function(pitGroup) {
+            var pitGroupNode = that.system.addNode(pitGroup.name,{'color':'red','shape':'dot','label': pitGroup.name});
+            //this.addGroupToGraph(pitGroup, data.pitGroups);
+            var memberPits = pitGroup.pits;
+            memberPits.forEach(function (memberPit) {
+                var pitNode = that.system.addNode(memberPit.name,{'color':'#95cde5','shape':'dot','label':memberPit.name});
+                that.system.addEdge(pitGroupNode, pitNode, {directed: true, weight: 2});
+            });
+        });
+        //this.addProcessJoins();
     }
 
     addProcessJoins() {
@@ -92,8 +102,9 @@ export class WorkflowView extends View{
     }
 
     handleDragEnd(e) {
+        var that = this;
         console.log('Dragged model: ' + e.target.innerHTML);
-        var draggedModel = this.getModelWithName(e.target.innerHTML);
+        var draggedModel = this.getPitWithName(e.target.innerHTML);
         e.target.style.opacity = '1';
         var pos = this.$el.find('#viewport').offset();
         var p = {x:e.pageX-pos.left, y:e.pageY-pos.top}
@@ -103,14 +114,16 @@ export class WorkflowView extends View{
             // dragged.node.tempMass = 10000
             //dragged.node.fixed = true;
             console.log('need to add');
-            this.addProcessToGraph(selected.node, [draggedModel]);
+            //this.addProcessToGraph(selected.node, [draggedModel]);
+            var pitNode = that.system.addNode(draggedModel.name,{'color':'#95cde5','shape':'dot','label':draggedModel.name});
+            that.system.addEdge(selected.node, pitNode, {directed: true, weight: 2});
         }
     }
 
     bindDomEvents() {
         this.bindDragEventsOnModels();
-        this.$el.find('#join_processes').click(function() {
-           alert("To display process join form");
+        this.$el.find('#define_pit_group').click(function() {
+           alert("To display pit group definition form");
         });
     }
 
@@ -123,12 +136,12 @@ export class WorkflowView extends View{
         });
     }
 
-    getModelWithName(modelName) {
-        var data = this.gnosModel.fetch();
-        var models = data.models;
+    getPitWithName(pitName) {
+        var data = this.pitModel.fetch();
+        var models = data.pits;
         var selectedModel = null;
         models.forEach(function(model){
-            if(model.name === modelName) {
+            if(model.name === pitName) {
                 selectedModel = model;
             }
         });

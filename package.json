@@ -2,6 +2,10 @@
   "build": {
     "appId": "com.example.electron-boilerplate",
     "app-category-type": "your.app.category.type",
+    "extraResources": [
+        "content/**/*",
+        "resources/**/*"
+    ],
     "win": {
       "target": [
         "nsis"

@@ -12,12 +12,24 @@ var utils = require('./utils');
 var projectDir = jetpack;
 var srcDir = jetpack.cwd('./src');
 var destDir = jetpack.cwd('./app');
+var contentDir = jetpack.cwd('./content');
+var resourceDir = jetpack.cwd('./resources');
 
 gulp.task('bundle', function () {
     return Promise.all([
         bundle(srcDir.path('background.js'), destDir.path('background.js')),
         bundle(srcDir.path('app.js'), destDir.path('app.js')),
     ]);
+});
+
+gulp.task('template', function () {
+    return gulp.src(contentDir.cwd() + '/**/*.html')
+        .pipe(gulp.dest(destDir.path('content')));
+});
+
+gulp.task('resources', function () {
+    return gulp.src(resourceDir.cwd() + '/**/*')
+        .pipe(gulp.dest(destDir.path('resources')));
 });
 
 gulp.task('less', function () {
@@ -50,4 +62,4 @@ gulp.task('watch', function () {
     }));
 });
 
-gulp.task('build', ['bundle', 'less', 'environment']);
+gulp.task('build', ['bundle', 'template', 'resources', 'less', 'environment']);

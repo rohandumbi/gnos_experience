@@ -4,6 +4,7 @@ import { DataMappingView } from './dataMappingView';
 import { RequiredFieldMappingView } from './requiredFieldMappingView';
 import { ExpressionDefinitionView } from './expressionDefinitionView';
 import { WorkflowView } from './workflowView';
+import { PitGroupView } from './pitGroupView';
 import { ModelDefinitionView } from './modelDefinitionView';
 import { ScenarioDefinitionView } from './scenarioDefinitionView';
 import { FixedCostDefinitionView } from './fixedCostDefinitionView';
@@ -58,7 +59,9 @@ export class MainView extends View{
         this.$el.find("#page-content-wrapper").html(this.workflowView.$el);
     }
     initializeGroupingDefinition(){
-
+        this.pitGroupView = new PitGroupView({});
+        this.pitGroupView.render();
+        this.$el.find("#page-content-wrapper").html(this.pitGroupView.$el);
     }
 
     initializeScenarioDefinition() {
