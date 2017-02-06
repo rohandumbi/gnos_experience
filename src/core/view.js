@@ -1,6 +1,6 @@
 export class View {
 
-    constructor() {
+    constructor(options) {
         this._callbacks = {};
         this.$el = $('<div style="height:100%"></div>');
     }
@@ -34,16 +34,12 @@ export class View {
     }
 
     trigger(eventName, options) {
-        //this.$el.trigger(eventName,[options]);
         if (this._callbacks[eventName]) {
             this._callbacks[eventName].fire(options);
         }
     }
 
     on(eventName, callback) {
-        /*this.$el.on(eventName, function(event, options){
-            callback(event, options);
-        });*/
         if (!this._callbacks[eventName]) {
             this._callbacks[eventName] = $.Callbacks();
         }

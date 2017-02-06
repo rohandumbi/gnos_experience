@@ -1,8 +1,10 @@
 import { View } from '../core/view';
+import { DashboardModel } from '../models/dashboardModel';
 export class DashBoardView extends View{
 
     constructor(options) {
         super();
+        this.dashboardModel = new DashboardModel();
     }
 
     getHtml() {
@@ -16,10 +18,10 @@ export class DashBoardView extends View{
                 '</div>' +
                 '<div id="dashboardPane">' +
                     '<div id="projectListPane">' +
-                        this.getCards() +
+                        /*this.getCards() +*/
                     '</div>' +
                     '<div id="newProjectPane">' +
-                        this.getNewProjectCard() +
+                        /*this.getNewProjectCard() +*/
                     '</div>' +
                 '</div>' +
             '</div>'
@@ -65,10 +67,10 @@ export class DashBoardView extends View{
         return htmlForm;
     }
 
-    getCards(){
+    getCards(data){
         var containerDiv = '<div id="projectCardContainer" class="row"> ';
         var cards = ''
-        for(var i=0; i<10; i++){
+        for(var i=0; i<data.length; i++){
             cards += '<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> ' +
                             '<div class="thumbnail">' +
                                 '<div class="caption"> ' +
@@ -76,13 +78,13 @@ export class DashBoardView extends View{
                                         '<span class="glyphicon glyphicon-trash pull-right text-primary"></span>' +
                                     '</div>' +
                                     '<div class="col-lg-12 well well-add-card"> ' +
-                                        '<h4>' + 'Project ' + (i+1) + '</h4> ' +
+                                        '<h4>' + data[i].name + '</h4> ' +
                                     '</div>' +
                                     '<div class="col-lg-12">' +
-                                        '<p class"text-muted">Created On: DD-MM-YYYY</p>' +
+                                        '<p class"text-muted">Created: ' + data[i].createdDate + '</p>' +
                                     '</div>' +
                                     '<button type="button" data-projectid="'+ 'Project ' + (i+1) +'" class=" openProjectBtn btn btn-primary btn-xs btn-update btn-add-card">Open</button> ' +
-                                    '<span title="Project notes will come here" class="glyphicon glyphicon-exclamation-sign text-danger pull-right icon-style"></span> ' +
+                                    '<span title="' + data[i].desc + '" class="glyphicon glyphicon-exclamation-sign text-danger pull-right icon-style"></span> ' +
                                 '</div>' +
                             '</div> ' +
                         '</div>'
@@ -94,6 +96,18 @@ export class DashBoardView extends View{
 
 
     onDomLoaded() {
+        var that = this;
+        this.dashboardModel.fetch({
+            success: function(data){
+                var $projectListPane = that.$el.find('#projectListPane');
+                var $newProjectPane = that.$el.find('#newProjectPane');
+                $projectListPane.append(that.getCards(data));
+                $newProjectPane.append(that.getNewProjectCard());
+            },
+            error: function(data){
+                alert("Error: " + data);
+            }
+        });
         this.bindEvents();
     }
 
