@@ -46,14 +46,14 @@ export class DashBoardView extends View{
                     '<div class="form-group"> ' +
                         '<label class="col-md-4 control-label" for="fullname">File Location</label> ' +
                         '<div class="col-md-4"> ' +
-                            '<input id="fileLocation" name="fullname" type="file" placeholder="" class="form-control input-md" required=""> ' +
+                            '<input id="fileLocation" name="file" name="file" type="file" placeholder="" class="form-control input-md" required=""> ' +
                             '<span class="help-block">Browse and select CSV.</span> ' +
                         '</div> ' +
                     '</div> ' +
                     '<div class="form-group"> ' +
                         '<label class="col-md-4 control-label" for=""></label> ' +
                         '<div class="col-md-5"> ' +
-                            '<input id="" name="" type="text" placeholder="Notes" class="form-control input-md" required=""> ' +
+                            '<input id="descriptions" name="" type="text" placeholder="Notes" class="form-control input-md" required=""> ' +
                         '</div> ' +
                     '</div> ' +
                     '<div class="form-group"> ' +
@@ -103,18 +103,51 @@ export class DashBoardView extends View{
                 var $newProjectPane = that.$el.find('#newProjectPane');
                 $projectListPane.append(that.getCards(data));
                 $newProjectPane.append(that.getNewProjectCard());
+                that.bindEvents();
             },
             error: function(data){
                 alert("Error: " + data);
             }
         });
-        this.bindEvents();
+        //this.bindEvents();
     }
 
     bindEvents() {
         var that = this;
         this.$el.find('.openProjectBtn').click(function() {
             that.trigger('open:project', {projectId: $(this).data('projectid')})
+        });
+        this.$el.find('#continue').click(function(event) {
+            event.preventDefault();
+            var name = that.$el.find('#projectName').val();
+            var fileInput = that.$el.find('#fileLocation').val();
+            var desc = that.$el.find('#descriptions').val();
+
+            if(!name || !fileInput){
+                alert('One of the required fields is empty');
+            }else{
+                var files = that.$el.find('#fileLocation').prop("files");
+                /*assuming first selection to be valid*/
+                var file = files[0];
+                var filePath = file.path;
+
+                var projectObject = {};
+                projectObject['name'] = name;
+                projectObject['desc'] = desc;
+                projectObject['fileName'] = filePath;
+                that.dashboardModel.add({
+                    dataObject: projectObject,
+                    success: function(data){
+                        //alert()
+                        that.trigger('reload');
+                    },
+                    error: function(data){
+                        alert("Error: " + data);
+                    }
+                });
+                //alert(JSON.stringify(projectObject));
+
+            }
         });
     }
 }

@@ -19,4 +19,23 @@ export class Model {
             }
         });
     }
+
+    add(options) {
+        if(!this.url) {
+            alert('Location of Project endpoints not avaiable.');
+        }
+        var data = JSON.stringify(options.dataObject);
+        $.ajax({
+            url: this.url,
+            type: "POST",
+            data: data,
+            success: function(data){
+                options.success(JSON.parse(data));
+            },
+            error: function(data) {
+                options.error(JSON.parse(data));
+            },
+            dataType: 'json'
+        });
+    }
 }

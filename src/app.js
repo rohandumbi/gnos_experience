@@ -44,6 +44,9 @@ var loadProjectDashboard = () => {
     dashboardView.on('open:project', function(options) {
         loadProject(options);
     });
+    dashboardView.on('reload', function(options) {
+        loadProjectDashboard(options);
+    });
 }
 
 var loadProject = (options) => {
