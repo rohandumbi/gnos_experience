@@ -71,7 +71,7 @@ export class DashBoardView extends View{
         var containerDiv = '<div id="projectCardContainer" class="row"> ';
         var cards = ''
         for(var i=0; i<data.length; i++){
-            cards += '<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> ' +
+            cards += '<div id="' + data[i].id + '" class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> ' +
                             '<div class="thumbnail">' +
                                 '<div class="caption"> ' +
                                     '<div class= "col-lg-12"> ' +
@@ -83,7 +83,7 @@ export class DashBoardView extends View{
                                     '<div class="col-lg-12">' +
                                         '<p class"text-muted">Created: ' + data[i].createdDate + '</p>' +
                                     '</div>' +
-                                    '<button type="button" data-projectid="'+ 'Project ' + (i+1) +'" class=" openProjectBtn btn btn-primary btn-xs btn-update btn-add-card">Open</button> ' +
+                '<button type="button" data-projectid="' + data[i].id + '" class=" openProjectBtn btn btn-primary btn-xs btn-update btn-add-card">Open</button> ' +
                                     '<span title="' + data[i].desc + '" class="glyphicon glyphicon-exclamation-sign text-danger pull-right icon-style"></span> ' +
                                 '</div>' +
                             '</div> ' +
@@ -145,8 +145,6 @@ export class DashBoardView extends View{
                         alert("Error: " + data);
                     }
                 });
-                //alert(JSON.stringify(projectObject));
-
             }
         });
     }
