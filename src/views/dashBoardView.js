@@ -75,7 +75,7 @@ export class DashBoardView extends View{
                             '<div class="thumbnail">' +
                                 '<div class="caption"> ' +
                                     '<div class= "col-lg-12"> ' +
-                                        '<span class="glyphicon glyphicon-trash pull-right text-primary"></span>' +
+                '<button type="button" data-projectid="' + data[i].id + '" class="deleteProjectBtn glyphicon glyphicon-trash pull-right text-primary"></button> ' +
                                     '</div>' +
                                     '<div class="col-lg-12 well well-add-card"> ' +
                                         '<h4>' + data[i].name + '</h4> ' +
@@ -83,7 +83,7 @@ export class DashBoardView extends View{
                                     '<div class="col-lg-12">' +
                                         '<p class"text-muted">Created: ' + data[i].createdDate + '</p>' +
                                     '</div>' +
-                '<button type="button" data-projectid="' + data[i].id + '" class=" openProjectBtn btn btn-primary btn-xs btn-update btn-add-card">Open</button> ' +
+                '<button type="button" data-projectid="' + data[i].id + '" class="openProjectBtn btn btn-primary btn-xs btn-update btn-add-card">Open</button> ' +
                                     '<span title="' + data[i].desc + '" class="glyphicon glyphicon-exclamation-sign text-danger pull-right icon-style"></span> ' +
                                 '</div>' +
                             '</div> ' +
@@ -116,6 +116,20 @@ export class DashBoardView extends View{
         var that = this;
         this.$el.find('.openProjectBtn').click(function() {
             that.trigger('open:project', {projectId: $(this).data('projectid')})
+        });
+        this.$el.find('.deleteProjectBtn').click(function () {
+            //that.trigger('open:project', {projectId: $(this).data('projectid')})
+            event.preventDefault();
+            var projectId = $(this).data('projectid');
+            that.dashboardModel.delete({
+                id: projectId,
+                success: function (data) {
+                    that.trigger('reload');
+                },
+                error: function (data) {
+                    alert("Could not delete: " + data);
+                }
+            });
         });
         this.$el.find('#continue').click(function(event) {
             event.preventDefault();

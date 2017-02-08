@@ -38,4 +38,16 @@ export class Model {
             dataType: 'json'
         });
     }
+
+    delete(options) {
+        if (!this.url) {
+            alert('Location of Project endpoints not avaiable.');
+        }
+        $.ajax({
+            url: this.url + '?' + $.param({"id": options.id}),
+            type: 'DELETE',
+            success: options.success || $.noop,
+            error: options.error || $.noop
+        });
+    }
 }
