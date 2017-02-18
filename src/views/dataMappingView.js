@@ -27,29 +27,44 @@ export class DataMappingView extends View{
 		this.model.fetch({
             success: function(data){
 				var row = '';
-				for(var i=0; i<data.fields.length; i++){
-					var field = data.fields[i];
+                for (var i = 0; i < data.length; i++) {
+                    var field = data[i];
 					row += (
 						'<tr>' +
 							'<td>' + field.name + '</td>' +
-							'<td>' + field.datatype + '</td>' +
+                        '<td>' + field.dataType + '</td>' +
 							'<td>' + field.weightedunit + '</td>' +
 						'</tr>'
 					)
 				}
-				this.$el.find("#tableBody").append($(row));
-				var grid = this.$el.find("#datatype-grid-basic").bootgrid({
+                that.$el.find("#tableBody").append($(row));
+                var grid = that.$el.find("#datatype-grid-basic").bootgrid({
 					/*rowCount: 15,*/
 					formatters: {
 						"datatype": function(column, row){
-							return (
+                            /*return (
 							'<select value="test">' +
 							'<option selected disabled hidden>' + row.datatype + '</option>'+
 							'<option value="grouptext">Group By(Text)</option>' +
 							'<option value="groupnumeric">Group By(Numeric)</option>' +
 							'<option value="unit">Unit</option>' +
 							'<option value="grade">Grade</option>' +
-							'</select>') ;
+                             '</select>') ;*/
+                            if (row.datatype.toString() === '1') {
+                                return (
+                                    '<select>' +
+                                    '<option value="1" selected>Number</option>' +
+                                    '<option value="2">Text</option>' +
+                                    '</select>'
+                                )
+                            } else if (row.datatype.toString() === '0') {
+                                return (
+                                    '<select>' +
+                                    '<option value="1">Number</option>' +
+                                    '<option selected value="2">Text</option>' +
+                                    '</select>'
+                                )
+                            }
 						},
 						"weightedunit": function(column, row){
 							return (
