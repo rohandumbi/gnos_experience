@@ -39,6 +39,25 @@ export class Model {
         });
     }
 
+	update(options) {
+        if(!this.url) {
+            alert('Location of Project endpoints not avaiable.');
+        }
+        var data = JSON.stringify(options.dataObject);
+        $.ajax({
+            url: this.url,
+            type: "PUT",
+            data: data,
+            success: function(data){
+                options.success(JSON.parse(data));
+            },
+            error: function(data) {
+                options.error(JSON.parse(data));
+            },
+            dataType: 'json'
+        });
+    }
+	
     delete(options) {
         if (!this.url) {
             alert('Location of Project endpoints not avaiable.');

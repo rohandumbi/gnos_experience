@@ -31,12 +31,12 @@ export class MainView extends View{
 
     initializeDatatypeDefinition(){
         //console.log("there there");
-        this.dataMappingView = new DataMappingView();
+        this.dataMappingView = new DataMappingView({projectId: this.projectId});
         this.dataMappingView.render();
         this.$el.find("#page-content-wrapper").html(this.dataMappingView.$el);
     }
     initializeRequiredFieldDefinition(){
-        this.requiredFieldMappingView = new RequiredFieldMappingView();
+        this.requiredFieldMappingView = new RequiredFieldMappingView({projectId: this.projectId});
         this.requiredFieldMappingView.render();
         this.$el.find("#page-content-wrapper").html(this.requiredFieldMappingView.$el);
     }

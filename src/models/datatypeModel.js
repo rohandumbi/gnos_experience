@@ -1,98 +1,22 @@
+import { Model } from '../core/model';
 export class DatatypeModel {
-    constructor(properties) {
-        this.properties = properties;
+    constructor(options) {
+        this.properties = options;
+		this.projectId = options.projectId;
     }
 
-    fetch() {
-        // do some AJAX calls and return data
-        return {
-            fields: [
-                {
-                    name: 'block',
-                    datatype: 'Group By(Text)',
-                    weightedunit: ''
-                },
-                {
-                    name: 'model',
-                    datatype: 'Group By(Text)',
-                    weightedunit: ''
-                },
-                {
-                    name: 'pit_name',
-                    datatype: 'Group By(Text)',
-                    weightedunit: ''
-                },
-                {
-                    name: 'bench_rl',
-                    datatype: 'Group By(Text)',
-                    weightedunit: ''
-                },
-                {
-                    name: 'bin',
-                    datatype: 'Group By(Numeric)',
-                    weightedunit: ''
-                },
-                {
-                    name: 't_t',
-                    datatype: 'Unit',
-                    weightedunit: ''
-                },
-                {
-                    name: 't_fe',
-                    datatype: 'Grade',
-                    weightedunit: 't_t'
-                },
-                {
-                    name: 't_al',
-                    datatype: 'Grade',
-                    weightedunit: 't_t'
-                },
-                {
-                    name: 't_si',
-                    datatype: 'Grade',
-                    weightedunit: 't_t'
-                },
-                {
-                    name: 't_p',
-                    datatype: 'Grade',
-                    weightedunit: 't_t'
-                },
-                {
-                    name: 't_mn',
-                    datatype: 'Grade',
-                    weightedunit: 't_t'
-                },
-                {
-                    name: 't_loi',
-                    datatype: 'Grade',
-                    weightedunit: 't_t'
-                },
-                {
-                    name: 't_s',
-                    datatype: 'Grade',
-                    weightedunit: 't_t'
-                },
-                {
-                    name: 't_h20_t',
-                    datatype: 'Grade',
-                    weightedunit: 't_t'
-                },
-                {
-                    name: 't_loi',
-                    datatype: 'Grade',
-                    weightedunit: 't_t'
-                },
-                {
-                    name: 't_vol',
-                    datatype: 'Unit',
-                    weightedunit: ''
-                },
-                {
-                    name: 'r_f_t',
-                    datatype: 'Unit',
-                    weightedunit: ''
-                }
-            ]
-        };
+    fetch(options) {
+        // do some AJAX calls and return data		
+		this.url = "http://localhost:4567/project/"+this.projectId+"/fields";
+        $.ajax({
+            url: this.url,
+            type: 'GET',
+            success: function(data){
+                options.success(JSON.parse(data));
+            },
+            error: function(data) {
+                options.error(JSON.parse(data));
+            }
+        });
     }
 }
