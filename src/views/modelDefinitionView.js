@@ -1,11 +1,14 @@
 import { View } from '../core/view';
 import { GnosModel } from '../models/gnosModel';
+import {ExpressionModel} from '../models/expressionModel';
 
 export class ModelDefinitionView extends View{
 
     constructor(options) {
         super();
-        this.model = new GnosModel({});
+        this.projectId = options.projectId;
+        this.model = new GnosModel({projectId: this.projectId});
+        this.expressionModel = new ExpressionModel({projectId: this.projectId});
     }
 
     getHtml() {
@@ -18,20 +21,28 @@ export class ModelDefinitionView extends View{
     }
 
     onDomLoaded() {
-        this.initializeGrid();
+        var that = this;
+        this.model.fetch({
+            success: function (data) {
+                that.initializeGrid(data);
+            },
+            error: function (data) {
+
+            }
+        });
     }
 
-    initializeGrid() {
+    initializeGrid(modelData) {
         var that = this;
-        var data = this.model.fetch();
+        //var data = this.model.fetch();
         var row = '';
-        for(var i=0; i<data.models.length; i++){
-            var model = data.models[i];
+        for (var i = 0; i < modelData.length; i++) {
+            var model = modelData[i];
             row += (
                 '<tr>' +
                     '<td>' + model.name + '</td>' +
-                    '<td>' + model.expressionName + '</td>' +
-                    '<td>' + model.filter + '</td>' +
+                '<td>' + model.expression.name + '</td>' +
+                '<td>' + (model.condition || '') + '</td>' +
                     /*'<td>' + model.id + '</td>' +*/
                 '</tr>'
             )
@@ -50,6 +61,22 @@ export class ModelDefinitionView extends View{
                     );
                 },*/
                 "expression": function(column, row){
+                    /*this.expressionModel.fetch({
+                     success: function(data){
+                     return (
+                     '<select value="test">' +
+                     '<option selected disabled hidden>' + row.expressionName + '</option>'+
+                     '<option value="grouptext">Group By(Text)</option>' +
+                     '<option value="groupnumeric">Group By(Numeric)</option>' +
+                     '<option value="unit">Unit</option>' +
+                     '<option value="grade">Grade</option>' +
+                     '</select>') ;
+                     },
+                     error: function(data){
+
+                     }
+                     })*/
+
                     return (
                     '<select value="test">' +
                         '<option selected disabled hidden>' + row.expressionName + '</option>'+
