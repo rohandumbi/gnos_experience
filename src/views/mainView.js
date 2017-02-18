@@ -41,7 +41,7 @@ export class MainView extends View{
         this.$el.find("#page-content-wrapper").html(this.requiredFieldMappingView.$el);
     }
     initializeExpressionDefinition(){
-        this.expressionDefinitionView = new ExpressionDefinitionView();
+        this.expressionDefinitionView = new ExpressionDefinitionView({projectId: this.projectId});
         this.expressionDefinitionView.render();
         this.$el.find("#page-content-wrapper").html(this.expressionDefinitionView.$el);
     }
@@ -49,17 +49,17 @@ export class MainView extends View{
 
     }
     initializeModelDefinition(){
-        this.modelDefinitionView = new ModelDefinitionView();
+        this.modelDefinitionView = new ModelDefinitionView({projectId: this.projectId});
         this.modelDefinitionView.render();
         this.$el.find("#page-content-wrapper").html(this.modelDefinitionView.$el);
     }
     initializeWorkflowDefinition(){
-        this.workflowView = new WorkflowView();
+        this.workflowView = new WorkflowView({projectId: this.projectId});
         this.workflowView.render();
         this.$el.find("#page-content-wrapper").html(this.workflowView.$el);
     }
     initializeGroupingDefinition(){
-        this.pitGroupView = new PitGroupView({});
+        this.pitGroupView = new PitGroupView({projectId: this.projectId});
         this.pitGroupView.render();
         this.$el.find("#page-content-wrapper").html(this.pitGroupView.$el);
     }

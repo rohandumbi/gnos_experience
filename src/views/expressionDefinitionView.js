@@ -5,7 +5,8 @@ export class ExpressionDefinitionView extends View{
 
     constructor(options) {
         super();
-        this.model = new ExpressionModel({});
+        this.projectId = options.projectId;
+        this.model = new ExpressionModel({projectId: this.projectId});
     }
 
     getHtml() {
@@ -18,21 +19,29 @@ export class ExpressionDefinitionView extends View{
     }
 
     onDomLoaded() {
-        this.initializeGrid();
+        var that = this;
+        this.model.fetch({
+            success: function (data) {
+                that.initializeGrid(data);
+            },
+            error: function (data) {
+
+            }
+        });
     }
 
-    initializeGrid() {
+    initializeGrid(modelData) {
         var that = this;
         var data = this.model.fetch();
         var row = '';
-        for(var i=0; i<data.expressions.length; i++){
-            var expression = data.expressions[i];
+        for (var i = 0; i < modelData.length; i++) {
+            var expression = modelData[i];
             row += (
                 '<tr>' +
                     '<td>' + expression.name + '</td>' +
-                    '<td>' + expression.is_grade + '</td>' +
-                    '<td>' + expression.expr_value + '</td>' +
-                    '<td>' + expression.filter + '</td>' +
+                '<td>' + expression.isGrade + '</td>' +
+                '<td>' + expression.exprvalue + '</td>' +
+                '<td>' + (expression.filter || '') + '</td>' +
                     /*'<td>' + model.id + '</td>' +*/
                 '</tr>'
             )
