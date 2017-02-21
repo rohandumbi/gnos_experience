@@ -22,6 +22,7 @@ export class ExpressionDefinitionView extends View{
         var that = this;
         this.model.fetch({
             success: function (data) {
+                that.data = data;
                 that.initializeGrid(data);
             },
             error: function (data) {
@@ -75,26 +76,12 @@ export class ExpressionDefinitionView extends View{
                         )
                     }
                 }
-                /*"commands": function(column, row)
-                {
-                    return "<button type=\"button\" class=\"btn btn-xs btn-default command-delete\" data-row-id=\"" + row.id + "\"><span class=\"glyphicon glyphicon-trash\"></span></button>";
-                }*/
             }
         }).on("loaded.rs.jquery.bootgrid", function()
         {
             /* Executes after data is loaded and rendered */
             that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
             that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
-
-            /*that.grid.find(".command-edit").on("click", function(e){
-                alert("You pressed edit on row: " + $(this).data("row-id"));
-            }).end().find(".command-delete").on("click", function(e){
-                alert("You pressed delete on row: " + $(this).data("row-id"));
-            });*/
-            /*that.grid.find(".command-delete").on("click", function(e){
-                alert("You pressed delete on row: " + $(this).data("row-id"));
-                that.deleteRows([$(this).data("row-id")]);
-            })*/
         });
         var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#expressionDefinitionModal"></button>');
         $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
@@ -156,7 +143,32 @@ export class ExpressionDefinitionView extends View{
         this.$el.find('#expression_filter').val('');
     }
 
-    deleteRows(rowIds) {
+    deleteRows() {
+        var selectedRows = this.$el.find("#datatype-grid-basic").bootgrid("getSelectedRows");
+        var that = this;
+        selectedRows.forEach(function (selectedRow) {
+            var deletedExpression = that.getExpressionByName(selectedRow);
+            console.log(deletedExpression);
+            that.model.delete({
+                id: deletedExpression.id,
+                success: function (data) {
+                    alert('Successfully deleted expression.');
+                },
+                error: function (data) {
+                    alert('Failed to delete expression.');
+                }
+            });
+        });
         this.$el.find("#datatype-grid-basic").bootgrid("remove");
+    }
+
+    getExpressionByName(expressionName) {
+        var object;
+        this.data.forEach(function (data) {
+            if (data.name === expressionName) {
+                object = data;
+            }
+        });
+        return object;
     }
 }

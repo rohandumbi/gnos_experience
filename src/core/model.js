@@ -63,7 +63,7 @@ export class Model {
             alert('Location of Project endpoints not avaiable.');
         }
         $.ajax({
-            url: this.url + '?' + $.param({"id": options.id}),
+            url: this.url + '/' + options.id,
             type: 'DELETE',
             success: options.success || $.noop,
             error: options.error || $.noop
