@@ -24,9 +24,9 @@ export class View {
         return htmlContent;
     }
 
-    render() {
-        var model = this.model || {fetch: ()=>{}};
-        this.renderToView(model.fetch());
+    render(model) {
+        //var model = this.model || {fetch: ()=>{}};
+        this.renderToView(model);
         return this;
     }
 

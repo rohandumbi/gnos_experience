@@ -6,9 +6,18 @@ export class ModelDefinitionView extends View{
 
     constructor(options) {
         super();
+        var that = this;
         this.projectId = options.projectId;
         this.model = new GnosModel({projectId: this.projectId});
         this.expressionModel = new ExpressionModel({projectId: this.projectId});
+        this.expressionModel.fetch({
+            success: function (data) {
+                that.expressions = data;
+            },
+            error: function (data) {
+
+            }
+        })
     }
 
     getHtml() {
@@ -80,10 +89,6 @@ export class ModelDefinitionView extends View{
                     return (
                     '<select value="test">' +
                         '<option selected disabled hidden>' + row.expressionName + '</option>'+
-                        '<option value="grouptext">Group By(Text)</option>' +
-                        '<option value="groupnumeric">Group By(Numeric)</option>' +
-                        '<option value="unit">Unit</option>' +
-                        '<option value="grade">Grade</option>' +
                     '</select>') ;
                 },
                 "filter": function(column, row){

@@ -21,7 +21,7 @@ var appDir = jetpack.cwd(app.getAppPath());
 
 document.addEventListener('DOMContentLoaded', function () {
     var loginView = new LoginView();
-    loginView.render();
+    loginView.render({message: 'Welcome to GNOS'});
     loginView.on('login:successful', function(options){
         loginComplete();
     });

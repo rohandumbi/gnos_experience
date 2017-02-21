@@ -49,15 +49,15 @@ export class Model {
             type: "PUT",
             data: data,
             success: function(data){
-                options.success(JSON.parse(data));
+                options.success(data);
             },
             error: function(data) {
-                options.error(JSON.parse(data));
+                options.error(data);
             },
             dataType: 'json'
         });
     }
-	
+
     delete(options) {
         if (!this.url) {
             alert('Location of Project endpoints not avaiable.');

@@ -22,10 +22,22 @@ export class DataMappingView extends View{
         this.initializeGrid();
     }
 
+    getObjectByName(name) {
+        var object;
+        this.data.forEach(function (field) {
+            if (field.name === name) {
+                object = field;
+            }
+        });
+        return object;
+
+    }
+
     initializeGrid() {
         var that = this;
 		this.model.fetch({
             success: function(data){
+                that.data = data;
 				var row = '';
                 for (var i = 0; i < data.length; i++) {
                     var field = data[i];
@@ -36,6 +48,8 @@ export class DataMappingView extends View{
 							'<td>' + field.weightedunit + '</td>' +
 						'</tr>'
 					)
+                    var $row = $(row);
+                    $row.data('data', field);
 				}
                 that.$el.find("#tableBody").append($(row));
                 var grid = that.$el.find("#datatype-grid-basic").bootgrid({
@@ -52,16 +66,16 @@ export class DataMappingView extends View{
                              '</select>') ;*/
                             if (row.datatype.toString() === '1') {
                                 return (
-                                    '<select>' +
+                                    '<select data-fieldname="' + row.datafield + '" class="data-type">' +
                                     '<option value="1" selected>Number</option>' +
-                                    '<option value="2">Text</option>' +
+                                    '<option value="0">Text</option>' +
                                     '</select>'
                                 )
                             } else if (row.datatype.toString() === '0') {
                                 return (
-                                    '<select>' +
+                                    '<select data-fieldname="' + row.datafield + '" class="data-type">' +
                                     '<option value="1">Number</option>' +
-                                    '<option selected value="2">Text</option>' +
+                                    '<option selected value="0">Text</option>' +
                                     '</select>'
                                 )
                             }
@@ -77,11 +91,32 @@ export class DataMappingView extends View{
 					/* Executes after data is loaded and rendered */
 					that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
 					that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
+                    grid.find(".data-type").change(function (e) {
+                        var fieldName = $(this).data('fieldname');
+                        var dataType = parseInt($(this).val());
+                        var field = that.getObjectByName(fieldName);
+                        field['dataType'] = dataType
+                        that.updateField(field);
+                    });
 				});
 			},
             error: function(data){
                 alert("Error: " + data);
             }
         });
+    }
+
+    updateField(field) {
+        console.log('field');
+        this.model.update({
+            dataObject: field,
+            success: function (data) {
+                alert('Successfully Updated');
+            },
+            error: function (data) {
+                alert('Error Updating: ' + data);
+            }
+        });
+
     }
 }

@@ -54,11 +54,6 @@ export class ExpressionDefinitionView extends View{
             rowSelect: true,
             keepSelection: true,
             formatters: {
-                /*"name": function(column, row){
-                    return (
-                        '<input type="text" value="' + row.name + '"' + 'readonly>'
-                    );
-                },*/
                 "definition": function(column, row){
                     return (
                         '<input type="text" value="' + row.value + '"' + '>'
