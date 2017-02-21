@@ -13,24 +13,40 @@
         </tbody>
     </table>
     <!--Modal Dialog for model definition-->
-    <div class="modal fade" id="modelDefinitionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal fade" id="expressionDefinitionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Model Definition</h4>
+                    <h4 class="modal-title" id="myModalLabel">Expression Definition</h4>
                 </div>
                 <div class="modal-body">
-                    <form class="form-inline">
-                        <div class="form-group">
-                            <label for="model_name">Model Name:</label>
-                            <input type="text" class="form-control" id="model_name">
-                        </div>
-                    </form>
+                    <div class="modal-body">
+                        <form class="form">
+                            <div class="form-group">
+                                <label for="expression_name">Expression Name:</label>
+                                <input type="text" class="form-control" id="expression_name">
+                            </div>
+                            <div class="form-group">
+                                <input id="expression_isGrade" type="checkbox"/> <label>This is grade</label>
+                            </div>
+                            <div class="form-group">
+                                <input id="expression_isComplex" type="checkbox"/> <label>This is complex</label>
+                            </div>
+                            <div class="form-group">
+                                <label for="expression_definition">Definition:</label>
+                                <input type="text" class="form-control" id="expression_definition">
+                            </div>
+                            <div class="form-group">
+                                <label for="expression_filter">Filter:</label>
+                                <input type="text" class="form-control" id="expression_filter">
+                            </div>
+                        </form>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button id="addModel" type="button" class="btn btn-primary" data-dismiss="modal">Add model</button>
+                    <button id="addModel" type="button" class="btn btn-primary" data-dismiss="modal">Add</button>
                 </div>
             </div>
         </div>

@@ -25,14 +25,14 @@ export class ExpressionDefinitionView extends View{
                 that.initializeGrid(data);
             },
             error: function (data) {
-
+                alert('Error fetching expressions ' + data);
             }
         });
     }
 
     initializeGrid(modelData) {
         var that = this;
-        var data = this.model.fetch();
+        //var data = this.model.fetch();
         var row = '';
         for (var i = 0; i < modelData.length; i++) {
             var expression = modelData[i];
@@ -96,7 +96,7 @@ export class ExpressionDefinitionView extends View{
                 that.deleteRows([$(this).data("row-id")]);
             })*/
         });
-        var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#modelDefinitionModal"></button>');
+        var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#expressionDefinitionModal"></button>');
         $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
 
         var $removeButton = $('<button type="button" class="btn btn-default"></button>');
@@ -116,17 +116,44 @@ export class ExpressionDefinitionView extends View{
     }
 
     addRowToGrid() {
-        var modelName = this.$el.find('#model_name').val();
-        if(modelName) {
-            this.$el.find("#datatype-grid-basic").bootgrid("append", [{
-                name: modelName,
-                id: -1,
-                expressionId: -1,
-                expressionName: "",
-                filter:""
-            }]);
-            this.$el.find('#model_name').val('');
+        var that = this;
+        var expressionName = this.$el.find('#expression_name').val();
+        var isGrade = this.$el.find('#expression_isGrade').is(':checked');
+        var isComplex = this.$el.find('#expression_isComplex').is(':checked');
+        var expressionDefinition = this.$el.find('#expression_definition').val();
+        var expressionFilter = this.$el.find('#expression_filter').val();
+        if (expressionName && expressionDefinition) {
+            console.log(expressionName + '-' + isGrade + '-' + expressionDefinition + '-' + expressionFilter + '-' + isComplex);
+            var newExpression = {
+                name: expressionName,
+                isGrade: isGrade,
+                isComplex: isComplex,
+                exprvalue: expressionDefinition,
+                filter: expressionFilter
+            }
+            this.model.add({
+                dataObject: newExpression,
+                success: function (data) {
+                    alert('Successfully added expression');
+                    that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
+                },
+                error: function (data) {
+                    alert('Failed to add expression ' + data);
+                }
+
+            });
+        } else {
+            alert('Model name/definition missing');
         }
+        this.clearDialog();
+    }
+
+    clearDialog() {
+        this.$el.find('#expression_name').val('');
+        this.$el.find('#expression_isGrade').prop("checked", !this.$el.find('#expression_isGrade').prop("checked"));
+        this.$el.find('#expression_isComplex').prop("checked", !this.$el.find('#expression_isComplex').prop("checked"));
+        this.$el.find('#expression_definition').val('');
+        this.$el.find('#expression_filter').val('');
     }
 
     deleteRows(rowIds) {

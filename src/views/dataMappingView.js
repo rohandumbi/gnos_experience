@@ -56,14 +56,6 @@ export class DataMappingView extends View{
 					/*rowCount: 15,*/
 					formatters: {
 						"datatype": function(column, row){
-                            /*return (
-							'<select value="test">' +
-							'<option selected disabled hidden>' + row.datatype + '</option>'+
-							'<option value="grouptext">Group By(Text)</option>' +
-							'<option value="groupnumeric">Group By(Numeric)</option>' +
-							'<option value="unit">Unit</option>' +
-							'<option value="grade">Grade</option>' +
-                             '</select>') ;*/
                             if (row.datatype.toString() === '1') {
                                 return (
                                     '<select data-fieldname="' + row.datafield + '" class="data-type">' +

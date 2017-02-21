@@ -41,9 +41,15 @@ export class MainView extends View{
         this.$el.find("#page-content-wrapper").html(this.requiredFieldMappingView.$el);
     }
     initializeExpressionDefinition(){
+        var that = this;
         this.expressionDefinitionView = new ExpressionDefinitionView({projectId: this.projectId});
         this.expressionDefinitionView.render();
         this.$el.find("#page-content-wrapper").html(this.expressionDefinitionView.$el);
+        /*this.expressionDefinitionView.on('reload', function() {
+         that.expressionDefinitionView.$el.remove();
+         that.expressionDefinitionView.off('reload');
+         that.initializeExpressionDefinition();
+         });*/
     }
     initializeReserveDefinition(){
 

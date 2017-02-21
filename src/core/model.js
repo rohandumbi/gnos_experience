@@ -30,10 +30,10 @@ export class Model {
             type: "POST",
             data: data,
             success: function(data){
-                options.success(JSON.parse(data));
+                options.success(data);
             },
             error: function(data) {
-                options.error(JSON.parse(data));
+                options.error(data);
             },
             dataType: 'json'
         });
