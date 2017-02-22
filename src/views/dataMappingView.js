@@ -101,6 +101,8 @@ export class DataMappingView extends View{
     updateField(field) {
         console.log('field');
         this.model.update({
+            url: 'http://localhost:4567/field',
+            id: field.id,
             dataObject: field,
             success: function (data) {
                 alert('Successfully Updated');

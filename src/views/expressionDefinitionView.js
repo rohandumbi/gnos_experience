@@ -123,6 +123,8 @@ export class ExpressionDefinitionView extends View{
         var updatedExpression = this.getExpressionByName(options.name);
         updatedExpression['filter'] = options.filter;
         this.model.update({
+            id: updatedExpression.id,
+            url: 'http://localhost:4567/expressions',
             dataObject: updatedExpression,
             success: function (data) {
                 alert('Successfully updated');
@@ -137,6 +139,8 @@ export class ExpressionDefinitionView extends View{
         var updatedExpression = this.getExpressionByName(options.name);
         updatedExpression['exprvalue'] = options.exprvalue;
         this.model.update({
+            id: updatedExpression.id,
+            url: 'http://localhost:4567/expressions',
             dataObject: updatedExpression,
             success: function (data) {
                 alert('Successfully updated');
@@ -151,6 +155,8 @@ export class ExpressionDefinitionView extends View{
         var updatedExpression = this.getExpressionByName(options.name);
         updatedExpression['isGrade'] = options.isGrade;
         this.model.update({
+            id: updatedExpression.id,
+            url: 'http://localhost:4567/expressions',
             dataObject: updatedExpression,
             success: function (data) {
                 alert('Successfully updated');
@@ -210,6 +216,7 @@ export class ExpressionDefinitionView extends View{
             var deletedExpression = that.getExpressionByName(selectedRow);
             console.log(deletedExpression);
             that.model.delete({
+                url: 'http://localhost:4567/expressions',
                 id: deletedExpression.id,
                 success: function (data) {
                     alert('Successfully deleted expression.');

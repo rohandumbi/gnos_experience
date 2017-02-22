@@ -5,11 +5,12 @@ export class Model {
 
     fetch(options) {
         // do AJAX GET calls and return data
-        if(!this.url) {
+        var url = options.url || this.url;
+        if (!url) {
             alert('Location of Project endpoints not avaiable.');
         }
         $.ajax({
-            url: this.url,
+            url: url,
             type: 'GET',
             success: function(data){
                 options.success(JSON.parse(data));
@@ -21,12 +22,13 @@ export class Model {
     }
 
     add(options) {
-        if(!this.url) {
+        var url = options.url || this.url;
+        if (!url) {
             alert('Location of Project endpoints not avaiable.');
         }
         var data = JSON.stringify(options.dataObject);
         $.ajax({
-            url: this.url,
+            url: url,
             type: "POST",
             data: data,
             success: function(data){
@@ -40,12 +42,13 @@ export class Model {
     }
 
 	update(options) {
-        if(!this.url) {
+        var url = options.url || this.url;
+        if (!url) {
             alert('Location of Project endpoints not avaiable.');
         }
         var data = JSON.stringify(options.dataObject);
         $.ajax({
-            url: this.url,
+            url: url + '/' + options.id,
             type: "PUT",
             data: data,
             success: function(data){
@@ -59,11 +62,12 @@ export class Model {
     }
 
     delete(options) {
-        if (!this.url) {
+        var url = options.url || this.url;
+        if (!url) {
             alert('Location of Project endpoints not avaiable.');
         }
         $.ajax({
-            url: this.url + '/' + options.id,
+            url: url + '/' + options.id,
             type: 'DELETE',
             success: options.success || $.noop,
             error: options.error || $.noop

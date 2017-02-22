@@ -17,10 +17,21 @@ export class ScenarioDefinitionView extends View{
         return promise;
     }
 
+    getScenarioByName(scenarioName) {
+        var object;
+        this.data.forEach(function (scenario) {
+            if (scenario.name === scenarioName) {
+                object = scenario;
+            }
+        });
+        return object;
+    }
+
     onDomLoaded() {
         var that = this;
         this.model.fetch({
             success: function (data) {
+                that.data = data;
                 that.initializeGrid(data);
             },
             error: function (data) {
@@ -114,14 +125,24 @@ export class ScenarioDefinitionView extends View{
         var discountFactor = this.$el.find('#discount_factor').val();
 
         if(scenarioName && startYear && timePeriod && discountFactor) {
-            this.$el.find("#datatype-grid-basic").bootgrid("append", [{
+            var newScenario = {
                 name: scenarioName,
                 id: -1,
                 startYear: startYear,
                 timePeriod: timePeriod,
-                discountFactor: discountFactor
-            }]);
-            //this.$el.find('#model_name').val('');
+                discount: discountFactor
+            }
+            var that = this;
+            this.model.add({
+                dataObject: newScenario,
+                success: function (data) {
+                    that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
+                    alert('Successfully created new scenario');
+                },
+                error: function (data) {
+                    alert('Failed to create new scenario');
+                }
+            });
             this.$el.find('#new_scenario_name').val('');
             this.$el.find('#start_year').val('');
             this.$el.find('#time_period').val('');
@@ -129,7 +150,23 @@ export class ScenarioDefinitionView extends View{
         }
     }
 
-    deleteRows(rowIds) {
+    deleteRows() {
+        var selectedRows = this.$el.find("#datatype-grid-basic").bootgrid("getSelectedRows");
+        var that = this;
+        selectedRows.forEach(function (selectedRow) {
+            var deletedScenario = that.getScenarioByName(selectedRow);
+            console.log(deletedScenario);
+            that.model.delete({
+                url: 'http://localhost:4567/scenarios',
+                id: deletedScenario.id,
+                success: function (data) {
+                    alert('Successfully deleted expression.');
+                },
+                error: function (data) {
+                    alert('Failed to delete expression.' + data);
+                }
+            });
+        });
         this.$el.find("#datatype-grid-basic").bootgrid("remove");
     }
 }
