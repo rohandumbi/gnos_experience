@@ -57,22 +57,22 @@ export class ExpressionDefinitionView extends View{
             formatters: {
                 "definition": function(column, row){
                     return (
-                        '<input type="text" value="' + row.value + '"' + '>'
+                        '<input data-expression-name="' + row.name + '" class="expression_definition" type="text" value="' + row.exprvalue + '"' + '>'
                     ) ;
                 },
                 "filter": function(column, row){
                     return (
-                        '<input style="width:200px" type="text" value="' + row.filter + '"' + '>'
+                        '<input data-expression-name="' + row.name + '" class="expression_filter" style="width:200px" type="text" value="' + row.filter + '"' + '>'
                     );
                 },
                 "grade": function(column, row) {
-                    if(row.grade.toString().toLowerCase() === "true"){
+                    if (row.isGrade.toString().toLowerCase() === "true") {
                         return (
-                            '<input type="checkbox" value="' + row.grade + '"' + 'checked  >'
+                            '<input data-expression-name="' + row.name + '" class="expression_isgrade" type="checkbox" value="' + row.isGrade + '"' + 'checked  >'
                         )
                     }else{
                         return (
-                            '<input type="checkbox" value="' + row.grade + '"' + '>'
+                            '<input data-expression-name="' + row.name + '" class="expression_isgrade" type="checkbox" value="' + row.isGrade + '"' + '>'
                         )
                     }
                 }
@@ -82,6 +82,22 @@ export class ExpressionDefinitionView extends View{
             /* Executes after data is loaded and rendered */
             that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
             that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
+            that.grid.find(".expression_definition").change(function (event) {
+                //alert($(this).data('expression-name'));
+                var expressionName = $(this).data('expression-name');
+                var exprValue = $(this).val();
+                that.updateExpressionDefinition({name: expressionName, exprvalue: exprValue});
+            });
+            that.grid.find(".expression_filter").change(function (event) {
+                var expressionName = $(this).data('expression-name');
+                var filterValue = $(this).val();
+                that.updateExpressionFilter({name: expressionName, filter: filterValue});
+            });
+            that.grid.find(".expression_isgrade").change(function (event) {
+                var expressionName = $(this).data('expression-name');
+                var expressionIsGrade = $(this).is(':checked');
+                that.upgradeExpressionGrade({name: expressionName, isGrade: expressionIsGrade});
+            });
         });
         var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#expressionDefinitionModal"></button>');
         $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
@@ -100,6 +116,49 @@ export class ExpressionDefinitionView extends View{
         this.$el.find('#addModel').click(function(){
             that.addRowToGrid();
         });
+
+    }
+
+    updateExpressionFilter(options) {
+        var updatedExpression = this.getExpressionByName(options.name);
+        updatedExpression['filter'] = options.filter;
+        this.model.update({
+            dataObject: updatedExpression,
+            success: function (data) {
+                alert('Successfully updated');
+            },
+            error: function (data) {
+                alert('Failed to update: ' + data);
+            }
+        });
+    }
+
+    updateExpressionDefinition(options) {
+        var updatedExpression = this.getExpressionByName(options.name);
+        updatedExpression['exprvalue'] = options.exprvalue;
+        this.model.update({
+            dataObject: updatedExpression,
+            success: function (data) {
+                alert('Successfully updated');
+            },
+            error: function (data) {
+                alert('Failed to update: ' + data);
+            }
+        });
+    }
+
+    upgradeExpressionGrade(options) {
+        var updatedExpression = this.getExpressionByName(options.name);
+        updatedExpression['isGrade'] = options.isGrade;
+        this.model.update({
+            dataObject: updatedExpression,
+            success: function (data) {
+                alert('Successfully updated');
+            },
+            error: function (data) {
+                alert('Failed to update: ' + data);
+            }
+        });
     }
 
     addRowToGrid() {
@@ -113,8 +172,8 @@ export class ExpressionDefinitionView extends View{
             console.log(expressionName + '-' + isGrade + '-' + expressionDefinition + '-' + expressionFilter + '-' + isComplex);
             var newExpression = {
                 name: expressionName,
-                isGrade: isGrade,
-                isComplex: isComplex,
+                isGrade: isGrade || false,
+                isComplex: isComplex || false,
                 exprvalue: expressionDefinition,
                 filter: expressionFilter
             }
@@ -122,6 +181,7 @@ export class ExpressionDefinitionView extends View{
                 dataObject: newExpression,
                 success: function (data) {
                     alert('Successfully added expression');
+                    that.data.push(data);
                     that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
                 },
                 error: function (data) {
