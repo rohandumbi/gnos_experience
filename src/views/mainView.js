@@ -45,11 +45,6 @@ export class MainView extends View{
         this.expressionDefinitionView = new ExpressionDefinitionView({projectId: this.projectId});
         this.expressionDefinitionView.render();
         this.$el.find("#page-content-wrapper").html(this.expressionDefinitionView.$el);
-        /*this.expressionDefinitionView.on('reload', function() {
-         that.expressionDefinitionView.$el.remove();
-         that.expressionDefinitionView.off('reload');
-         that.initializeExpressionDefinition();
-         });*/
     }
     initializeReserveDefinition(){
 
@@ -71,7 +66,7 @@ export class MainView extends View{
     }
 
     initializeScenarioDefinition() {
-        this.scenarioDefinitionView = new ScenarioDefinitionView();
+        this.scenarioDefinitionView = new ScenarioDefinitionView({projectId: this.projectId});
         this.scenarioDefinitionView.render();
         this.$el.find("#page-content-wrapper").html(this.scenarioDefinitionView.$el);
     }

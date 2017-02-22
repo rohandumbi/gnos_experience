@@ -5,7 +5,7 @@ export class ScenarioDefinitionView extends View{
 
     constructor(options) {
         super();
-        this.model = new ScenarioCollection({});
+        this.model = new ScenarioCollection(options);
     }
 
     getHtml() {
@@ -18,21 +18,29 @@ export class ScenarioDefinitionView extends View{
     }
 
     onDomLoaded() {
-        this.initializeGrid();
+        var that = this;
+        this.model.fetch({
+            success: function (data) {
+                that.initializeGrid(data);
+            },
+            error: function (data) {
+                alert('Could not fetch scenario list: ' + data);
+            }
+        });
     }
 
-    initializeGrid() {
+    initializeGrid(scenarios) {
         var that = this;
-        var data = this.model.fetch();
+        //var data = this.model.fetch();
         var row = '';
-        for(var i=0; i<data.scenarios.length; i++){
-            var scenario = data.scenarios[i];
+        for (var i = 0; i < scenarios.length; i++) {
+            var scenario = scenarios[i];
             row += (
                 '<tr>' +
                 '<td>' + scenario.name + '</td>' +
                 '<td>' + scenario.startYear + '</td>' +
                 '<td>' + scenario.timePeriod + '</td>' +
-                '<td>' + scenario.discountFactor + '</td>' +
+                '<td>' + scenario.discount + '</td>' +
                 '</tr>'
             )
         }
