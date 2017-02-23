@@ -182,7 +182,7 @@ export class OpexDefinitionView extends View{
                     );
                 },
                 "inUse": function (column, row) {
-                    if(row.in_use){
+                    if (row.in_use.toString() === 'true') {
                         return (
                             '<input class="use" type="checkbox" value="' + row.in_use + '"' + 'checked  >'
                         )
