@@ -115,9 +115,6 @@ export class OpexDefinitionView extends View{
                 var presentYear = scenarioStartYear + i;
                 row += '<td>' + costData[presentYear.toString()] + '</td>';
             }
-            // opex.costData.forEach(function(data){
-            //     row += '<td>' + data.value + '</td>';
-            // });
             row += '</tr>';
         }
         this.$el.find("#tableBody").append($(row));
@@ -131,86 +128,70 @@ export class OpexDefinitionView extends View{
                 "classification": function(column, row){
                     if(row.classification.toString() === "true"){
                         return (
-                        '<select value="test"  style="max-width: 120px">' +
+                        '<select class="classification">' +
                             '<option selected disabled hidden>' + 'Revenue' + '</option>'+
                             '<option value="revenue">Revenue</option>' +
                             '<option value="pcost">PCost</option>'+
                         '</select>') ;
                     }else{
                         return (
-                        '<select value="test"  style="max-width: 120px">' +
-                        '<option selected disabled hidden>' + 'PCost' + '</option>'+
+                        '<select class="classification">' +
+                        '<option selected disabled hidden>' + 'PCost' + '</option>' +
                         '<option value="revenue">Revenue</option>' +
-                        '<option value="pcost">PCost</option>'+
+                        '<option value="pcost">PCost</option>' +
                         '</select>') ;
                     }
                 },
 
                 "identifier": function(column, row) {
                     var model = that.getModelById(row.identifier);
-                    return (
-                    '<select value="test"  style="max-width: 120px">' +
-                    '<option selected disabled hidden>' + model.name + '</option>' +
-                        '<option value="model 1">Model 1</option>' +
-                        '<option value="model 2">Model 2</option>'+
-                    '</select>') ;
+                    var tableRow = (
+                        '<select class="identifier" value="test">' +
+                        '<option selected disabled hidden>' + model.name + '</option>'
+                    );
+                    that.models.forEach(function (model) {
+                        tableRow += '<option data-model-id="' + model.id + '" value="model 1">' + model.name + '</option>';
+                    });
+
+                    tableRow += '</select>';
+                    return tableRow;
                 },
                 "expression": function(column, row) {
                     var expression = that.getExpressionById(row.expression);
                     if(row.classification.toString() === "true"){
-                        return (
-                            '<select value="test"  style="max-width: 120px">' +
-                            '<option selected disabled hidden>' + expression.name + '</option>' +
-                                '<option value="expression 1">Expression 1</option>' +
-                                '<option value="expression 2">Expression 2</option>'+
-                            '</select>'
+                        var tableRow = (
+                            '<select class="expression" value="test">' +
+                            '<option selected disabled hidden>' + expression.name + '</option>'
                         );
+                        that.expressions.forEach(function (expression) {
+                            tableRow += '<option data-expression-id="' + expression.id + '" value="model 1">' + expression.name + '</option>';
+                        });
+
+                        tableRow += '</select>';
+                        return tableRow;
                     }else{
                         return (
-                            '<select value="test"  style="width: 100px">' +
+                            '<select value="test">' +
                             '</select>'
                         );
                     }
                 },
                 "value": function(column, row){
                     return (
-                        '<input style="max-width: 100px" type="text" value="' + row[column.id] + '"' + 'checked  >'
+                        '<input class="cost" data-year="' + column.id + '" type="text" value="' + row[column.id] + '"' + '>'
                     );
                 },
                 "inUse": function (column, row) {
                     if(row.in_use){
                         return (
-                            '<input type="checkbox" value="' + row.in_use + '"' + 'checked  >'
+                            '<input class="use" type="checkbox" value="' + row.in_use + '"' + 'checked  >'
                         )
                     }else{
                         return (
-                            '<input type="checkbox" value="' + row.in_use + '"' + '>'
+                            '<input class="use" type="checkbox" value="' + row.in_use + '"' + '>'
                         )
                     }
                 }
-                /*"year": function(column, row){
-                 return (
-                 '<input type="text" value="' + row.year + '"' + 'readonly>'
-                 );
-                 }*/
-                /*"expression": function(column, row){
-                 return (
-                 '<select value="test">' +
-                 '<option selected disabled hidden>' + row.expressionName + '</option>'+
-                 '<option value="grouptext">Group By(Text)</option>' +
-                 '<option value="groupnumeric">Group By(Numeric)</option>' +
-                 '<option value="unit">Unit</option>' +
-                 '<option value="grade">Grade</option>' +
-                 '</select>') ;
-                 },
-                 "filter": function(column, row){
-                 return (
-                 '<input type="text" value="' + row.filter + '"' + '>'
-                 );
-                 }*/
-                /*"commands": function(column, row){
-                 return "<button title='Load Scenario' type=\"button\" class=\"btn btn-xs btn-default command-upload\" data-row-id=\"" + row.name + "\"><span class=\"glyphicon glyphicon-upload\"></span></button>";
-                 }*/
             }
         }).on("loaded.rs.jquery.bootgrid", function()
         {
@@ -218,9 +199,34 @@ export class OpexDefinitionView extends View{
             that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
             that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
 
-            /*that.grid.find(".command-upload").on("click", function(e){
-             that.loadScenario($(this).data("row-id"));
-             })*/
+            that.grid.find('.expression').change(function (e) {
+                //alert('update expression of opex index: ' + $(this).closest('tr').data('row-id') + ':' + $(this).data('expression-id'));
+                that.updateExpressionId({
+                    expressionId: $(this).find(":selected").data('expression-id'),
+                    index: $(this).closest('tr').data('row-id')
+                });
+            });
+            that.grid.find('.identifier').change(function (e) {
+                //alert('update identifier of opex index: ' + $(this).closest('tr').data('row-id') + ':' + $(this).data('model-id'));
+                that.updateModelId({
+                    modelId: $(this).find(":selected").data('model-id'),
+                    index: $(this).closest('tr').data('row-id')
+                })
+            });
+            that.grid.find('.cost').change(function (e) {
+                //alert('update year of opex index: ' + $(this).data('year') + ':' + $(this).closest('tr').data('row-id') + ':' + $(this).val());
+                that.updateCostData({
+                    index: $(this).closest('tr').data('row-id'),
+                    year: $(this).data('year'),
+                    value: $(this).val()
+                });
+            });
+            that.grid.find(".use").change(function (event) {
+                var opexInUse = $(this).is(':checked');
+                that.updateInUse({index: $(this).closest('tr').data('row-id'), inUse: opexInUse});
+                //alert('update use of opex index: ' + $(this).closest('tr').data('row-id') + ':' + opexInUse);
+                //that.upgradeExpressionGrade({name: expressionName, isGrade: expressionIsGrade});
+            });
         });
         var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#modelDefinitionModal"></button>');
         $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
@@ -237,6 +243,48 @@ export class OpexDefinitionView extends View{
         this.$el.find('#addScenario').click(function(){
             that.addRowToGrid();
         });
+    }
+
+    updateOpex(opexData) {
+        this.opexModel.update({
+            url: 'http://localhost:4567/opexdata',
+            id: opexData.id,
+            dataObject: opexData,
+            success: function (data) {
+                alert('Successfully updated.');
+            },
+            error: function (data) {
+                alert('failed update' + data);
+            }
+        });
+    }
+
+    updateExpressionId(options) {
+        var opexData = this.opexData[options.index];
+        opexData['expressionId'] = options.expressionId;
+        console.log(opexData);
+        this.updateOpex(opexData);
+    }
+
+    updateModelId(options) {
+        var opexData = this.opexData[options.index];
+        opexData['modelId'] = options.modelId;
+        console.log(opexData);
+        this.updateOpex(opexData);
+    }
+
+    updateCostData(options) {
+        var opexData = this.opexData[options.index];
+        opexData.costData[options.year.toString()] = parseInt(options.value);
+        console.log(opexData);
+        this.updateOpex(opexData);
+    }
+
+    updateInUse(options) {
+        var opexData = this.opexData[options.index];
+        opexData['inUse'] = options.inUse;
+        console.log(opexData);
+        this.updateOpex(opexData);
     }
 
     loadScenario(scenarioName) {
