@@ -1,13 +1,25 @@
 import { View } from '../core/view';
 import { ScenarioModel } from '../models/scenarioModel';
 import { OpexModel } from '../models/opexModel';
+import {ExpressionModel} from '../models/expressionModel';
+import {GnosModel} from '../models/gnosModel';
 
 export class OpexDefinitionView extends View{
 
     constructor(options) {
         super();
+        this.scenario = options.scenario;
+        this.projectId = options.projectId;
+        if (!this.scenario) alert('select a scenario first');
         this.model = new ScenarioModel({});
-        this.opexModel = new OpexModel({});
+        this.opexModel = new OpexModel({scenarioId: this.scenario.id});
+        this.expressionModel = new ExpressionModel({projectId: this.projectId});
+        this.gnosModel = new GnosModel({projectId: this.projectId});
+    }
+
+    render() {
+        super.render(this.scenario);
+        return this;
     }
 
     getHtml() {
@@ -19,27 +31,93 @@ export class OpexDefinitionView extends View{
         return promise;
     }
 
-    onDomLoaded() {
-        this.initializeGrid();
+    fetchExpressionList() {
+        var that = this;
+        this.expressionModel.fetch({
+            success: function (data) {
+                that.expressions = data;
+                that.fetchModelList();
+            },
+            error: function (data) {
+                alert('Failed getting list of models.');
+            }
+        });
     }
 
-    initializeGrid() {
+    fetchModelList() {
         var that = this;
-        var data = this.opexModel.fetch();
+        this.gnosModel.fetch({
+            success: function (data) {
+                that.models = data;
+                that.fetchOpexList();
+            },
+            error: function (data) {
+                alert('Failed getting list of opex data.');
+            }
+        })
+    }
+
+    fetchOpexList() {
+        var that = this;
+        this.opexModel.fetch({
+            success: function (data) {
+                that.opexData = data;
+                that.initializeGrid(data);
+            },
+            error: function (data) {
+                alert('Error fetching opex data: ' + data);
+            }
+        });
+    }
+
+    getExpressionById(expressionId) {
+        var expressionObject;
+        this.expressions.forEach(function (expression) {
+            if (expression.id === parseInt(expressionId)) {
+                expressionObject = expression;
+            }
+        });
+        return expressionObject;
+    }
+
+    getModelById(modelId) {
+        var modelObject;
+        this.models.forEach(function (model) {
+            if (model.id === parseInt(modelId)) {
+                modelObject = model;
+            }
+        });
+        return modelObject;
+    }
+
+    onDomLoaded() {
+        this.fetchExpressionList();
+    }
+
+    initializeGrid(opexData) {
+        var that = this;
+        //var data = this.opexModel.fetch();
         var row = '';
-        for(var i=0; i<data.opex.length; i++){
-            var opex = data.opex[i];
+        for (var i = 0; i < opexData.length; i++) {
+            var opex = opexData[i];
             row += (
                 '<tr>' +
                 '<td>' + opex.isRevenue + '</td>' +
                 '<td>' + opex.inUse + '</td>' +
-                '<td>' + opex.processName + '</td>' +
-                '<td>' + opex.expressionName + '</td>'
+                '<td>' + opex.modelId + '</td>' +
+                '<td>' + opex.expressionId + '</td>'
             )
             //row += '<td>' + benchConstraint.inUse + '</td>';
-            opex.values.forEach(function(data){
-                row += '<td>' + data.value + '</td>';
-            });
+            var scenarioStartYear = this.scenario.startYear;
+            var scenarioTimePeriod = this.scenario.timePeriod;
+            var costData = opex.costData;
+            for (var i = 0; i < scenarioTimePeriod; i++) {
+                var presentYear = scenarioStartYear + i;
+                row += '<td>' + costData[presentYear.toString()] + '</td>';
+            }
+            // opex.costData.forEach(function(data){
+            //     row += '<td>' + data.value + '</td>';
+            // });
             row += '</tr>';
         }
         this.$el.find("#tableBody").append($(row));
@@ -69,18 +147,20 @@ export class OpexDefinitionView extends View{
                 },
 
                 "identifier": function(column, row) {
+                    var model = that.getModelById(row.identifier);
                     return (
                     '<select value="test"  style="max-width: 120px">' +
-                        '<option selected disabled hidden>' + row.identifier + '</option>'+
+                    '<option selected disabled hidden>' + model.name + '</option>' +
                         '<option value="model 1">Model 1</option>' +
                         '<option value="model 2">Model 2</option>'+
                     '</select>') ;
                 },
                 "expression": function(column, row) {
+                    var expression = that.getExpressionById(row.expression);
                     if(row.classification.toString() === "true"){
                         return (
                             '<select value="test"  style="max-width: 120px">' +
-                                '<option selected disabled hidden>' + row.expression + '</option>'+
+                            '<option selected disabled hidden>' + expression.name + '</option>' +
                                 '<option value="expression 1">Expression 1</option>' +
                                 '<option value="expression 2">Expression 2</option>'+
                             '</select>'

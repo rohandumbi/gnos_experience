@@ -66,32 +66,36 @@ export class MainView extends View{
     }
 
     initializeScenarioDefinition() {
+        var that = this;
         this.scenarioDefinitionView = new ScenarioDefinitionView({projectId: this.projectId});
         this.scenarioDefinitionView.render();
         this.$el.find("#page-content-wrapper").html(this.scenarioDefinitionView.$el);
+        this.scenarioDefinitionView.on('loaded-scenario', function (scenario) {
+            that.scenario = scenario;
+        });
     }
     initializeOpexDefinition(){
-        this.opexDefinitionView = new OpexDefinitionView();
+        this.opexDefinitionView = new OpexDefinitionView({projectId: this.projectId, scenario: this.scenario});
         this.opexDefinitionView.render();
         this.$el.find("#page-content-wrapper").html(this.opexDefinitionView.$el);
     }
     initializeFixedCostDefinition(){
-        this.fixedCostDefinitionView = new FixedCostDefinitionView();
+        this.fixedCostDefinitionView = new FixedCostDefinitionView({scenario: this.scenario});
         this.fixedCostDefinitionView.render();
         this.$el.find("#page-content-wrapper").html(this.fixedCostDefinitionView.$el);
     }
     initializeMaterialConstraint(){
-        this.processConstraintView = new ProcessConstraintView({});
+        this.processConstraintView = new ProcessConstraintView({scenario: this.scenario});
         this.processConstraintView.render();
         this.$el.find("#page-content-wrapper").html(this.processConstraintView.$el);
     }
     initializeGradeConstraint(){
-        this.gradeConstraintView = new GradeConstraintView({});
+        this.gradeConstraintView = new GradeConstraintView({scenario: this.scenario});
         this.gradeConstraintView.render();
         this.$el.find("#page-content-wrapper").html(this.gradeConstraintView.$el);
     }
     initializeBenchConstraint(){
-        this.benchConstraintView = new BenchConstraintView();
+        this.benchConstraintView = new BenchConstraintView({scenario: this.scenario});
         this.benchConstraintView.render();
         this.$el.find("#page-content-wrapper").html(this.benchConstraintView.$el);
     }
@@ -99,7 +103,7 @@ export class MainView extends View{
 
     }
     initializeCapexConstraint(){
-        this.capexCollectionView = new CapexCollectionView();
+        this.capexCollectionView = new CapexCollectionView({scenario: this.scenario});
         this.capexCollectionView.render();
         this.$el.find("#page-content-wrapper").html(this.capexCollectionView.$el);
     }

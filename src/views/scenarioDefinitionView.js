@@ -116,6 +116,7 @@ export class ScenarioDefinitionView extends View{
 
     loadScenario(scenarioName) {
         this.$el.find('#scenario_name').val(scenarioName);
+        this.trigger('loaded-scenario', this.getScenarioByName(scenarioName));
     }
 
     addRowToGrid() {
