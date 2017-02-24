@@ -111,8 +111,8 @@ export class OpexDefinitionView extends View{
             var scenarioStartYear = this.scenario.startYear;
             var scenarioTimePeriod = this.scenario.timePeriod;
             var costData = opex.costData;
-            for (var i = 0; i < scenarioTimePeriod; i++) {
-                var presentYear = scenarioStartYear + i;
+            for (var j = 0; j < scenarioTimePeriod; j++) {
+                var presentYear = scenarioStartYear + j;
                 row += '<td>' + costData[presentYear.toString()] + '</td>';
             }
             row += '</tr>';
@@ -168,12 +168,12 @@ export class OpexDefinitionView extends View{
                         expressionName = expression.name;
                         tableRow = (
                             '<select class="expression" value="test">' +
-                            '<option selected disable hidden>' + expressionName + '</option>'
+                            '<option selected disabled hidden>' + expressionName + '</option>'
                         );
                     }else{
                         expressionName = '';
                         tableRow = (
-                            '<select class="expression" value="test">' +
+                            '<select disabled class="expression" value="test">' +
                             '<option selected disabled hidden>' + expressionName + '</option>'
                         );
                     }
@@ -185,8 +185,9 @@ export class OpexDefinitionView extends View{
                     return tableRow;
                 },
                 "value": function(column, row){
+                    var yearlyValue = row[column.id] || row.costData[column.id]
                     return (
-                        '<input class="cost" data-year="' + column.id + '" type="text" value="' + row[column.id] + '"' + '>'
+                        '<input class="cost" data-year="' + column.id + '" type="text" value="' + yearlyValue + '"' + '>'
                     );
                 },
                 "inUse": function (column, row) {
