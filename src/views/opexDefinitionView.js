@@ -159,15 +159,20 @@ export class OpexDefinitionView extends View{
                 "expression": function(column, row) {
                     var expression = that.getExpressionById(row.expression);
                     var expressionName;
+                    var tableRow = '';
                     if (expression) {
                         expressionName = expression.name;
+                        tableRow = (
+                            '<select class="expression" value="test">' +
+                            '<option selected disabled hidden>' + expressionName + '</option>'
+                        );
                     }else{
                         expressionName = '';
+                        tableRow = (
+                            '<select disabled class="expression" value="test">' +
+                            '<option selected disabled hidden>' + expressionName + '</option>'
+                        );
                     }
-                    var tableRow = (
-                        '<select class="expression" value="test">' +
-                        '<option selected disabled hidden>' + expressionName + '</option>'
-                    );
                     that.expressions.forEach(function (expression) {
                         tableRow += '<option data-expression-id="' + expression.id + '" value="model 1">' + expression.name + '</option>';
                     });
