@@ -130,15 +130,15 @@ export class OpexDefinitionView extends View{
                         return (
                         '<select class="classification">' +
                             '<option selected disabled hidden>' + 'Revenue' + '</option>'+
-                            '<option value="revenue">Revenue</option>' +
-                            '<option value="pcost">PCost</option>'+
+                        '<option data-revenue="true" value="revenue">Revenue</option>' +
+                        '<option data-revenue="false" value="pcost">PCost</option>' +
                         '</select>') ;
                     }else{
                         return (
                         '<select class="classification">' +
                         '<option selected disabled hidden>' + 'PCost' + '</option>' +
-                        '<option value="revenue">Revenue</option>' +
-                        '<option value="pcost">PCost</option>' +
+                        '<option data-revenue="true" value="revenue">Revenue</option>' +
+                        '<option data-revenue="false" value="pcost">PCost</option>' +
                         '</select>') ;
                     }
                 },
@@ -158,23 +158,22 @@ export class OpexDefinitionView extends View{
                 },
                 "expression": function(column, row) {
                     var expression = that.getExpressionById(row.expression);
-                    if(row.classification.toString() === "true"){
-                        var tableRow = (
-                            '<select class="expression" value="test">' +
-                            '<option selected disabled hidden>' + expression.name + '</option>'
-                        );
-                        that.expressions.forEach(function (expression) {
-                            tableRow += '<option data-expression-id="' + expression.id + '" value="model 1">' + expression.name + '</option>';
-                        });
-
-                        tableRow += '</select>';
-                        return tableRow;
+                    var expressionName;
+                    if (expression) {
+                        expressionName = expression.name;
                     }else{
-                        return (
-                            '<select value="test">' +
-                            '</select>'
-                        );
+                        expressionName = '';
                     }
+                    var tableRow = (
+                        '<select class="expression" value="test">' +
+                        '<option selected disabled hidden>' + expressionName + '</option>'
+                    );
+                    that.expressions.forEach(function (expression) {
+                        tableRow += '<option data-expression-id="' + expression.id + '" value="model 1">' + expression.name + '</option>';
+                    });
+
+                    tableRow += '</select>';
+                    return tableRow;
                 },
                 "value": function(column, row){
                     return (
@@ -223,9 +222,25 @@ export class OpexDefinitionView extends View{
             });
             that.grid.find(".use").change(function (event) {
                 var opexInUse = $(this).is(':checked');
-                that.updateInUse({index: $(this).closest('tr').data('row-id'), inUse: opexInUse});
-                //alert('update use of opex index: ' + $(this).closest('tr').data('row-id') + ':' + opexInUse);
-                //that.upgradeExpressionGrade({name: expressionName, isGrade: expressionIsGrade});
+                that.updateInUse({
+                    index: $(this).closest('tr').data('row-id'),
+                    inUse: opexInUse
+                });
+            });
+
+            that.grid.find('.classification').change(function (e) {
+                var index = $(this).closest('tr').data('row-id');
+                var isRevenue = ($(this).find(":selected").data('revenue').toString() === "true");
+                if (!isRevenue) {
+                    $(this).closest('tr').find('.expression').val('');
+                    $(this).closest('tr').find('.expression').prop("disabled", true);
+                    //$(this).closest('tr').find('.expression').hide();
+                } else {
+                    //$(this).closest('tr').find('.expression').val('');
+                    $(this).closest('tr').find('.expression').prop("disabled", false);
+                    //$(this).closest('tr').find('.expression').show();
+                }
+                that.updateIsRevenue({index: index, isRevenue: isRevenue});
             });
         });
         var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#modelDefinitionModal"></button>');
@@ -245,16 +260,18 @@ export class OpexDefinitionView extends View{
         });
     }
 
-    updateOpex(opexData) {
+    updateOpex(options) {
         this.opexModel.update({
             url: 'http://localhost:4567/opexdata',
-            id: opexData.id,
-            dataObject: opexData,
+            id: options.opexData.id,
+            dataObject: options.opexData,
             success: function (data) {
                 alert('Successfully updated.');
+                if (options.success) options.success(data);
             },
             error: function (data) {
                 alert('failed update' + data);
+                if (options.success) options.error(data);
             }
         });
     }
@@ -263,28 +280,38 @@ export class OpexDefinitionView extends View{
         var opexData = this.opexData[options.index];
         opexData['expressionId'] = options.expressionId;
         console.log(opexData);
-        this.updateOpex(opexData);
+        this.updateOpex({opexData: opexData});
     }
 
     updateModelId(options) {
         var opexData = this.opexData[options.index];
         opexData['modelId'] = options.modelId;
         console.log(opexData);
-        this.updateOpex(opexData);
+        this.updateOpex({opexData: opexData});
     }
 
     updateCostData(options) {
         var opexData = this.opexData[options.index];
         opexData.costData[options.year.toString()] = parseInt(options.value);
         console.log(opexData);
-        this.updateOpex(opexData);
+        this.updateOpex({opexData: opexData});
     }
 
     updateInUse(options) {
         var opexData = this.opexData[options.index];
         opexData['inUse'] = options.inUse;
         console.log(opexData);
-        this.updateOpex(opexData);
+        this.updateOpex({opexData: opexData});
+    }
+
+    updateIsRevenue(options) {
+        var opexData = this.opexData[options.index];
+        opexData['isRevenue'] = options.isRevenue;
+        if (!options.isRevenue) {
+            opexData["expressionId"] = 0;
+        }
+        console.log(opexData);
+        this.updateOpex({opexData: opexData});
     }
 
     loadScenario(scenarioName) {
