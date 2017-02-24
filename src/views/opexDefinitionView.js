@@ -126,7 +126,7 @@ export class OpexDefinitionView extends View{
             keepSelection: false,
             formatters: {
                 "classification": function(column, row){
-                    if(row.classification.toString() === "true"){
+                    if (row.isRevenue.toString() === "true") {
                         return (
                         '<select class="classification">' +
                             '<option selected disabled hidden>' + 'Revenue' + '</option>'+
@@ -144,10 +144,14 @@ export class OpexDefinitionView extends View{
                 },
 
                 "identifier": function(column, row) {
-                    var model = that.getModelById(row.identifier);
+                    var model = that.getModelById(row.modelId);
+                    var modelName = '';
+                    if (model && model.name) {
+                        modelName = model.name;
+                    }
                     var tableRow = (
                         '<select class="identifier" value="test">' +
-                        '<option selected disabled hidden>' + model.name + '</option>'
+                        '<option selected disabled hidden>' + modelName + '</option>'
                     );
                     that.models.forEach(function (model) {
                         tableRow += '<option data-model-id="' + model.id + '" value="model 1">' + model.name + '</option>';
@@ -157,19 +161,19 @@ export class OpexDefinitionView extends View{
                     return tableRow;
                 },
                 "expression": function(column, row) {
-                    var expression = that.getExpressionById(row.expression);
+                    var expression = that.getExpressionById(row.expressionId);
                     var expressionName;
                     var tableRow = '';
-                    if (expression) {
+                    if (expression && expression.name) {
                         expressionName = expression.name;
                         tableRow = (
                             '<select class="expression" value="test">' +
-                            '<option selected disabled hidden>' + expressionName + '</option>'
+                            '<option selected disable hidden>' + expressionName + '</option>'
                         );
                     }else{
                         expressionName = '';
                         tableRow = (
-                            '<select disabled class="expression" value="test">' +
+                            '<select class="expression" value="test">' +
                             '<option selected disabled hidden>' + expressionName + '</option>'
                         );
                     }
@@ -186,13 +190,13 @@ export class OpexDefinitionView extends View{
                     );
                 },
                 "inUse": function (column, row) {
-                    if (row.in_use.toString() === 'true') {
+                    if (row.inUse.toString() === 'true') {
                         return (
-                            '<input class="use" type="checkbox" value="' + row.in_use + '"' + 'checked  >'
+                            '<input class="use" type="checkbox" value="' + row.inUse + '"' + 'checked  >'
                         )
                     }else{
                         return (
-                            '<input class="use" type="checkbox" value="' + row.in_use + '"' + '>'
+                            '<input class="use" type="checkbox" value="' + row.inUse + '"' + '>'
                         )
                     }
                 }
@@ -248,7 +252,7 @@ export class OpexDefinitionView extends View{
                 that.updateIsRevenue({index: index, isRevenue: isRevenue});
             });
         });
-        var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#modelDefinitionModal"></button>');
+        var $addButton = $('<button id="addOpex" type="button" class="btn btn-default" data-toggle="modal"></button>');
         $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
 
         var $removeButton = $('<button type="button" class="btn btn-default"></button>');
@@ -260,7 +264,7 @@ export class OpexDefinitionView extends View{
         $removeButton.click(function(){
             that.deleteRows();
         });
-        this.$el.find('#addScenario').click(function(){
+        $addButton.click(function () {
             that.addRowToGrid();
         });
     }
@@ -324,25 +328,34 @@ export class OpexDefinitionView extends View{
     }
 
     addRowToGrid() {
-        var scenarioName = this.$el.find('#new_scenario_name').val();
-        var startYear = this.$el.find('#start_year').val();
-        var timePeriod = this.$el.find('#time_period').val();
-        var discountFactor = this.$el.find('#discount_factor').val();
-
-        if(scenarioName && startYear && timePeriod && discountFactor) {
-            this.$el.find("#datatype-grid-basic").bootgrid("append", [{
-                name: scenarioName,
-                id: -1,
-                startYear: startYear,
-                timePeriod: timePeriod,
-                discountFactor: discountFactor
-            }]);
-            //this.$el.find('#model_name').val('');
-            this.$el.find('#new_scenario_name').val('');
-            this.$el.find('#start_year').val('');
-            this.$el.find('#time_period').val('');
-            this.$el.find('#discount_factor').val('');
+        var that = this;
+        var newOpex = {};
+        newOpex['modelId'] = 0;
+        newOpex['expressionId'] = 0;
+        newOpex['inUse'] = true;
+        newOpex['isRevenue'] = true;
+        //newOpex['costData'] = {};
+        var costData = {}
+        var startYear = this.scenario.startYear;
+        var timePeriod = this.scenario.timePeriod;
+        for (var i = 0; i < timePeriod; i++) {
+            var presentYear = startYear + i;
+            costData[presentYear.toString()] = 0;
         }
+        newOpex['costData'] = costData;
+        console.log(newOpex);
+        this.opexModel.add({
+            dataObject: newOpex,
+            success: function (data) {
+                alert('added new data');
+                that.opexData.push(data);
+                that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
+            },
+            error: function (data) {
+                alert('Error creating opex data');
+            }
+
+        });
     }
 
     deleteRows(rowIds) {
