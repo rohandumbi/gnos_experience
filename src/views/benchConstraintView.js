@@ -126,15 +126,15 @@ export class BenchConstraintView extends View{
                     }
                 }
             }
-        }).on("loaded.rs.jquery.bootgrid", function()
-        {
+        }).on("loaded.rs.jquery.bootgrid", function () {
+            /*Add the defaultRow*/
+            if (!that.isDefaultRowPresent()) {
+                that.addRowToGrid('Default');
+            }
+
             /* Executes after data is loaded and rendered */
             that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
             that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
-
-            /*that.grid.find(".command-upload").on("click", function(e){
-             that.loadScenario($(this).data("row-id"));
-             })*/
 
             that.grid.find('.name').change(function (e) {
                 //alert('update identifier of opex index: ' + $(this).closest('tr').data('row-id') + ':' + $(this).data('model-id'));
@@ -263,7 +263,33 @@ export class BenchConstraintView extends View{
         });
     }
 
-    deleteRows(rowIds) {
+    isDefaultRowPresent() {
+        var isPresent = false;
+        this.benchConstraintData.forEach(function (benchConstraint) {
+            if (benchConstraint.pitName === 'Default') {
+                isPresent = true;
+            }
+        });
+        return isPresent;
+    }
+
+    deleteRows() {
+        var selectedRows = this.$el.find("#datatype-grid-basic").bootgrid("getSelectedRows");
+        var that = this;
+        selectedRows.forEach(function (selectedRow) {
+            var deletedBenchConstraint = that.getBenchByPitName(selectedRow);
+            console.log(deletedBenchConstraint);
+            that.benchConstraintModel.delete({
+                url: 'http://localhost:4567/benchconstraints',
+                id: deletedBenchConstraint.id,
+                success: function (data) {
+                    alert('Successfully deleted expression.');
+                },
+                error: function (data) {
+                    alert('Failed to delete expression.' + data);
+                }
+            });
+        });
         this.$el.find("#datatype-grid-basic").bootgrid("remove");
     }
 }
