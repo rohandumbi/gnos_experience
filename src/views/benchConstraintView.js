@@ -1,13 +1,19 @@
 import { View } from '../core/view';
-import { ScenarioModel } from '../models/scenarioModel';
 import { BenchConstraintModel } from '../models/benchConstraintModel';
 
 export class BenchConstraintView extends View{
 
     constructor(options) {
         super();
-        this.model = new ScenarioModel({});
-        this.benchConstraintModel = new BenchConstraintModel({});
+        this.scenario = options.scenario;
+        this.projectId = options.projectId;
+        if (!this.scenario) alert('select a scenario first');
+        this.benchConstraintModel = new BenchConstraintModel({scenarioId: this.scenario.id});
+    }
+
+    render() {
+        super.render(this.scenario);
+        return this;
     }
 
     getHtml() {
@@ -19,24 +25,58 @@ export class BenchConstraintView extends View{
         return promise;
     }
 
-    onDomLoaded() {
-        this.initializeGrid();
+    fetchPitList() {
+        this.pits = [
+            {
+                id: 1,
+                projectId: this.projectId,
+                name: 'pit_1'
+            },
+            {
+                id: 2,
+                projectId: this.projectId,
+                name: 'pit_2'
+            }
+        ]
+        this.fetchBenchConstraints();
     }
 
-    initializeGrid() {
+    fetchBenchConstraints() {
         var that = this;
-        var data = this.benchConstraintModel.fetch();
+        this.benchConstraintModel.fetch({
+            success: function (data) {
+                that.benchConstraintData = data;
+                that.initializeGrid(data);
+            },
+            error: function (data) {
+                alert('Error fetching opex data: ' + data);
+            }
+        });
+    }
+
+    onDomLoaded() {
+        //this.initializeGrid();
+        this.fetchPitList();
+    }
+
+    initializeGrid(benchConstraintData) {
+        var that = this;
         var row = '';
-        for(var i=0; i<data.benchConstraints.length; i++){
-            var benchConstraint = data.benchConstraints[i];
+        for (var i = 0; i < benchConstraintData.length; i++) {
+            var benchConstraint = benchConstraintData[i];
             row += (
                 '<tr>' +
                 '<td>' + benchConstraint.pitName + '</td>'
             )
             row += '<td>' + benchConstraint.inUse + '</td>';
-            benchConstraint.values.forEach(function(data){
-                row += '<td>' + data.value + '</td>';
-            });
+
+            var scenarioStartYear = this.scenario.startYear;
+            var scenarioTimePeriod = this.scenario.timePeriod;
+            var constraintData = benchConstraint.constraintData;
+            for (var j = 0; j < scenarioTimePeriod; j++) {
+                var presentYear = scenarioStartYear + j;
+                row += '<td>' + constraintData[presentYear.toString()] + '</td>';
+            }
             row += '</tr>';
         }
         this.$el.find("#tableBody").append($(row));
@@ -48,52 +88,34 @@ export class BenchConstraintView extends View{
             keepSelection: false,
             formatters: {
                 "pit_name": function(column, row){
-                    return (
-                    '<select value="test"  style="max-width: 120px">' +
-                        '<option selected disabled hidden>' + row.pit_name + '</option>'+
-                        '<option value="default">Default</option>' +
-                        '<option value="b1p12">b1p12</option>'+
-                    '</select>') ;
+                    var tableRow = (
+                        '<select class="pit-name" value="test">' +
+                        '<option selected disabled hidden>' + row.pitName + '</option>'
+                    );
+                    that.pits.forEach(function (pit) {
+                        tableRow += '<option data-pit-name="' + pit.name + '" data-pit-id="' + pit.id + '">' + pit.name + '</option>';
+                    });
+
+                    tableRow += '</select>';
+                    return tableRow;
                 },
                 "value": function(column, row){
+                    var yearlyValue = row[column.id] || row.constraintData[column.id]
                     return (
-                        '<input style="max-width: 100px" type="text" value="' + row[column.id] + '"' + 'checked  >'
+                        '<input class="cost" data-year="' + column.id + '" type="text" value="' + yearlyValue + '"' + '>'
                     );
                 },
                 "inUse": function (column, row) {
-                    if(row.in_use.toString().toLowerCase() === "true"){
+                    if (row.inUse.toString() === 'true') {
                         return (
-                            '<input type="checkbox" value="' + row.in_use + '"' + 'checked  >'
+                            '<input class="use" type="checkbox" value="' + row.inUse + '"' + 'checked  >'
                         )
                     }else{
                         return (
-                            '<input type="checkbox" value="' + row.in_use + '"' + '>'
+                            '<input class="use" type="checkbox" value="' + row.inUse + '"' + '>'
                         )
                     }
                 }
-                /*"year": function(column, row){
-                 return (
-                 '<input type="text" value="' + row.year + '"' + 'readonly>'
-                 );
-                 }*/
-                /*"expression": function(column, row){
-                 return (
-                 '<select value="test">' +
-                 '<option selected disabled hidden>' + row.expressionName + '</option>'+
-                 '<option value="grouptext">Group By(Text)</option>' +
-                 '<option value="groupnumeric">Group By(Numeric)</option>' +
-                 '<option value="unit">Unit</option>' +
-                 '<option value="grade">Grade</option>' +
-                 '</select>') ;
-                 },
-                 "filter": function(column, row){
-                 return (
-                 '<input type="text" value="' + row.filter + '"' + '>'
-                 );
-                 }*/
-                /*"commands": function(column, row){
-                 return "<button title='Load Scenario' type=\"button\" class=\"btn btn-xs btn-default command-upload\" data-row-id=\"" + row.name + "\"><span class=\"glyphicon glyphicon-upload\"></span></button>";
-                 }*/
             }
         }).on("loaded.rs.jquery.bootgrid", function()
         {
@@ -105,7 +127,7 @@ export class BenchConstraintView extends View{
              that.loadScenario($(this).data("row-id"));
              })*/
         });
-        var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#modelDefinitionModal"></button>');
+        var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal"></button>');
         $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
 
         var $removeButton = $('<button type="button" class="btn btn-default"></button>');
@@ -117,7 +139,7 @@ export class BenchConstraintView extends View{
         $removeButton.click(function(){
             that.deleteRows();
         });
-        this.$el.find('#addScenario').click(function(){
+        $addButton.click(function () {
             that.addRowToGrid();
         });
     }
@@ -127,25 +149,31 @@ export class BenchConstraintView extends View{
     }
 
     addRowToGrid() {
-        var scenarioName = this.$el.find('#new_scenario_name').val();
-        var startYear = this.$el.find('#start_year').val();
-        var timePeriod = this.$el.find('#time_period').val();
-        var discountFactor = this.$el.find('#discount_factor').val();
-
-        if(scenarioName && startYear && timePeriod && discountFactor) {
-            this.$el.find("#datatype-grid-basic").bootgrid("append", [{
-                name: scenarioName,
-                id: -1,
-                startYear: startYear,
-                timePeriod: timePeriod,
-                discountFactor: discountFactor
-            }]);
-            //this.$el.find('#model_name').val('');
-            this.$el.find('#new_scenario_name').val('');
-            this.$el.find('#start_year').val('');
-            this.$el.find('#time_period').val('');
-            this.$el.find('#discount_factor').val('');
+        var that = this;
+        var newBenchConstraint = {};
+        newBenchConstraint['pitName'] = '';
+        newBenchConstraint['inUse'] = true;
+        var constraintData = {}
+        var startYear = this.scenario.startYear;
+        var timePeriod = this.scenario.timePeriod;
+        for (var i = 0; i < timePeriod; i++) {
+            var presentYear = startYear + i;
+            constraintData[presentYear.toString()] = 0;
         }
+        newBenchConstraint['constraintData'] = constraintData;
+        console.log(newBenchConstraint);
+        this.benchConstraintModel.add({
+            dataObject: newBenchConstraint,
+            success: function (data) {
+                alert('added new data');
+                that.benchConstraintData.push(data);
+                that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
+            },
+            error: function (data) {
+                alert('Error creating bench data');
+            }
+
+        });
     }
 
     deleteRows(rowIds) {

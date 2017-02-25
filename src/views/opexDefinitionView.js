@@ -1,5 +1,4 @@
 import { View } from '../core/view';
-import { ScenarioModel } from '../models/scenarioModel';
 import { OpexModel } from '../models/opexModel';
 import {ExpressionModel} from '../models/expressionModel';
 import {GnosModel} from '../models/gnosModel';
@@ -11,7 +10,6 @@ export class OpexDefinitionView extends View{
         this.scenario = options.scenario;
         this.projectId = options.projectId;
         if (!this.scenario) alert('select a scenario first');
-        this.model = new ScenarioModel({});
         this.opexModel = new OpexModel({scenarioId: this.scenario.id});
         this.expressionModel = new ExpressionModel({projectId: this.projectId});
         this.gnosModel = new GnosModel({projectId: this.projectId});

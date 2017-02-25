@@ -95,7 +95,7 @@ export class MainView extends View{
         this.$el.find("#page-content-wrapper").html(this.gradeConstraintView.$el);
     }
     initializeBenchConstraint(){
-        this.benchConstraintView = new BenchConstraintView({scenario: this.scenario});
+        this.benchConstraintView = new BenchConstraintView({projectId: this.projectId, scenario: this.scenario});
         this.benchConstraintView.render();
         this.$el.find("#page-content-wrapper").html(this.benchConstraintView.$el);
     }

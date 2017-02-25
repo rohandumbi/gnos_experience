@@ -1,12 +1,10 @@
 import { View } from '../core/view';
-import { ScenarioModel } from '../models/scenarioModel';
 import { FixedCostModel } from '../models/fixedCostModel';
 
 export class FixedCostDefinitionView extends View{
 
     constructor(options) {
         super();
-        //this.model = new ScenarioModel({});
         this.scenario = options.scenario;
         this.fixedCostModel = new FixedCostModel({scenarioId: this.scenario.id});
         if (!this.scenario) alert('select a scenario first');
