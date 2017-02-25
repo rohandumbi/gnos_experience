@@ -107,7 +107,6 @@ export class OpexDefinitionView extends View{
                 '<td>' + opex.modelId + '</td>' +
                 '<td>' + opex.expressionId + '</td>'
             )
-            //row += '<td>' + benchConstraint.inUse + '</td>';
             var scenarioStartYear = this.scenario.startYear;
             var scenarioTimePeriod = this.scenario.timePeriod;
             var costData = opex.costData;

@@ -6,8 +6,11 @@ export class FixedCostDefinitionView extends View{
 
     constructor(options) {
         super();
-        this.model = new ScenarioModel({});
-        this.fixedCostModel = new FixedCostModel({});
+        //this.model = new ScenarioModel({});
+        this.scenario = options.scenario;
+        this.fixedCostModel = new FixedCostModel({scenarioId: this.scenario.id});
+        if (!this.scenario) alert('select a scenario first');
+        this.costHeadNames = ['Ore mining cost', 'Waste mining cost', 'Stockpile cost', 'Stockpile reclaiming cost', 'Truck hour cost'];
     }
 
     getHtml() {
@@ -19,23 +22,41 @@ export class FixedCostDefinitionView extends View{
         return promise;
     }
 
-    onDomLoaded() {
-        this.initializeGrid();
+    render() {
+        super.render(this.scenario);
+        return this;
     }
 
-    initializeGrid() {
+    onDomLoaded() {
         var that = this;
-        var data = this.fixedCostModel.fetch();
+        this.fixedCostModel.fetch({
+            success: function (data) {
+                that.initializeGrid(data);
+            },
+            error: function (data) {
+                alert('Failed to get fixed costs.');
+            }
+        });
+
+
+    }
+
+    initializeGrid(fixedCostData) {
+        var that = this;
         var row = '';
-        for(var i=0; i<data.fixedCosts.length; i++){
-            var fixedCost = data.fixedCosts[i];
+        for (var i = 0; i < fixedCostData.length; i++) {
+            var fixedCost = fixedCostData[i];
             row += (
                 '<tr>' +
-                '<td>' + fixedCost.name + '</td>'
+                '<td>' + fixedCost.costHead + '</td>'
             )
-            fixedCost.values.forEach(function(fixedCost){
-                row += '<td>' + fixedCost.value + '</td>';
-            });
+            var scenarioStartYear = this.scenario.startYear;
+            var scenarioTimePeriod = this.scenario.timePeriod;
+            var costData = fixedCost.costData;
+            for (var j = 0; j < scenarioTimePeriod; j++) {
+                var presentYear = scenarioStartYear + j;
+                row += '<td>' + costData[presentYear.toString()] + '</td>';
+            }
             row += '</tr>';
         }
         this.$el.find("#tableBody").append($(row));
@@ -47,8 +68,9 @@ export class FixedCostDefinitionView extends View{
             keepSelection: false,
             formatters: {
                 "value": function(column, row){
+                    var yearlyValue = row[column.id] || row.costData[column.id];
                     return (
-                        '<input style="max-width: 100px" type="text" value="' + row[column.id] + '"' + 'checked  >'
+                        '<input class="cost" data-year="' + column.id + '" type="text" value="' + yearlyValue + '"' + '>'
                     );
                 }
                 /*"expression": function(column, row){
