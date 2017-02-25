@@ -31,6 +31,7 @@ export class FixedCostDefinitionView extends View{
         var that = this;
         this.fixedCostModel.fetch({
             success: function (data) {
+                that.fixedCostData = data;
                 that.initializeGrid(data);
             },
             error: function (data) {
@@ -48,7 +49,7 @@ export class FixedCostDefinitionView extends View{
             var fixedCost = fixedCostData[i];
             row += (
                 '<tr>' +
-                '<td>' + fixedCost.costHead + '</td>'
+                '<td>' + this.costHeadNames[fixedCost.costHead] + '</td>'
             )
             var scenarioStartYear = this.scenario.startYear;
             var scenarioTimePeriod = this.scenario.timePeriod;
@@ -80,9 +81,14 @@ export class FixedCostDefinitionView extends View{
             that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
             that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
 
-            /*that.grid.find(".command-upload").on("click", function(e){
-                that.loadScenario($(this).data("row-id"));
-            })*/
+            that.grid.find('.cost').change(function (e) {
+                //alert('update year of opex index: ' + $(this).data('year') + ':' + $(this).closest('tr').data('row-id') + ':' + $(this).val());
+                that.updateCostData({
+                    index: $(this).closest('tr').data('row-id'),
+                    year: $(this).data('year'),
+                    value: $(this).val()
+                });
+            });
         });
     }
 
@@ -90,29 +96,18 @@ export class FixedCostDefinitionView extends View{
         this.$el.find('#scenario_name').val(scenarioName);
     }
 
-    addRowToGrid() {
-        var scenarioName = this.$el.find('#new_scenario_name').val();
-        var startYear = this.$el.find('#start_year').val();
-        var timePeriod = this.$el.find('#time_period').val();
-        var discountFactor = this.$el.find('#discount_factor').val();
-
-        if(scenarioName && startYear && timePeriod && discountFactor) {
-            this.$el.find("#datatype-grid-basic").bootgrid("append", [{
-                name: scenarioName,
-                id: -1,
-                startYear: startYear,
-                timePeriod: timePeriod,
-                discountFactor: discountFactor
-            }]);
-            //this.$el.find('#model_name').val('');
-            this.$el.find('#new_scenario_name').val('');
-            this.$el.find('#start_year').val('');
-            this.$el.find('#time_period').val('');
-            this.$el.find('#discount_factor').val('');
-        }
-    }
-
-    deleteRows(rowIds) {
-        this.$el.find("#datatype-grid-basic").bootgrid("remove");
+    updateCostData(options) {
+        var fixedCostData = this.fixedCostData[options.index];
+        fixedCostData.costData[options.year.toString()] = parseInt(options.value);
+        console.log(fixedCostData);
+        this.fixedCostModel.update({
+            dataObject: fixedCostData,
+            success: function (data) {
+                alert('Successfully updated.');
+            },
+            error: function (data) {
+                alert('failed update' + data);
+            }
+        });
     }
 }

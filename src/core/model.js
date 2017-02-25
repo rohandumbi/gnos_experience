@@ -46,9 +46,12 @@ export class Model {
         if (!url) {
             alert('Location of Project endpoints not avaiable.');
         }
+        if (options.id) {
+            url += '/' + options.id;
+        }
         var data = JSON.stringify(options.dataObject);
         $.ajax({
-            url: url + '/' + options.id,
+            url: url,
             type: "PUT",
             data: data,
             success: function(data){
