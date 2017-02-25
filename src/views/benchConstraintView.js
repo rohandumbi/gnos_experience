@@ -26,6 +26,7 @@ export class BenchConstraintView extends View{
     }
 
     fetchPitList() {
+        var that = this;
         this.pits = [
             {
                 id: 1,
@@ -38,6 +39,14 @@ export class BenchConstraintView extends View{
                 name: 'pit_2'
             }
         ]
+        var tableRow = (
+            '<select id="new_pit" class="pit-name form-control" value="test">'
+        );
+        this.pits.forEach(function (pit) {
+            tableRow += '<option data-pit-name="' + pit.name + '" data-pit-id="' + pit.id + '">' + pit.name + '</option>';
+        });
+        tableRow += '</select>';
+        this.$el.find('#pit_list').append(tableRow);
         this.fetchBenchConstraints();
     }
 
@@ -150,7 +159,7 @@ export class BenchConstraintView extends View{
                 });
             });
         });
-        var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal"></button>');
+        var $addButton = $('<button type="button" data-target="#pitModal" class="btn btn-default" data-toggle="modal"></button>');
         $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
 
         var $removeButton = $('<button type="button" class="btn btn-default"></button>');
@@ -162,9 +171,14 @@ export class BenchConstraintView extends View{
         $removeButton.click(function(){
             that.deleteRows();
         });
-        $addButton.click(function () {
-            that.addRowToGrid();
+
+        this.$el.find('#addData').click(function () {
+            var pitName = that.$el.find('select#new_pit option:checked').val();
+            that.addRowToGrid(pitName);
         });
+        /*$addButton.click(function () {
+            that.addRowToGrid();
+         });*/
     }
 
     loadScenario(scenarioName) {
@@ -221,10 +235,10 @@ export class BenchConstraintView extends View{
         this.updateBenchConstraint({benchData: benchData});
     }
 
-    addRowToGrid() {
+    addRowToGrid(pitName) {
         var that = this;
         var newBenchConstraint = {};
-        newBenchConstraint['pitName'] = '';
+        newBenchConstraint['pitName'] = pitName;
         newBenchConstraint['inUse'] = true;
         var constraintData = {}
         var startYear = this.scenario.startYear;
