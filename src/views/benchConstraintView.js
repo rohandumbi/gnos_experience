@@ -102,7 +102,7 @@ export class BenchConstraintView extends View{
                 "value": function(column, row){
                     var yearlyValue = row[column.id] || row.constraintData[column.id]
                     return (
-                        '<input class="cost" data-year="' + column.id + '" type="text" value="' + yearlyValue + '"' + '>'
+                        '<input class="constraint" data-year="' + column.id + '" type="text" value="' + yearlyValue + '"' + '>'
                     );
                 },
                 "inUse": function (column, row) {
@@ -126,6 +126,29 @@ export class BenchConstraintView extends View{
             /*that.grid.find(".command-upload").on("click", function(e){
              that.loadScenario($(this).data("row-id"));
              })*/
+
+            that.grid.find('.name').change(function (e) {
+                //alert('update identifier of opex index: ' + $(this).closest('tr').data('row-id') + ':' + $(this).data('model-id'));
+                that.updatePitName({
+                    newPitName: $(this).find(":selected").data('pit-name'),
+                    existingPitName: $(this).closest('tr').data('row-id')
+                })
+            });
+            that.grid.find('.constraint').change(function (e) {
+                //alert('update year of opex index: ' + $(this).data('year') + ':' + $(this).closest('tr').data('row-id') + ':' + $(this).val());
+                that.updateConstraintData({
+                    existingPitName: $(this).closest('tr').data('row-id'),
+                    year: $(this).data('year'),
+                    value: $(this).val()
+                });
+            });
+            that.grid.find(".use").change(function (event) {
+                var benchInUse = $(this).is(':checked');
+                that.updateInUse({
+                    existingPitName: $(this).closest('tr').data('row-id'),
+                    inUse: benchInUse
+                });
+            });
         });
         var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal"></button>');
         $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
@@ -146,6 +169,56 @@ export class BenchConstraintView extends View{
 
     loadScenario(scenarioName) {
         this.$el.find('#scenario_name').val(scenarioName);
+    }
+
+    updateBenchConstraint(options) {
+        this.benchConstraintModel.update({
+            url: 'http://localhost:4567/benchconstraints',
+            id: options.benchData.id,
+            dataObject: options.benchData,
+            success: function (data) {
+                alert('Successfully updated.');
+                if (options.success) options.success(data);
+            },
+            error: function (data) {
+                alert('failed update' + data);
+                if (options.success) options.error(data);
+            }
+        });
+    }
+
+    getBenchByPitName(pitName) {
+        var object;
+        this.benchConstraintData.forEach(function (benchData) {
+            if (benchData.pitName === pitName) {
+                object = benchData;
+            }
+        });
+        return object;
+    }
+
+    updatePitName(options) {
+        var benchData = this.getBenchByPitName(options.existingPitName);
+        //var opexData = this.opexData[options.index];
+        benchData['pitName'] = options.newPitName;
+        console.log(benchData);
+        this.updateBenchConstraint({benchData: benchData});
+    }
+
+    updateConstraintData(options) {
+        //var opexData = this.opexData[options.index];
+        var benchData = this.getBenchByPitName(options.existingPitName);
+        benchData.constraintData[options.year.toString()] = parseInt(options.value);
+        console.log(benchData);
+        this.updateBenchConstraint({benchData: benchData});
+    }
+
+    updateInUse(options) {
+        //var opexData = this.opexData[options.index];
+        var benchData = this.getBenchByPitName(options.existingPitName);
+        benchData['inUse'] = options.inUse;
+        console.log(benchData);
+        this.updateBenchConstraint({benchData: benchData});
     }
 
     addRowToGrid() {
