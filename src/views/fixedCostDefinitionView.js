@@ -73,24 +73,6 @@ export class FixedCostDefinitionView extends View{
                         '<input class="cost" data-year="' + column.id + '" type="text" value="' + yearlyValue + '"' + '>'
                     );
                 }
-                /*"expression": function(column, row){
-                    return (
-                    '<select value="test">' +
-                    '<option selected disabled hidden>' + row.expressionName + '</option>'+
-                    '<option value="grouptext">Group By(Text)</option>' +
-                    '<option value="groupnumeric">Group By(Numeric)</option>' +
-                    '<option value="unit">Unit</option>' +
-                    '<option value="grade">Grade</option>' +
-                    '</select>') ;
-                },
-                "filter": function(column, row){
-                    return (
-                        '<input type="text" value="' + row.filter + '"' + '>'
-                    );
-                }*/
-                /*"commands": function(column, row){
-                    return "<button title='Load Scenario' type=\"button\" class=\"btn btn-xs btn-default command-upload\" data-row-id=\"" + row.name + "\"><span class=\"glyphicon glyphicon-upload\"></span></button>";
-                }*/
             }
         }).on("loaded.rs.jquery.bootgrid", function()
         {
@@ -101,21 +83,6 @@ export class FixedCostDefinitionView extends View{
             /*that.grid.find(".command-upload").on("click", function(e){
                 that.loadScenario($(this).data("row-id"));
             })*/
-        });
-        var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#modelDefinitionModal"></button>');
-        $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
-
-        var $removeButton = $('<button type="button" class="btn btn-default"></button>');
-        $removeButton.append('<span class="glyphicon glyphicon-trash"></span>');
-
-        this.$el.find(".actionBar").append($addButton);
-        this.$el.find(".actionBar").append($removeButton);
-
-        $removeButton.click(function(){
-            that.deleteRows();
-        });
-        this.$el.find('#addScenario').click(function(){
-            that.addRowToGrid();
         });
     }
 
