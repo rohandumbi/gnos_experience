@@ -1,5 +1,6 @@
 import { View } from '../core/view';
 import { BenchConstraintModel } from '../models/benchConstraintModel';
+import {PitModel} from '../models/pitModel';
 
 export class BenchConstraintView extends View{
 
@@ -9,6 +10,7 @@ export class BenchConstraintView extends View{
         this.projectId = options.projectId;
         if (!this.scenario) alert('select a scenario first');
         this.benchConstraintModel = new BenchConstraintModel({scenarioId: this.scenario.id});
+        this.pitModel = new PitModel({projectId: this.projectId});
     }
 
     render() {
@@ -39,15 +41,24 @@ export class BenchConstraintView extends View{
                 name: 'pit_2'
             }
         ]
-        var tableRow = (
-            '<select id="new_pit" class="pit-name form-control" value="test">'
-        );
-        this.pits.forEach(function (pit) {
-            tableRow += '<option data-pit-name="' + pit.name + '" data-pit-id="' + pit.id + '">' + pit.name + '</option>';
+        this.pitModel.fetch({
+            success: function (data) {
+                that.pits = data;
+                var tableRow = (
+                    '<select id="new_pit" class="pit-name form-control" value="test">'
+                );
+                that.pits.forEach(function (pit) {
+                    tableRow += '<option data-pit-name="' + pit.pitName + '" data-pit-no="' + pit.pitNo + '">' + pit.pitName + '</option>';
+                });
+                tableRow += '</select>';
+                that.$el.find('#pit_list').append(tableRow);
+                that.fetchBenchConstraints();
+            },
+            error: function (data) {
+
+            }
+
         });
-        tableRow += '</select>';
-        this.$el.find('#pit_list').append(tableRow);
-        this.fetchBenchConstraints();
     }
 
     fetchBenchConstraints() {
@@ -102,7 +113,7 @@ export class BenchConstraintView extends View{
                         '<option selected disabled hidden>' + row.pitName + '</option>'
                     );
                     that.pits.forEach(function (pit) {
-                        tableRow += '<option data-pit-name="' + pit.name + '" data-pit-id="' + pit.id + '">' + pit.name + '</option>';
+                        tableRow += '<option data-pit-name="' + pit.pitName + '" data-pit-no="' + pit.pitNo + '">' + pit.pitName + '</option>';
                     });
 
                     tableRow += '</select>';
