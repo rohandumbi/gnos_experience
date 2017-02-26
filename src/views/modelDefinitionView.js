@@ -10,35 +10,54 @@ export class ModelDefinitionView extends View{
         this.projectId = options.projectId;
         this.model = new GnosModel({projectId: this.projectId});
         this.expressionModel = new ExpressionModel({projectId: this.projectId});
-        this.expressionModel.fetch({
-            success: function (data) {
-                that.expressions = data;
-            },
-            error: function (data) {
-
-            }
-        })
     }
 
     getHtml() {
         var promise = new Promise(function(resolve, reject){
-            $.get( "../content/modelDefinitionView.html", function( data ) {
+            $.get("../content/modelDefinitionView.html", function (data) {
                 resolve(data);
             })
         });
         return promise;
     }
 
-    onDomLoaded() {
+    getExpressionById(expressionId) {
+        var expressionObject;
+        this.expressions.forEach(function (expression) {
+            if (expression.id === parseInt(expressionId)) {
+                expressionObject = expression;
+            }
+        });
+        return expressionObject;
+    }
+
+    fetchExpressions() {
+        var that = this;
+        this.expressionModel.fetch({
+            success: function (data) {
+                that.expressions = data;
+                that.fetchModels();
+            },
+            error: function (data) {
+                alert('Error fetching expression list: ' + data);
+            }
+        })
+    }
+
+    fetchModels() {
         var that = this;
         this.model.fetch({
             success: function (data) {
                 that.initializeGrid(data);
             },
             error: function (data) {
-
+                alert('Error fetching model list');
             }
         });
+    }
+
+    onDomLoaded() {
+        this.fetchExpressions();
     }
 
     initializeGrid(modelData) {
@@ -50,7 +69,7 @@ export class ModelDefinitionView extends View{
             row += (
                 '<tr>' +
                     '<td>' + model.name + '</td>' +
-                '<td>' + model.expression.name + '</td>' +
+                '<td>' + model.expressionId + '</td>' +
                 '<td>' + (model.condition || '') + '</td>' +
                     /*'<td>' + model.id + '</td>' +*/
                 '</tr>'
@@ -70,30 +89,32 @@ export class ModelDefinitionView extends View{
                     );
                 },*/
                 "expression": function(column, row){
-                    /*this.expressionModel.fetch({
-                     success: function(data){
-                     return (
-                     '<select value="test">' +
-                     '<option selected disabled hidden>' + row.expressionName + '</option>'+
-                     '<option value="grouptext">Group By(Text)</option>' +
-                     '<option value="groupnumeric">Group By(Numeric)</option>' +
-                     '<option value="unit">Unit</option>' +
-                     '<option value="grade">Grade</option>' +
-                     '</select>') ;
-                     },
-                     error: function(data){
+                    var expression = that.getExpressionById(row.expressionId);
+                    var expressionName;
+                    var tableRow = '';
+                    if (expression && expression.name) {
+                        expressionName = expression.name;
+                        tableRow = (
+                            '<select class="expression" value="test">' +
+                            '<option selected disabled hidden>' + expressionName + '</option>'
+                        );
+                    } else {
+                        expressionName = '';
+                        tableRow = (
+                            '<select disabled class="expression" value="test">' +
+                            '<option selected disabled hidden>' + expressionName + '</option>'
+                        );
+                    }
+                    that.expressions.forEach(function (expression) {
+                        tableRow += '<option data-expression-id="' + expression.id + '" value="model 1">' + expression.name + '</option>';
+                    });
 
-                     }
-                     })*/
-
-                    return (
-                    '<select value="test">' +
-                        '<option selected disabled hidden>' + row.expressionName + '</option>'+
-                    '</select>') ;
+                    tableRow += '</select>';
+                    return tableRow;
                 },
-                "filter": function(column, row){
+                "condition": function (column, row) {
                     return (
-                        '<input type="text" value="' + row.filter + '"' + '>'
+                        '<input data-model-name="' + row.name + '" class="model_condition" style="width:200px" type="text" value="' + row.condition + '"' + '>'
                     );
                 }
                 /*"commands": function(column, row)
