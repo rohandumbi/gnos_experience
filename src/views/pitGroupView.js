@@ -7,7 +7,7 @@ export class PitGroupView extends View{
     constructor(options) {
         super();
         this.pitGroupModel = new PitGroupModel({});
-        this.pitModel = new PitModel({});
+        this.pitModel = new PitModel({projectId: options.projectId});
     }
 
     getHtml() {
@@ -32,19 +32,26 @@ export class PitGroupView extends View{
 
     onDomLoaded() {
         this.initializePitList();
-        this.initializeGraph();
-        this.bindDomEvents();
+        //this.initializeGraph();
+        //this.bindDomEvents();
     }
 
     initializePitList() {
-        var data = this.pitModel.fetch();
-        var $liGroup = this.$el.find('ul.list-group');
-        var $li;
-        data.pits.forEach(function(pit) {
-            $li = $('<li draggable="true">' + pit.name + '</li>');
-            $li.attr('title', pit.name);
-            $li.addClass('list-group-item list-group-item-info');
-            $liGroup.append($li);
+        var that = this;
+        var data = this.pitModel.fetch({
+            success: function (data) {
+                var $liGroup = that.$el.find('ul.list-group');
+                var $li;
+                data.forEach(function (pit) {
+                    $li = $('<li data-pitNo="' + pit.pitNo + '" draggable="true">' + pit.pitName + '</li>');
+                    $li.attr('title', pit.pitName);
+                    $li.addClass('list-group-item list-group-item-info');
+                    $liGroup.append($li);
+                });
+            },
+            error: function (data) {
+                alert('Error fetching list of pits: ' + data);
+            }
         });
     }
 

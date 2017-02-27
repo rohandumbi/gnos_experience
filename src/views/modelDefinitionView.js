@@ -102,11 +102,6 @@ export class ModelDefinitionView extends View{
             rowSelect: true,
             keepSelection: true,
             formatters: {
-                /*"name": function(column, row){
-                    return (
-                        '<input type="text" value="' + row.name + '"' + 'readonly>'
-                    );
-                },*/
                 "expression": function(column, row){
                     var expression = that.getExpressionById(row.expressionId);
                     var expressionName;
@@ -164,9 +159,6 @@ export class ModelDefinitionView extends View{
 
         this.$el.find(".actionBar").append($addButton);
         this.$el.find(".actionBar").append($removeButton);
-        /*$addButton.click(function(){
-            that.addRowToGrid();
-        });*/
         $removeButton.click(function(){
             that.deleteRows();
         });
