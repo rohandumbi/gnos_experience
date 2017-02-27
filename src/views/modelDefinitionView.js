@@ -59,6 +59,14 @@ export class ModelDefinitionView extends View{
         this.model.fetch({
             success: function (data) {
                 that.modelData = data;
+                var tableRow = (
+                    '<select id="expression_name" class="expression_name form-control" value="test">'
+                );
+                that.expressions.forEach(function (expression) {
+                    tableRow += '<option data-expression-name="' + expression.name + '" data-expression-id="' + expression.id + '">' + expression.name + '</option>';
+                });
+                tableRow += '</select>';
+                that.$el.find('#expression_list').append(tableRow);
                 that.initializeGrid(data);
             },
             error: function (data) {
@@ -124,8 +132,9 @@ export class ModelDefinitionView extends View{
                     return tableRow;
                 },
                 "condition": function (column, row) {
+                    var condition = row.condition || '';
                     return (
-                        '<input data-model-name="' + row.name + '" class="model_condition" style="width:200px" type="text" value="' + row.condition + '"' + '>'
+                        '<input data-model-name="' + row.name + '" class="model_condition" style="width:200px" type="text" value="' + condition + '"' + '>'
                     );
                 }
             }
@@ -199,20 +208,46 @@ export class ModelDefinitionView extends View{
     }
 
     addRowToGrid() {
+        var that = this;
         var modelName = this.$el.find('#model_name').val();
-        if(modelName) {
-            this.$el.find("#datatype-grid-basic").bootgrid("append", [{
-                name: modelName,
-                id: -1,
-                expressionId: -1,
-                expressionName: "",
-                filter:""
-            }]);
-            this.$el.find('#model_name').val('');
+        var expressionId = this.$el.find('select#expression_name option:checked').data('expression-id');
+        var newModel = {};
+        newModel['name'] = modelName;
+        newModel['expressionId'] = expressionId;
+        if (modelName && expressionId) {
+            this.model.add({
+                url: 'http://localhost:4567/project/' + that.projectId + '/model',
+                dataObject: newModel,
+                success: function (data) {
+                    that.modelData = data;
+                    that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
+                    that.$el.find('#model_name').val('');
+                    that.$el.find('#expression_name').val('');
+                },
+                error: function (data) {
+                    alert('Failed to create model');
+                }
+            });
         }
     }
 
-    deleteRows(rowIds) {
+    deleteRows() {
+        var selectedRows = this.$el.find("#datatype-grid-basic").bootgrid("getSelectedRows");
+        var that = this;
+        selectedRows.forEach(function (selectedRow) {
+            var deletedModel = that.getModelByName(selectedRow);
+            console.log(deletedModel);
+            that.model.delete({
+                url: 'http://localhost:4567/model',
+                id: deletedModel.id,
+                success: function (data) {
+                    alert('Successfully deleted expression.');
+                },
+                error: function (data) {
+                    alert('Failed to delete expression.');
+                }
+            });
+        });
         this.$el.find("#datatype-grid-basic").bootgrid("remove");
     }
 }
