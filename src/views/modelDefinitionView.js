@@ -31,6 +31,16 @@ export class ModelDefinitionView extends View{
         return expressionObject;
     }
 
+    getModelByName(modelName) {
+        var modelObject;
+        this.modelData.forEach(function (model) {
+            if (model.name === modelName) {
+                modelObject = model;
+            }
+        });
+        return modelObject;
+    }
+
     fetchExpressions() {
         var that = this;
         this.expressionModel.fetch({
@@ -48,6 +58,7 @@ export class ModelDefinitionView extends View{
         var that = this;
         this.model.fetch({
             success: function (data) {
+                that.modelData = data;
                 that.initializeGrid(data);
             },
             error: function (data) {
@@ -106,7 +117,7 @@ export class ModelDefinitionView extends View{
                         );
                     }
                     that.expressions.forEach(function (expression) {
-                        tableRow += '<option data-expression-id="' + expression.id + '" value="model 1">' + expression.name + '</option>';
+                        tableRow += '<option data-expression-id="' + expression.id + '">' + expression.name + '</option>';
                     });
 
                     tableRow += '</select>';
@@ -117,10 +128,6 @@ export class ModelDefinitionView extends View{
                         '<input data-model-name="' + row.name + '" class="model_condition" style="width:200px" type="text" value="' + row.condition + '"' + '>'
                     );
                 }
-                /*"commands": function(column, row)
-                {
-                    return "<button type=\"button\" class=\"btn btn-xs btn-default command-delete\" data-row-id=\"" + row.id + "\"><span class=\"glyphicon glyphicon-trash\"></span></button>";
-                }*/
             }
         }).on("loaded.rs.jquery.bootgrid", function()
         {
@@ -128,15 +135,17 @@ export class ModelDefinitionView extends View{
             that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
             that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
 
-            /*that.grid.find(".command-edit").on("click", function(e){
-                alert("You pressed edit on row: " + $(this).data("row-id"));
-            }).end().find(".command-delete").on("click", function(e){
-                alert("You pressed delete on row: " + $(this).data("row-id"));
-            });*/
-            /*that.grid.find(".command-delete").on("click", function(e){
-                alert("You pressed delete on row: " + $(this).data("row-id"));
-                that.deleteRows([$(this).data("row-id")]);
-            })*/
+            that.grid.find(".expression").change(function (event) {
+                //alert($(this).data('expression-name'));
+                var modelName = $(this).closest('tr').data('row-id');
+                var exprId = $(this).find(":selected").data('expression-id');
+                that.updateExpression({name: modelName, expressionId: exprId});
+            });
+            that.grid.find(".model_condition").change(function (event) {
+                var modelName = $(this).closest('tr').data('row-id');
+                var conditionValue = $(this).val();
+                that.updateCondition({name: modelName, condition: conditionValue});
+            });
         });
         var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#modelDefinitionModal"></button>');
         $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
@@ -154,6 +163,38 @@ export class ModelDefinitionView extends View{
         });
         this.$el.find('#addModel').click(function(){
             that.addRowToGrid();
+        });
+    }
+
+    updateExpression(options) {
+        var updatedModel = this.getModelByName(options.name);
+        updatedModel['expressionId'] = options.expressionId;
+        this.model.update({
+            id: updatedModel.id,
+            url: 'http://localhost:4567/model',
+            dataObject: updatedModel,
+            success: function (data) {
+                alert('Successfully updated');
+            },
+            error: function (data) {
+                alert('Failed to update: ' + data);
+            }
+        });
+    }
+
+    updateCondition(options) {
+        var updatedModel = this.getModelByName(options.name);
+        updatedModel['condition'] = options.condition;
+        this.model.update({
+            id: updatedModel.id,
+            url: 'http://localhost:4567/model',
+            dataObject: updatedModel,
+            success: function (data) {
+                alert('Successfully updated');
+            },
+            error: function (data) {
+                alert('Failed to update: ' + data);
+            }
         });
     }
 
