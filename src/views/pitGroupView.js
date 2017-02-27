@@ -40,6 +40,7 @@ export class PitGroupView extends View{
         var that = this;
         var data = this.pitModel.fetch({
             success: function (data) {
+                that.pits = data;
                 var $liGroup = that.$el.find('ul.list-group');
                 var $li;
                 data.forEach(function (pit) {
@@ -48,6 +49,7 @@ export class PitGroupView extends View{
                     $li.addClass('list-group-item list-group-item-info');
                     $liGroup.append($li);
                 });
+                that.initializeGraph();
             },
             error: function (data) {
                 alert('Error fetching list of pits: ' + data);
@@ -80,6 +82,7 @@ export class PitGroupView extends View{
                 that.system.addEdge(pitGroupNode, pitNode, {directed: true, weight: 2});
             });
         });
+        this.bindDomEvents();
         //this.addProcessJoins();
     }
 
@@ -111,27 +114,39 @@ export class PitGroupView extends View{
     handleDragEnd(e) {
         var that = this;
         console.log('Dragged model: ' + e.target.innerHTML);
-        var draggedModel = this.getPitWithName(e.target.innerHTML);
+        var draggedPit = this.getPitWithName(e.target.innerHTML);
         e.target.style.opacity = '1';
         var pos = this.$el.find('#viewport').offset();
         var p = {x:e.pageX-pos.left, y:e.pageY-pos.top}
         var selected = this.system.nearest(p);
 
-        if ((selected.node !== null) && (draggedModel!==null)){
+        if ((selected.node !== null) && (draggedPit !== null)) {
             // dragged.node.tempMass = 10000
             //dragged.node.fixed = true;
             console.log('need to add');
             //this.addProcessToGraph(selected.node, [draggedModel]);
-            var pitNode = that.system.addNode(draggedModel.name,{'color':'#95cde5','shape':'dot','label':draggedModel.name});
+            var pitNode = that.system.addNode(draggedPit.pitName, {
+                'color': '#95cde5',
+                'shape': 'dot',
+                'label': draggedPit.pitName
+            });
             that.system.addEdge(selected.node, pitNode, {directed: true, weight: 2});
         }
     }
 
     bindDomEvents() {
+        var that = this;
         this.bindDragEventsOnModels();
-        this.$el.find('#define_pit_group').click(function() {
-           alert("To display pit group definition form");
+        this.$el.find('#add-pitgroup').click(function () {
+            //alert("To display pit group definition form");
+            var newGroupName = that.$el.find('#new_group_name').val();
+            that.addPitGroup(newGroupName);
         });
+    }
+
+    addPitGroup(groupName) {
+        this.$el.find('#new_group_name').val('');
+        this.system.addNode(groupName, {'color': 'red', 'shape': 'dot', 'label': groupName});
     }
 
     bindDragEventsOnModels() {
@@ -144,14 +159,12 @@ export class PitGroupView extends View{
     }
 
     getPitWithName(pitName) {
-        var data = this.pitModel.fetch();
-        var models = data.pits;
-        var selectedModel = null;
-        models.forEach(function(model){
-            if(model.name === pitName) {
-                selectedModel = model;
+        var selectedPit = null;
+        this.pits.forEach(function (pit) {
+            if (pit.pitName === pitName) {
+                selectedPit = pit;
             }
         });
-        return selectedModel;
+        return selectedPit;
     }
 }
