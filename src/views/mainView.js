@@ -11,6 +11,7 @@ import { FixedCostDefinitionView } from './fixedCostDefinitionView';
 import { ProcessConstraintView } from './processConstraintView';
 import { GradeConstraintView } from './gradeConstraintView';
 import { BenchConstraintView } from './benchConstraintView';
+import {PitDependencyView} from './pitDependencyView';
 import { OpexDefinitionView } from './opexDefinitionView';
 import { CapexCollectionView } from './capexCollectionView';
 
@@ -30,7 +31,6 @@ export class MainView extends View{
     }
 
     initializeDatatypeDefinition(){
-        //console.log("there there");
         this.dataMappingView = new DataMappingView({projectId: this.projectId});
         this.dataMappingView.render();
         this.$el.find("#page-content-wrapper").html(this.dataMappingView.$el);
@@ -99,6 +99,14 @@ export class MainView extends View{
         this.benchConstraintView.render();
         this.$el.find("#page-content-wrapper").html(this.benchConstraintView.$el);
     }
+
+    initializePitDependency() {
+        var that = this;
+        this.pitDependencyView = new PitDependencyView({projectId: this.projectId, scenario: this.scenario});
+        this.pitDependencyView.render();
+        this.$el.find("#page-content-wrapper").html(this.pitDependencyView.$el);
+    }
+
     initializeDumpConstraint(){
 
     }
@@ -156,6 +164,9 @@ export class MainView extends View{
                 break;
             case "capex":
                 this.initializeCapexConstraint();
+                break;
+            case "pit-dependency":
+                this.initializePitDependency();
                 break;
 
         }
