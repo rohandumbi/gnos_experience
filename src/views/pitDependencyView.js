@@ -106,6 +106,9 @@ export class PitDependencyView extends View {
             )
         }
         this.$el.find("#tableBody").append($(row));
+        if (this.grid) {
+            this.grid.remove();
+        }
         this.grid = this.$el.find("#datatype-grid-basic").bootgrid({
             rowCount: [15, 10, 20, 25],
             selection: true,
@@ -130,7 +133,7 @@ export class PitDependencyView extends View {
                     var dependentPitName = row.dependentPitName;
                     var tableRow = '';
                     tableRow = (
-                        '<select class="first_pit" value="test">' +
+                        '<select class="dependent_pit" value="test">' +
                         '<option selected disabled hidden>' + dependentPitName + '</option>'
                     );
                     that.pits.forEach(function (pit) {
@@ -142,11 +145,11 @@ export class PitDependencyView extends View {
                 "in_use": function (column, row) {
                     if (row.inUse.toString() === 'true') {
                         return (
-                            '<input class="use" type="checkbox" value="' + row.inUse + '"' + 'checked  >'
+                            '<input class="in_use" type="checkbox" value="' + row.inUse + '"' + 'checked  >'
                         )
                     } else {
                         return (
-                            '<input class="use" type="checkbox" value="' + row.inUse + '"' + '>'
+                            '<input class="in_use" type="checkbox" value="' + row.inUse + '"' + '>'
                         )
                     }
                 },
@@ -159,17 +162,17 @@ export class PitDependencyView extends View {
                 "max_lead": function (column, row) {
                     var maxLead = (row.maxLead < 0 ) ? '' : row.maxLead;
                     return (
-                        '<input class="min_lead" type="text" value="' + maxLead + '"' + '>'
+                        '<input class="max_lead" type="text" value="' + maxLead + '"' + '>'
                     );
                 },
                 "first_pit_bench": function (column, row) {
                     //var expression = that.getExpressionById(row.expressionId);
                     var benchName = row.firstPitAssociatedBench;
-                    if (benchName.toString() === 'undefined') {
+                    if (!benchName || benchName.toString() === 'undefined') {
                         benchName = '';
                     }
                     var tableRow = (
-                        '<select class="expression" value="test">' +
+                        '<select class="first_pit_bench" value="test">' +
                         '<option selected disabled hidden>' + benchName + '</option>'
                     );
                     var firstPitName = row.firstPitName;
@@ -183,11 +186,11 @@ export class PitDependencyView extends View {
                 },
                 "dependent_pit_bench": function (column, row) {
                     var benchName = row.dependentPitAssociatedBench;
-                    if (benchName.toString() === 'undefined') {
+                    if (!benchName || benchName.toString() === 'undefined') {
                         benchName = '';
                     }
                     var tableRow = (
-                        '<select class="expression" value="test">' +
+                        '<select class="dependent_pit_bench" value="test">' +
                         '<option selected disabled hidden>' + benchName + '</option>'
                     );
                     var dependentPitName = row.dependentPitName;
@@ -210,21 +213,61 @@ export class PitDependencyView extends View {
             /* Executes after data is loaded and rendered */
             that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
             that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
-            that.grid.find(".expression_definition").change(function (event) {
-                //alert($(this).data('expression-name'));
-                var expressionName = $(this).data('expression-name');
-                var exprValue = $(this).val();
-                that.updateExpressionDefinition({name: expressionName, exprvalue: exprValue});
+            that.grid.find(".first_pit").change(function (event) {
+                var index = $(this).closest('tr').data('row-id');
+                var firstPitName = $(this).find(":selected").val();
+                var $associatedBench = $(this).closest('tr').find('.first_pit_bench');
+                $associatedBench.val('');
+                var pit = that.getPitByName(firstPitName);
+                var selectOptions = '<option selected disabled hidden>' + '' + '</option>';
+                pit.associatedBenches.forEach(function (bench) {
+                    selectOptions += '<option data-pit-name="' + firstPitName + '" data-bench-no="' + bench.benchName + '">' + bench.benchName + '</option>';
+                });
+                $associatedBench.html(selectOptions);
+                that.updateFirstPit({index: index, firstPitName: firstPitName});
             });
-            that.grid.find(".expression_filter").change(function (event) {
-                var expressionName = $(this).data('expression-name');
-                var filterValue = $(this).val();
-                that.updateExpressionFilter({name: expressionName, filter: filterValue});
+            that.grid.find(".dependent_pit").change(function (event) {
+                var index = $(this).closest('tr').data('row-id');
+                var dependentPitName = $(this).find(":selected").val();
+                var $associatedBench = $(this).closest('tr').find('.dependent_pit_bench');
+                $associatedBench.val('');
+                var pit = that.getPitByName(dependentPitName);
+                var selectOptions = '<option selected disabled hidden>' + '' + '</option>';
+                pit.associatedBenches.forEach(function (bench) {
+                    selectOptions += '<option data-pit-name="' + dependentPitName + '" data-bench-no="' + bench.benchName + '">' + bench.benchName + '</option>';
+                });
+                $associatedBench.html(selectOptions);
+                that.updateDependentPit({index: index, dependentPitName: dependentPitName});
             });
-            that.grid.find(".expression_isgrade").change(function (event) {
-                var expressionName = $(this).data('expression-name');
-                var expressionIsGrade = $(this).is(':checked');
-                that.upgradeExpressionGrade({name: expressionName, isGrade: expressionIsGrade});
+            that.grid.find(".first_pit_bench").change(function (event) {
+                var index = $(this).closest('tr').data('row-id');
+                var firstPitAssociatedBench = $(this).find(":selected").val();
+                that.updateFirstPitAssociatedBench({index: index, firstPitAssociatedBench: firstPitAssociatedBench});
+            });
+            that.grid.find(".dependent_pit_bench").change(function (event) {
+                var index = $(this).closest('tr').data('row-id');
+                var dependentPitAssociatedBench = $(this).find(":selected").val();
+                that.updateDependentPitAssociatedBench({
+                    index: index,
+                    dependentPitAssociatedBench: dependentPitAssociatedBench
+                });
+            });
+            that.grid.find(".max_lead").change(function (event) {
+                var index = $(this).closest('tr').data('row-id');
+                var maxLead = $(this).val();
+                that.updateMaxLead({index: index, maxLead: maxLead});
+            });
+            that.grid.find(".min_lead").change(function (event) {
+                var index = $(this).closest('tr').data('row-id');
+                var minLead = $(this).val();
+                that.updateMinLead({index: index, minLead: minLead});
+            });
+            that.grid.find(".in_use").change(function (event) {
+                var inUse = $(this).is(':checked');
+                that.updateInUse({
+                    index: $(this).closest('tr').data('row-id'),
+                    inUse: inUse
+                });
             });
         });
         var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#expressionDefinitionModal"></button>');
@@ -247,18 +290,77 @@ export class PitDependencyView extends View {
 
     }
 
-    updateExpressionFilter(options) {
-        var updatedExpression = this.getExpressionByName(options.name);
-        updatedExpression['filter'] = options.filter;
-        this.model.update({
-            id: updatedExpression.id,
-            url: 'http://localhost:4567/expressions',
-            dataObject: updatedExpression,
+    updateFirstPit(options) {
+        var that = this;
+        var pitDependency = this.pitDependency[options.index];
+        pitDependency['firstPitName'] = options.firstPitName;
+        delete pitDependency.firstPitAssociatedBench;
+        console.log(pitDependency);
+        this.updatePitDependency({pitDependency: pitDependency});
+    }
+
+    updateFirstPitAssociatedBench(options) {
+        var that = this;
+        var pitDependency = this.pitDependency[options.index];
+        pitDependency['firstPitAssociatedBench'] = options.firstPitAssociatedBench;
+        console.log(pitDependency);
+        this.updatePitDependency({pitDependency: pitDependency});
+    }
+
+    updateDependentPitAssociatedBench(options) {
+        var that = this;
+        var pitDependency = this.pitDependency[options.index];
+        pitDependency['dependentPitAssociatedBench'] = options.dependentPitAssociatedBench;
+        console.log(pitDependency);
+        this.updatePitDependency({pitDependency: pitDependency});
+    }
+
+    updateDependentPit(options) {
+        var that = this;
+        var pitDependency = this.pitDependency[options.index];
+        pitDependency['dependentPitName'] = options.dependentPitName;
+        delete pitDependency.dependentPitAssociatedBench;
+        console.log(pitDependency);
+        this.updatePitDependency({pitDependency: pitDependency});
+    }
+
+    updateMaxLead(options) {
+        var pitDependency = this.pitDependency[options.index];
+        pitDependency['maxLead'] = options.maxLead;
+        console.log(pitDependency);
+        this.updatePitDependency({pitDependency: pitDependency});
+    }
+
+    updateMinLead(options) {
+        var pitDependency = this.pitDependency[options.index];
+        pitDependency['minLead'] = options.minLead;
+        console.log(pitDependency);
+        this.updatePitDependency({pitDependency: pitDependency});
+    }
+
+    updateInUse(options) {
+        var pitDependency = this.pitDependency[options.index];
+        pitDependency['inUse'] = options.inUse;
+        console.log(pitDependency);
+        this.updatePitDependency({pitDependency: pitDependency});
+    }
+
+    updatePitDependency(options) {
+        this.pitDependencyModel.update({
+            id: options.pitDependency.id,
+            url: 'http://localhost:4567/pitdependencies',
+            dataObject: options.pitDependency,
             success: function (data) {
                 alert('Successfully updated');
+                if (options.success) {
+                    options.success();
+                }
             },
             error: function (data) {
                 alert('Failed to update: ' + data);
+                if (options.error) {
+                    options.error();
+                }
             }
         });
     }
@@ -268,7 +370,7 @@ export class PitDependencyView extends View {
         updatedExpression['exprvalue'] = options.exprvalue;
         this.model.update({
             id: updatedExpression.id,
-            url: 'http://localhost:4567/expressions',
+            url: 'http://localhost:4567/pitdependencies',
             dataObject: updatedExpression,
             success: function (data) {
                 alert('Successfully updated');
