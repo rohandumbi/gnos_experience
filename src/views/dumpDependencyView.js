@@ -32,6 +32,20 @@ export class DumpDependencyView extends View {
             success: function (data) {
                 that.dumps = data;
                 that.fetchPitList();
+                var firstDumpOptions = (
+                    '<select id="first_dump" class="dump-name form-control" value="test">' + '<option selected disabled hidden>' + '' + '</option>'
+                );
+                var dependentDumpOptions = (
+                    '<select id="dependent_dump" class="dump-name form-control" value="test">' + '<option selected disabled hidden>' + '' + '</option>'
+                );
+                that.dumps.forEach(function (dump) {
+                    firstDumpOptions += '<option data-dump-name="' + dump.name + '" data-dump-no="' + dump.dumpNumber + '">' + dump.name + '</option>';
+                    dependentDumpOptions += '<option data-dump-name="' + dump.name + '" data-dump-no="' + dump.dumpNumber + '">' + dump.name + '</option>';
+                });
+                firstDumpOptions += '</select>';
+                dependentDumpOptions += '</select>';
+                that.$el.find('#first_dump_list').append(firstDumpOptions);
+                that.$el.find('#dependent_dump_list').append(dependentDumpOptions);
             },
             error: function (data) {
                 alert('Error fetching list of dumps');
@@ -146,7 +160,7 @@ export class DumpDependencyView extends View {
             formatters: {
                 "first_pit": function (column, row) {
                     var firstPitName = row.firstPitName;
-                    if (firstPitName.toString() === 'undefined') {
+                    if (!firstPitName || firstPitName.toString() === 'undefined') {
                         firstPitName = '';
                     }
                     var tableRow = '';
@@ -162,7 +176,7 @@ export class DumpDependencyView extends View {
                 },
                 "first_dump": function (column, row) {
                     var firstDumpName = row.firstDumpName;
-                    if (firstDumpName.toString() === 'undefined') {
+                    if (!firstDumpName || firstDumpName.toString() === 'undefined') {
                         firstDumpName = '';
                     }
                     var tableRow = '';
@@ -214,6 +228,13 @@ export class DumpDependencyView extends View {
             /* Executes after data is loaded and rendered */
             that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
             that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
+            that.$el.find('#first_pit').change(function () {
+                that.$el.find('#first_dump').val('');
+            });
+            that.$el.find('#first_dump').change(function () {
+                that.$el.find('#first_pit').val('');
+            });
+
             that.grid.find(".first_pit").change(function (event) {
                 var index = $(this).closest('tr').data('row-id');
                 var firstPitName = $(this).find(":selected").val();
@@ -254,13 +275,23 @@ export class DumpDependencyView extends View {
         $removeButton.click(function () {
             that.deleteRows();
         });
-        this.$el.find('#addPitDependency').click(function () {
+        this.$el.find('#addDumpDependency').click(function () {
             var firstPitName = that.$el.find('select#first_pit option:checked').val();
-            var dependentPitName = that.$el.find('select#dependent_pit option:checked').val();
-            if (!firstPitName || !dependentPitName) {
-                alert('Select a pit');
+            var firstDumpName = that.$el.find('select#first_dump option:checked').val();
+            var dependentDumpName = that.$el.find('select#dependent_dump option:checked').val();
+            if (!firstPitName && !firstDumpName) {
+                alert('Select first pit/dump.');
+                return;
             }
-            that.addRowToGrid({firstPitName: firstPitName, dependentPitName: dependentPitName});
+            if (!dependentDumpName) {
+                alert('Select dependent dump name.');
+                return;
+            }
+            that.addRowToGrid({
+                firstPitName: firstPitName,
+                firstDumpName: firstDumpName,
+                dependentDumpName: dependentDumpName
+            });
         });
 
     }
@@ -317,21 +348,23 @@ export class DumpDependencyView extends View {
 
     addRowToGrid(options) {
         var that = this;
-        var newPitDependency = {};
-        newPitDependency['firstPitName'] = options.firstPitName;
-        newPitDependency['dependentPitName'] = options.dependentPitName;
-        newPitDependency['maxLead'] = -1;
-        newPitDependency['minLead'] = -1;
-        newPitDependency['inUse'] = true;
-        this.pitDependencyModel.add({
-            dataObject: newPitDependency,
+        var newDumpDependency = {};
+        if (options.firstPitName) {
+            newDumpDependency['firstPitName'] = options.firstPitName;
+        } else {
+            newDumpDependency['firstDumpName'] = options.firstDumpName;
+        }
+        newDumpDependency['dependentDumpName'] = options.dependentDumpName;
+        newDumpDependency['inUse'] = true;
+        this.dumpDependencyModel.add({
+            dataObject: newDumpDependency,
             success: function (data) {
                 alert('added new data');
-                that.pitDependency.push(data);
+                that.dumpDependency.push(data);
                 that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
             },
             error: function (data) {
-                alert('Error creating bench data');
+                alert('Error creating dump dependency');
             }
 
         });
