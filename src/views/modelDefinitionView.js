@@ -90,7 +90,6 @@ export class ModelDefinitionView extends View{
                     '<td>' + model.name + '</td>' +
                 '<td>' + model.expressionId + '</td>' +
                 '<td>' + (model.condition || '') + '</td>' +
-                    /*'<td>' + model.id + '</td>' +*/
                 '</tr>'
             )
         }

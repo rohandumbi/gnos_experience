@@ -29,8 +29,8 @@ export class PitDependencyView extends View {
             success: function (data) {
                 that.pits = data;
                 that.pits.forEach(function (pit) {
-                    var benchList = that.fetchBenchesForPit(pit.pitNo);
-                    pit['associatedBenches'] = benchList;
+                    that.fetchBenchesForPit(pit);
+                    //pit['associatedBenches'] = benchList;
                 });
                 that.fetchPitDependency();
             },
@@ -55,16 +55,31 @@ export class PitDependencyView extends View {
         });
     }
 
-    fetchBenchesForPit(pitNo) {
-        this.benchModel = new BenchModel({projectId: this.projectId, pitNo: pitNo});
+    fetchBenchesForPit(pit) {
+        this.benchModel = new BenchModel({projectId: this.projectId, pitNo: pit.pitNo});
         this.benchModel.fetch({
             success: function (data) {
-                return data;
+                return pit['associatedBenches'] = data;
             },
             error: function (data) {
                 alert('Error fetching list of benches: ' + data);
             }
         });
+    }
+
+    getDescriptionForRow(row) {
+        //var rowNumber = $(row).closest('tr').data('row-id');
+        return 'Hello first pit: ' + row.firstPitName;
+    }
+
+    getPitByName(pitName) {
+        var object = null;
+        this.pits.forEach(function (pit) {
+            if (pit.pitName === pitName) {
+                object = pit;
+            }
+        })
+        return object;
     }
 
     onDomLoaded() {
@@ -99,25 +114,96 @@ export class PitDependencyView extends View {
             keepSelection: true,
             formatters: {
                 "first_pit": function (column, row) {
-                    return (
-                        '<input data-expression-name="' + row.name + '" class="expression_definition" type="text" value="' + row.exprvalue + '"' + '>'
+                    var firstPitName = row.firstPitName;
+                    var tableRow = '';
+                    tableRow = (
+                        '<select class="first_pit" value="test">' +
+                        '<option selected disabled hidden>' + firstPitName + '</option>'
                     );
+                    that.pits.forEach(function (pit) {
+                        tableRow += '<option data-pit-no="' + pit.pitNo + '">' + pit.pitName + '</option>';
+                    });
+                    tableRow += '</select>';
+                    return tableRow;
                 },
-                "filter": function (column, row) {
-                    return (
-                        '<input data-expression-name="' + row.name + '" class="expression_filter" style="width:200px" type="text" value="' + row.filter + '"' + '>'
+                "dependent_pit": function (column, row) {
+                    var dependentPitName = row.dependentPitName;
+                    var tableRow = '';
+                    tableRow = (
+                        '<select class="first_pit" value="test">' +
+                        '<option selected disabled hidden>' + dependentPitName + '</option>'
                     );
+                    that.pits.forEach(function (pit) {
+                        tableRow += '<option data-pit-no="' + pit.pitNo + '">' + pit.pitName + '</option>';
+                    });
+                    tableRow += '</select>';
+                    return tableRow;
                 },
-                "grade": function (column, row) {
-                    if (row.isGrade.toString().toLowerCase() === "true") {
+                "in_use": function (column, row) {
+                    if (row.inUse.toString() === 'true') {
                         return (
-                            '<input data-expression-name="' + row.name + '" class="expression_isgrade" type="checkbox" value="' + row.isGrade + '"' + 'checked  >'
+                            '<input class="use" type="checkbox" value="' + row.inUse + '"' + 'checked  >'
                         )
                     } else {
                         return (
-                            '<input data-expression-name="' + row.name + '" class="expression_isgrade" type="checkbox" value="' + row.isGrade + '"' + '>'
+                            '<input class="use" type="checkbox" value="' + row.inUse + '"' + '>'
                         )
                     }
+                },
+                "min_lead": function (column, row) {
+                    var minLead = (row.minLead < 0 ) ? '' : row.minLead;
+                    return (
+                        '<input class="min_lead" type="text" value="' + minLead + '"' + '>'
+                    );
+                },
+                "max_lead": function (column, row) {
+                    var maxLead = (row.maxLead < 0 ) ? '' : row.maxLead;
+                    return (
+                        '<input class="min_lead" type="text" value="' + maxLead + '"' + '>'
+                    );
+                },
+                "first_pit_bench": function (column, row) {
+                    //var expression = that.getExpressionById(row.expressionId);
+                    var benchName = row.firstPitAssociatedBench;
+                    if (benchName.toString() === 'undefined') {
+                        benchName = '';
+                    }
+                    var tableRow = (
+                        '<select class="expression" value="test">' +
+                        '<option selected disabled hidden>' + benchName + '</option>'
+                    );
+                    var firstPitName = row.firstPitName;
+                    var pit = that.getPitByName(firstPitName);
+                    pit.associatedBenches.forEach(function (bench) {
+                        tableRow += '<option data-pit-name="' + firstPitName + '" data-bench-no="' + bench.benchName + '">' + bench.benchName + '</option>';
+                    });
+
+                    tableRow += '</select>';
+                    return tableRow;
+                },
+                "dependent_pit_bench": function (column, row) {
+                    var benchName = row.dependentPitAssociatedBench;
+                    if (benchName.toString() === 'undefined') {
+                        benchName = '';
+                    }
+                    var tableRow = (
+                        '<select class="expression" value="test">' +
+                        '<option selected disabled hidden>' + benchName + '</option>'
+                    );
+                    var dependentPitName = row.dependentPitName;
+                    var pit = that.getPitByName(dependentPitName);
+                    pit.associatedBenches.forEach(function (bench) {
+                        tableRow += '<option data-pit-name="' + dependentPitName + '" data-bench-no="' + bench.benchName + '">' + bench.benchName + '</option>';
+                    });
+
+                    tableRow += '</select>';
+                    return tableRow;
+                },
+                "description": function (column, row) {
+                    var description = that.getDescriptionForRow(row);
+                    return (
+                        '<input class="description" type="text" value="' + description + '"' + '>'
+                    );
                 }
             }
         }).on("loaded.rs.jquery.bootgrid", function () {
