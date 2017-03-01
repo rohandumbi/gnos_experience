@@ -228,41 +228,11 @@ export class DumpDependencyView extends View {
                 $firstPit.val('');
                 that.updateFirstDump({index: index, firstDumpName: firstDumpName});
             });
-            that.grid.find(".dependent_pit").change(function (event) {
+
+            that.grid.find(".dependent_dump").change(function (event) {
                 var index = $(this).closest('tr').data('row-id');
-                var dependentPitName = $(this).find(":selected").val();
-                var $associatedBench = $(this).closest('tr').find('.dependent_pit_bench');
-                $associatedBench.val('');
-                var pit = that.getPitByName(dependentPitName);
-                var selectOptions = '<option selected disabled hidden>' + '' + '</option>';
-                pit.associatedBenches.forEach(function (bench) {
-                    selectOptions += '<option data-pit-name="' + dependentPitName + '" data-bench-no="' + bench.benchName + '">' + bench.benchName + '</option>';
-                });
-                $associatedBench.html(selectOptions);
-                that.updateDependentPit({index: index, dependentPitName: dependentPitName});
-            });
-            that.grid.find(".first_pit_bench").change(function (event) {
-                var index = $(this).closest('tr').data('row-id');
-                var firstPitAssociatedBench = $(this).find(":selected").val();
-                that.updateFirstPitAssociatedBench({index: index, firstPitAssociatedBench: firstPitAssociatedBench});
-            });
-            that.grid.find(".dependent_pit_bench").change(function (event) {
-                var index = $(this).closest('tr').data('row-id');
-                var dependentPitAssociatedBench = $(this).find(":selected").val();
-                that.updateDependentPitAssociatedBench({
-                    index: index,
-                    dependentPitAssociatedBench: dependentPitAssociatedBench
-                });
-            });
-            that.grid.find(".max_lead").change(function (event) {
-                var index = $(this).closest('tr').data('row-id');
-                var maxLead = $(this).val();
-                that.updateMaxLead({index: index, maxLead: maxLead});
-            });
-            that.grid.find(".min_lead").change(function (event) {
-                var index = $(this).closest('tr').data('row-id');
-                var minLead = $(this).val();
-                that.updateMinLead({index: index, minLead: minLead});
+                var dependentDumpName = $(this).find(":selected").val();
+                that.updateDependentDump({index: index, dependentDumpName: dependentDumpName});
             });
             that.grid.find(".in_use").change(function (event) {
                 var inUse = $(this).is(':checked');
@@ -272,7 +242,7 @@ export class DumpDependencyView extends View {
                 });
             });
         });
-        var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#pitDependencyModal"></button>');
+        var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#dumpDependencyModal"></button>');
         $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
 
         var $removeButton = $('<button type="button" class="btn btn-default"></button>');
@@ -311,47 +281,18 @@ export class DumpDependencyView extends View {
         this.updateDumpDependency({dumpDependency: dumpDependency});
     }
 
-    updateFirstPitAssociatedBench(options) {
-        var pitDependency = this.pitDependency[options.index];
-        pitDependency['firstPitAssociatedBench'] = options.firstPitAssociatedBench;
-        console.log(pitDependency);
-        this.updatePitDependency({pitDependency: pitDependency});
-    }
-
-    updateDependentPitAssociatedBench(options) {
-        var pitDependency = this.pitDependency[options.index];
-        pitDependency['dependentPitAssociatedBench'] = options.dependentPitAssociatedBench;
-        console.log(pitDependency);
-        this.updatePitDependency({pitDependency: pitDependency});
-    }
-
-    updateDependentPit(options) {
-        var pitDependency = this.pitDependency[options.index];
-        pitDependency['dependentPitName'] = options.dependentPitName;
-        delete pitDependency.dependentPitAssociatedBench;
-        console.log(pitDependency);
-        this.updatePitDependency({pitDependency: pitDependency});
-    }
-
-    updateMaxLead(options) {
-        var pitDependency = this.pitDependency[options.index];
-        pitDependency['maxLead'] = options.maxLead;
-        console.log(pitDependency);
-        this.updatePitDependency({pitDependency: pitDependency});
-    }
-
-    updateMinLead(options) {
-        var pitDependency = this.pitDependency[options.index];
-        pitDependency['minLead'] = options.minLead;
-        console.log(pitDependency);
-        this.updatePitDependency({pitDependency: pitDependency});
+    updateDependentDump(options) {
+        var dumpDependency = this.dumpDependency[options.index];
+        dumpDependency['dependentDumpName'] = options.dependentDumpName;
+        console.log(dumpDependency);
+        this.updateDumpDependency({dumpDependency: dumpDependency});
     }
 
     updateInUse(options) {
-        var pitDependency = this.pitDependency[options.index];
-        pitDependency['inUse'] = options.inUse;
-        console.log(pitDependency);
-        this.updatePitDependency({pitDependency: pitDependency});
+        var dumpDependency = this.dumpDependency[options.index];
+        dumpDependency['inUse'] = options.inUse;
+        console.log(dumpDependency);
+        this.updateDumpDependency({dumpDependency: dumpDependency});
     }
 
     updateDumpDependency(options) {
