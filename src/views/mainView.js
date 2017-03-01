@@ -12,6 +12,7 @@ import { ProcessConstraintView } from './processConstraintView';
 import { GradeConstraintView } from './gradeConstraintView';
 import { BenchConstraintView } from './benchConstraintView';
 import {PitDependencyView} from './pitDependencyView';
+import {DumpDependencyView} from './dumpDependencyView';
 import { OpexDefinitionView } from './opexDefinitionView';
 import { CapexCollectionView } from './capexCollectionView';
 
@@ -101,14 +102,15 @@ export class MainView extends View{
     }
 
     initializePitDependency() {
-        var that = this;
         this.pitDependencyView = new PitDependencyView({projectId: this.projectId, scenario: this.scenario});
         this.pitDependencyView.render();
         this.$el.find("#page-content-wrapper").html(this.pitDependencyView.$el);
     }
 
-    initializeDumpConstraint(){
-
+    initializeDumpDependency() {
+        this.dumpDependencyView = new DumpDependencyView({projectId: this.projectId, scenario: this.scenario});
+        this.dumpDependencyView.render();
+        this.$el.find("#page-content-wrapper").html(this.dumpDependencyView.$el);
     }
     initializeCapexConstraint(){
         this.capexCollectionView = new CapexCollectionView({scenario: this.scenario});
@@ -159,14 +161,14 @@ export class MainView extends View{
             case "bench":
                 this.initializeBenchConstraint();
                 break;
+            case "pit-dependency":
+                this.initializePitDependency();
+                break;
             case "dump":
-                this.initializeDumpConstraint();
+                this.initializeDumpDependency();
                 break;
             case "capex":
                 this.initializeCapexConstraint();
-                break;
-            case "pit-dependency":
-                this.initializePitDependency();
                 break;
 
         }
