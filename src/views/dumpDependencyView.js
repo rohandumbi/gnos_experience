@@ -76,7 +76,7 @@ export class DumpDependencyView extends View {
         var that = this;
         this.dumpDependencyModel.fetch({
             success: function (data) {
-                that.pitDependency = data;
+                that.dumpDependency = data;
                 that.initializeGrid(data);
             },
             error: function (data) {
@@ -146,6 +146,9 @@ export class DumpDependencyView extends View {
             formatters: {
                 "first_pit": function (column, row) {
                     var firstPitName = row.firstPitName;
+                    if (firstPitName.toString() === 'undefined') {
+                        firstPitName = '';
+                    }
                     var tableRow = '';
                     tableRow = (
                         '<select class="first_pit" value="test">' +
@@ -157,15 +160,34 @@ export class DumpDependencyView extends View {
                     tableRow += '</select>';
                     return tableRow;
                 },
-                "dependent_pit": function (column, row) {
-                    var dependentPitName = row.dependentPitName;
+                "first_dump": function (column, row) {
+                    var firstDumpName = row.firstDumpName;
+                    if (firstDumpName.toString() === 'undefined') {
+                        firstDumpName = '';
+                    }
                     var tableRow = '';
                     tableRow = (
-                        '<select class="dependent_pit" value="test">' +
-                        '<option selected disabled hidden>' + dependentPitName + '</option>'
+                        '<select class="first_dump" value="test">' +
+                        '<option selected disabled hidden>' + firstDumpName + '</option>'
                     );
-                    that.pits.forEach(function (pit) {
-                        tableRow += '<option data-pit-no="' + pit.pitNo + '">' + pit.pitName + '</option>';
+                    that.dumps.forEach(function (dump) {
+                        tableRow += '<option data-dump-no="' + dump.dumpNumber + '">' + dump.name + '</option>';
+                    });
+                    tableRow += '</select>';
+                    return tableRow;
+                },
+                "dependent_dump": function (column, row) {
+                    var dependentDumpName = row.dependentDumpName;
+                    if (dependentDumpName.toString() === 'undefined') {
+                        dependentDumpName = '';
+                    }
+                    var tableRow = '';
+                    tableRow = (
+                        '<select class="dependent_dump" value="test">' +
+                        '<option selected disabled hidden>' + dependentDumpName + '</option>'
+                    );
+                    that.dumps.forEach(function (dump) {
+                        tableRow += '<option data-dump-no="' + dump.dumpNumber + '">' + dump.name + '</option>';
                     });
                     tableRow += '</select>';
                     return tableRow;
@@ -181,55 +203,6 @@ export class DumpDependencyView extends View {
                         )
                     }
                 },
-                "min_lead": function (column, row) {
-                    var minLead = (row.minLead < 0 ) ? '' : row.minLead;
-                    return (
-                        '<input class="min_lead" type="text" value="' + minLead + '"' + '>'
-                    );
-                },
-                "max_lead": function (column, row) {
-                    var maxLead = (row.maxLead < 0 ) ? '' : row.maxLead;
-                    return (
-                        '<input class="max_lead" type="text" value="' + maxLead + '"' + '>'
-                    );
-                },
-                "first_pit_bench": function (column, row) {
-                    //var expression = that.getExpressionById(row.expressionId);
-                    var benchName = row.firstPitAssociatedBench;
-                    if (!benchName || benchName.toString() === 'undefined') {
-                        benchName = '';
-                    }
-                    var tableRow = (
-                        '<select class="first_pit_bench" value="test">' +
-                        '<option selected disabled hidden>' + benchName + '</option>'
-                    );
-                    var firstPitName = row.firstPitName;
-                    var pit = that.getPitByName(firstPitName);
-                    pit.associatedBenches.forEach(function (bench) {
-                        tableRow += '<option data-pit-name="' + firstPitName + '" data-bench-no="' + bench.benchName + '">' + bench.benchName + '</option>';
-                    });
-
-                    tableRow += '</select>';
-                    return tableRow;
-                },
-                "dependent_pit_bench": function (column, row) {
-                    var benchName = row.dependentPitAssociatedBench;
-                    if (!benchName || benchName.toString() === 'undefined') {
-                        benchName = '';
-                    }
-                    var tableRow = (
-                        '<select class="dependent_pit_bench" value="test">' +
-                        '<option selected disabled hidden>' + benchName + '</option>'
-                    );
-                    var dependentPitName = row.dependentPitName;
-                    var pit = that.getPitByName(dependentPitName);
-                    pit.associatedBenches.forEach(function (bench) {
-                        tableRow += '<option data-pit-name="' + dependentPitName + '" data-bench-no="' + bench.benchName + '">' + bench.benchName + '</option>';
-                    });
-
-                    tableRow += '</select>';
-                    return tableRow;
-                },
                 "description": function (column, row) {
                     var description = that.getDescriptionForRow(row);
                     return (
@@ -244,15 +217,16 @@ export class DumpDependencyView extends View {
             that.grid.find(".first_pit").change(function (event) {
                 var index = $(this).closest('tr').data('row-id');
                 var firstPitName = $(this).find(":selected").val();
-                var $associatedBench = $(this).closest('tr').find('.first_pit_bench');
-                $associatedBench.val('');
-                var pit = that.getPitByName(firstPitName);
-                var selectOptions = '<option selected disabled hidden>' + '' + '</option>';
-                pit.associatedBenches.forEach(function (bench) {
-                    selectOptions += '<option data-pit-name="' + firstPitName + '" data-bench-no="' + bench.benchName + '">' + bench.benchName + '</option>';
-                });
-                $associatedBench.html(selectOptions);
+                var $firstDump = $(this).closest('tr').find('.first_dump');
+                $firstDump.val('');
                 that.updateFirstPit({index: index, firstPitName: firstPitName});
+            });
+            that.grid.find(".first_dump").change(function (event) {
+                var index = $(this).closest('tr').data('row-id');
+                var firstDumpName = $(this).find(":selected").val();
+                var $firstPit = $(this).closest('tr').find('.first_pit');
+                $firstPit.val('');
+                that.updateFirstDump({index: index, firstDumpName: firstDumpName});
             });
             that.grid.find(".dependent_pit").change(function (event) {
                 var index = $(this).closest('tr').data('row-id');
@@ -322,11 +296,19 @@ export class DumpDependencyView extends View {
     }
 
     updateFirstPit(options) {
-        var pitDependency = this.pitDependency[options.index];
-        pitDependency['firstPitName'] = options.firstPitName;
-        delete pitDependency.firstPitAssociatedBench;
-        console.log(pitDependency);
-        this.updatePitDependency({pitDependency: pitDependency});
+        var dumpDependency = this.dumpDependency[options.index];
+        dumpDependency['firstPitName'] = options.firstPitName;
+        delete dumpDependency.firstDumpName;
+        console.log(dumpDependency);
+        this.updateDumpDependency({dumpDependency: dumpDependency});
+    }
+
+    updateFirstDump(options) {
+        var dumpDependency = this.dumpDependency[options.index];
+        dumpDependency['firstDumpName'] = options.firstDumpName;
+        delete dumpDependency.firstPitName;
+        console.log(dumpDependency);
+        this.updateDumpDependency({dumpDependency: dumpDependency});
     }
 
     updateFirstPitAssociatedBench(options) {
@@ -372,11 +354,11 @@ export class DumpDependencyView extends View {
         this.updatePitDependency({pitDependency: pitDependency});
     }
 
-    updatePitDependency(options) {
-        this.pitDependencyModel.update({
-            id: options.pitDependency.id,
-            url: 'http://localhost:4567/pitdependencies',
-            dataObject: options.pitDependency,
+    updateDumpDependency(options) {
+        this.dumpDependencyModel.update({
+            id: options.dumpDependency.id,
+            url: 'http://localhost:4567/dumpdependencies',
+            dataObject: options.dumpDependency,
             success: function (data) {
                 alert('Successfully updated');
                 if (options.success) {
