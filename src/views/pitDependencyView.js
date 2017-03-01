@@ -1,5 +1,7 @@
 import {View} from '../core/view';
 import {PitDependencyModel} from '../models/pitDependencyModel';
+import {PitModel} from '../models/pitModel';
+import {BenchModel} from '../models/benchModel';
 
 export class PitDependencyView extends View {
 
@@ -8,6 +10,7 @@ export class PitDependencyView extends View {
         if (!options.scenario) alert('Load a scenario');
         this.projectId = options.projectId;
         this.scenario = options.scenario;
+        this.pitModel = new PitModel({projectId: this.projectId})
         this.pitDependencyModel = new PitDependencyModel({projectId: this.projectId, scenario: this.scenario});
     }
 
@@ -20,33 +23,70 @@ export class PitDependencyView extends View {
         return promise;
     }
 
-    onDomLoaded() {
+    fetchPitList() {
         var that = this;
+        this.pitModel.fetch({
+            success: function (data) {
+                that.pits = data;
+                that.pits.forEach(function (pit) {
+                    var benchList = that.fetchBenchesForPit(pit.pitNo);
+                    pit['associatedBenches'] = benchList;
+                });
+                that.fetchPitDependency();
+            },
+            error: function (data) {
+                alert('Error fetching pit list.');
+            }
+        });
+
+
+    }
+
+    fetchPitDependency() {
+        var that = this;
+        this.pitDependencyModel.fetch({
+            success: function (data) {
+                that.pitDependency = data;
+                that.initializeGrid(data);
+            },
+            error: function (data) {
+                alert('Error fetching pit dependency data ' + data);
+            }
+        });
+    }
+
+    fetchBenchesForPit(pitNo) {
+        this.benchModel = new BenchModel({projectId: this.projectId, pitNo: pitNo});
+        this.benchModel.fetch({
+            success: function (data) {
+                return data;
+            },
+            error: function (data) {
+                alert('Error fetching list of benches: ' + data);
+            }
+        });
+    }
+
+    onDomLoaded() {
         this.$el.find('#scenario_name').val(this.scenario.name);
-        /*this.pitDependencyModel.fetch({
-         success: function (data) {
-         that.data = data;
-         that.initializeGrid(data);
-         },
-         error: function (data) {
-         alert('Error fetching expressions ' + data);
-         }
-         });*/
+        this.fetchPitList();
     }
 
     initializeGrid(modelData) {
         var that = this;
-        //var data = this.model.fetch();
         var row = '';
         for (var i = 0; i < modelData.length; i++) {
-            var expression = modelData[i];
+            var pitDependency = modelData[i];
             row += (
                 '<tr>' +
-                '<td>' + expression.name + '</td>' +
-                '<td>' + expression.isGrade + '</td>' +
-                '<td>' + expression.exprvalue + '</td>' +
-                '<td>' + (expression.filter || '') + '</td>' +
-                /*'<td>' + model.id + '</td>' +*/
+                '<td>' + pitDependency.firstPitName + '</td>' +
+                '<td>' + pitDependency.firstPitAssociatedBench + '</td>' +
+                '<td>' + pitDependency.dependentPitName + '</td>' +
+                '<td>' + pitDependency.dependentPitAssociatedBench + '</td>' +
+                '<td>' + pitDependency.inUse + '</td>' +
+                '<td>' + pitDependency.minLead + '</td>' +
+                '<td>' + pitDependency.maxLead + '</td>' +
+                '<td>' + '' + '</td>' +
                 '</tr>'
             )
         }
@@ -58,7 +98,7 @@ export class PitDependencyView extends View {
             rowSelect: true,
             keepSelection: true,
             formatters: {
-                "definition": function (column, row) {
+                "first_pit": function (column, row) {
                     return (
                         '<input data-expression-name="' + row.name + '" class="expression_definition" type="text" value="' + row.exprvalue + '"' + '>'
                     );
