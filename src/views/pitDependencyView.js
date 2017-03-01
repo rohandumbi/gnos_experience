@@ -33,6 +33,20 @@ export class PitDependencyView extends View {
                     //pit['associatedBenches'] = benchList;
                 });
                 that.fetchPitDependency();
+                var firstPitOptions = (
+                    '<select id="first_pit" class="pit-name form-control" value="test">' + '<option selected disabled hidden>' + '' + '</option>'
+                );
+                var dependentPitOptions = (
+                    '<select id="dependent_pit" class="pit-name form-control" value="test">' + '<option selected disabled hidden>' + '' + '</option>'
+                );
+                that.pits.forEach(function (pit) {
+                    firstPitOptions += '<option data-pit-name="' + pit.pitName + '" data-pit-no="' + pit.pitNo + '">' + pit.pitName + '</option>';
+                    dependentPitOptions += '<option data-pit-name="' + pit.pitName + '" data-pit-no="' + pit.pitNo + '">' + pit.pitName + '</option>';
+                });
+                firstPitOptions += '</select>';
+                dependentPitOptions += '</select>';
+                that.$el.find('#first_pit_list').append(firstPitOptions);
+                that.$el.find('#dependent_pit_list').append(dependentPitOptions);
             },
             error: function (data) {
                 alert('Error fetching pit list.');
@@ -270,7 +284,7 @@ export class PitDependencyView extends View {
                 });
             });
         });
-        var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#expressionDefinitionModal"></button>');
+        var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#pitDependencyModal"></button>');
         $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
 
         var $removeButton = $('<button type="button" class="btn btn-default"></button>');
@@ -278,20 +292,22 @@ export class PitDependencyView extends View {
 
         this.$el.find(".actionBar").append($addButton);
         this.$el.find(".actionBar").append($removeButton);
-        /*$addButton.click(function(){
-         that.addRowToGrid();
-         });*/
+
         $removeButton.click(function () {
             that.deleteRows();
         });
-        this.$el.find('#addModel').click(function () {
-            that.addRowToGrid();
+        this.$el.find('#addPitDependency').click(function () {
+            var firstPitName = that.$el.find('select#first_pit option:checked').val();
+            var dependentPitName = that.$el.find('select#dependent_pit option:checked').val();
+            if (!firstPitName || !dependentPitName) {
+                alert('Select a pit');
+            }
+            that.addRowToGrid({firstPitName: firstPitName, dependentPitName: dependentPitName});
         });
 
     }
 
     updateFirstPit(options) {
-        var that = this;
         var pitDependency = this.pitDependency[options.index];
         pitDependency['firstPitName'] = options.firstPitName;
         delete pitDependency.firstPitAssociatedBench;
@@ -300,7 +316,6 @@ export class PitDependencyView extends View {
     }
 
     updateFirstPitAssociatedBench(options) {
-        var that = this;
         var pitDependency = this.pitDependency[options.index];
         pitDependency['firstPitAssociatedBench'] = options.firstPitAssociatedBench;
         console.log(pitDependency);
@@ -308,7 +323,6 @@ export class PitDependencyView extends View {
     }
 
     updateDependentPitAssociatedBench(options) {
-        var that = this;
         var pitDependency = this.pitDependency[options.index];
         pitDependency['dependentPitAssociatedBench'] = options.dependentPitAssociatedBench;
         console.log(pitDependency);
@@ -316,7 +330,6 @@ export class PitDependencyView extends View {
     }
 
     updateDependentPit(options) {
-        var that = this;
         var pitDependency = this.pitDependency[options.index];
         pitDependency['dependentPitName'] = options.dependentPitName;
         delete pitDependency.dependentPitAssociatedBench;
@@ -365,78 +378,32 @@ export class PitDependencyView extends View {
         });
     }
 
-    updateExpressionDefinition(options) {
-        var updatedExpression = this.getExpressionByName(options.name);
-        updatedExpression['exprvalue'] = options.exprvalue;
-        this.model.update({
-            id: updatedExpression.id,
-            url: 'http://localhost:4567/pitdependencies',
-            dataObject: updatedExpression,
-            success: function (data) {
-                alert('Successfully updated');
-            },
-            error: function (data) {
-                alert('Failed to update: ' + data);
-            }
-        });
-    }
-
-    upgradeExpressionGrade(options) {
-        var updatedExpression = this.getExpressionByName(options.name);
-        updatedExpression['isGrade'] = options.isGrade;
-        this.model.update({
-            id: updatedExpression.id,
-            url: 'http://localhost:4567/expressions',
-            dataObject: updatedExpression,
-            success: function (data) {
-                alert('Successfully updated');
-            },
-            error: function (data) {
-                alert('Failed to update: ' + data);
-            }
-        });
-    }
-
-    addRowToGrid() {
+    addRowToGrid(options) {
         var that = this;
-        var expressionName = this.$el.find('#expression_name').val();
-        var isGrade = this.$el.find('#expression_isGrade').is(':checked');
-        var isComplex = this.$el.find('#expression_isComplex').is(':checked');
-        var expressionDefinition = this.$el.find('#expression_definition').val();
-        var expressionFilter = this.$el.find('#expression_filter').val();
-        if (expressionName && expressionDefinition) {
-            console.log(expressionName + '-' + isGrade + '-' + expressionDefinition + '-' + expressionFilter + '-' + isComplex);
-            var newExpression = {
-                name: expressionName,
-                isGrade: isGrade || false,
-                isComplex: isComplex || false,
-                exprvalue: expressionDefinition,
-                filter: expressionFilter
+        var newPitDependency = {};
+        newPitDependency['firstPitName'] = options.firstPitName;
+        newPitDependency['dependentPitName'] = options.dependentPitName;
+        newPitDependency['maxLead'] = -1;
+        newPitDependency['minLead'] = -1;
+        newPitDependency['inUse'] = true;
+        this.pitDependencyModel.add({
+            dataObject: newPitDependency,
+            success: function (data) {
+                alert('added new data');
+                that.pitDependency.push(data);
+                that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
+            },
+            error: function (data) {
+                alert('Error creating bench data');
             }
-            this.model.add({
-                dataObject: newExpression,
-                success: function (data) {
-                    alert('Successfully added expression');
-                    that.data.push(data);
-                    that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
-                },
-                error: function (data) {
-                    alert('Failed to add expression ' + data);
-                }
 
-            });
-        } else {
-            alert('Model name/definition missing');
-        }
+        });
         this.clearDialog();
     }
 
     clearDialog() {
-        this.$el.find('#expression_name').val('');
-        this.$el.find('#expression_isGrade').prop("checked", !this.$el.find('#expression_isGrade').prop("checked"));
-        this.$el.find('#expression_isComplex').prop("checked", !this.$el.find('#expression_isComplex').prop("checked"));
-        this.$el.find('#expression_definition').val('');
-        this.$el.find('#expression_filter').val('');
+        this.$el.find('#first_pit').val('');
+        this.$el.find('#dependent_pit').val('');
     }
 
     deleteRows() {
