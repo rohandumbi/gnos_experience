@@ -140,7 +140,7 @@ export class MainView extends View{
             case "workflow":
                 this.initializeWorkflowDefinition();
                 break;
-            case "grouping":
+            case "pit_grouping":
                 this.initializeGroupingDefinition();
                 break;
             case "scenario_definition":
