@@ -168,18 +168,16 @@ export class PitGroupView extends View {
             //dragged.node.fixed = true;
             console.log('need to add');
             var selectedGroup = that.getPitGroupWithName(selected.node.name);
-            that.addPitToGroup({pit: draggedPit, pitGroup: selectedGroup});
+            if (!selectedGroup) {
+                alert('Your target is not a pit group.');
+            }
+            that.addPitToGroup({pit: draggedPit, pitGroup: selectedGroup, selectedNode: selected.node});
             //this.addProcessToGraph(selected.node, [draggedModel]);
-            var pitNode = that.system.addNode(draggedPit.pitName, {
-                'color': '#95cde5',
-                'shape': 'dot',
-                'label': draggedPit.pitName
-            });
-            that.system.addEdge(selected.node, pitNode, {directed: true, weight: 2});
         }
     }
 
     addPitToGroup(options) {
+        var that = this;
         var pitGroup = options.pitGroup;
         var childPit = options.pit;
         console.log('pit group to be updated: ' + pitGroup);
@@ -192,6 +190,13 @@ export class PitGroupView extends View {
             success: function (data) {
                 alert('Added pit to group');
                 pitGroup.listChildPits.push(childPit.pitName);
+
+                var pitNode = that.system.addNode(childPit.pitName, {
+                    'color': '#95cde5',
+                    'shape': 'dot',
+                    'label': childPit.pitName
+                });
+                that.system.addEdge(options.selectedNode, pitNode, {directed: true, weight: 2});
             },
             error: function (data) {
                 alert('Error adding pit to group.');
@@ -210,8 +215,24 @@ export class PitGroupView extends View {
     }
 
     addPitGroup(groupName) {
+        var that = this;
         this.$el.find('#new_group_name').val('');
-        this.system.addNode(groupName, {'color': 'red', 'shape': 'dot', 'label': groupName});
+        var newPitGroup = {};
+        newPitGroup['name'] = groupName;
+        newPitGroup['listChildPitGroups'] = [];
+        newPitGroup['listChildPits'] = [];
+        this.pitGroupModel.add({
+            dataObject: newPitGroup,
+            success: function (data) {
+                alert('Added pit group');
+                //pitGroup.listChildPits.push(childPit.pitName);
+                that.pitGroups.push(newPitGroup);
+                that.system.addNode(groupName, {'color': 'red', 'shape': 'dot', 'label': groupName});
+            },
+            error: function (data) {
+                alert('Error adding pit group. ' + data);
+            }
+        });
     }
 
     bindDragEventsOnPits() {
