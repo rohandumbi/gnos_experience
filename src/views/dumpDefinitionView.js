@@ -143,6 +143,39 @@ export class DumpDefinitionView extends View {
             rowSelect: true,
             keepSelection: true,
             formatters: {
+                "type": function (column, row) {
+                    var dumpTypeIndex = row.type;
+                    var dumpType;
+                    if (dumpTypeIndex.toString() === '0') {
+                        dumpType = 'External'
+                    } else {
+                        dumpType = 'Internal'
+                    }
+                    var tableRow = (
+                        '<select class="dump_type">' +
+                        '<option selected disabled hidden>' + dumpType + '</option>' +
+                        '<option data-dump-type="0">External</option>' +
+                        '<option data-dump-type="1">Internal</option>' +
+                        '</select>'
+
+                    );
+                    return tableRow;
+                },
+                "mappedTo": function (column, row) {
+                    var groupName = row.mappedTo;
+                    var tableRow = (
+                        '<select class="dump_mapping" value="test">' +
+                        '<option selected disabled hidden>' + groupName + '</option>'
+                    );
+                    that.pits.forEach(function (pit) {
+                        tableRow += '<option data-mapping-type="0">' + pit.pitName + '</option>';
+                    });
+                    that.pitGroups.forEach(function (pitGroup) {
+                        tableRow += '<option data-mapping-type="1">' + pitGroup.name + '</option>';
+                    });
+                    tableRow += '</select>';
+                    return tableRow;
+                },
                 "expression": function (column, row) {
                     var expression = that.getExpressionById(row.expressionId);
                     var expressionName;
@@ -170,8 +203,25 @@ export class DumpDefinitionView extends View {
                 "condition": function (column, row) {
                     var condition = row.condition || '';
                     return (
-                        '<input data-model-name="' + row.name + '" class="model_condition" style="width:200px" type="text" value="' + condition + '"' + '>'
+                        '<input data-dump-name="' + row.name + '" class="dump_condition" style="width:200px" type="text" value="' + condition + '"' + '>'
                     );
+                },
+                "capacity": function (column, row) {
+                    var capacity = row.capacity || '';
+                    return (
+                        '<input data-dump-name="' + row.name + '" class="dump_capacity" style="width:200px" type="text" value="' + capacity + '"' + '>'
+                    );
+                },
+                "hasCapacity": function (column, row) {
+                    if (row.hasCapacity.toString() === 'true') {
+                        return (
+                            '<input class="dump_hasCapacity" type="checkbox" value="' + row.hasCapacity + '"' + 'checked  >'
+                        )
+                    } else {
+                        return (
+                            '<input class="dump_hasCapacity" type="checkbox" value="' + row.hasCapacity + '"' + '>'
+                        )
+                    }
                 }
             }
         }).on("loaded.rs.jquery.bootgrid", function () {
