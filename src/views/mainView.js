@@ -5,6 +5,8 @@ import { RequiredFieldMappingView } from './requiredFieldMappingView';
 import { ExpressionDefinitionView } from './expressionDefinitionView';
 import { WorkflowView } from './workflowView';
 import { PitGroupView } from './pitGroupView';
+import {DumpDefinitionView} from './dumpDefinitionView';
+import {StockpileDefinitionView} from './stockpileDefinitionView';
 import { ModelDefinitionView } from './modelDefinitionView';
 import { ScenarioDefinitionView } from './scenarioDefinitionView';
 import { FixedCostDefinitionView } from './fixedCostDefinitionView';
@@ -64,6 +66,18 @@ export class MainView extends View{
         this.pitGroupView = new PitGroupView({projectId: this.projectId});
         this.pitGroupView.render();
         this.$el.find("#page-content-wrapper").html(this.pitGroupView.$el);
+    }
+
+    initializeDumpDefinition() {
+        this.dumpDefinitionView = new DumpDefinitionView({projectId: this.projectId});
+        this.dumpDefinitionView.render();
+        this.$el.find("#page-content-wrapper").html(this.dumpDefinitionView.$el);
+    }
+
+    initializeStockpileDefinition() {
+        this.stockpileDefinitionView = new StockpileDefinitionView({projectId: this.projectId});
+        this.stockpileDefinitionView.render();
+        this.$el.find("#page-content-wrapper").html(this.stockpileDefinitionView.$el);
     }
 
     initializeScenarioDefinition() {
@@ -142,6 +156,12 @@ export class MainView extends View{
                 break;
             case "pit_grouping":
                 this.initializeGroupingDefinition();
+                break;
+            case "dump_definition":
+                this.initializeDumpDefinition();
+                break;
+            case "stockpile_definition":
+                this.initializeStockpileDefinition();
                 break;
             case "scenario_definition":
                 this.initializeScenarioDefinition();
