@@ -19,7 +19,7 @@ export class PitGroupView extends View {
         return promise;
     }
 
-    addGroupToGraph(parent, processes) {
+    /*addGroupToGraph(parent, processes) {
         var that = this;
         processes.forEach(function (process) {
             var processNode = that.system.addNode(process.name, {
@@ -32,7 +32,7 @@ export class PitGroupView extends View {
                 that.addProcessToGraph(processNode, process.processes);
             }
         })
-    }
+     }*/
 
     onDomLoaded() {
         this.fetchPits();
@@ -100,12 +100,12 @@ export class PitGroupView extends View {
             //this.addGroupToGraph(pitGroup, data.pitGroups);
             var childPits = pitGroup.listChildPits;
             childPits.forEach(function (childPit) {
-                var pitNode = that.system.addNode(childPit.toString(), {
+                var childPitNode = that.system.addNode(childPit.toString(), {
                     'color': '#95cde5',
                     'shape': 'dot',
                     'label': childPit.toString()
                 });
-                that.system.addEdge(pitGroupNode, pitNode, {directed: true, weight: 2});
+                that.system.addEdge(childPitNode, pitGroupNode, {directed: true, weight: 2});
             });
             var childPitGroups = pitGroup.listChildPitGroups;
             childPitGroups.forEach(function (childPitGroup) {
@@ -114,41 +114,12 @@ export class PitGroupView extends View {
                     'shape': 'dot',
                     'label': childPitGroup.toString()
                 });
-                that.system.addEdge(pitGroupNode, childPitGroupNode, {directed: true, weight: 2});
+                that.system.addEdge(childPitGroupNode, pitGroupNode, {directed: true, weight: 2});
             });
         });
         this.bindDomEvents();
         //this.addProcessJoins();
     }
-
-    addProcessJoins() {
-        var join_uranus_cr = this.system.addNode('uranus_cr', {
-            'color': '#2b2e3b',
-            'shape': 'square',
-            'label': 'Join: uranus_cr'
-        });
-        var uranus_lg_node = this.system.getNode('uranus_lg');
-        var uranus_hg_node = this.system.getNode('uranus_hg');
-        this.system.addEdge(join_uranus_cr, uranus_lg_node, {directed: true, weight: 2});
-        this.system.addEdge(join_uranus_cr, uranus_hg_node, {directed: true, weight: 2});
-
-
-        var join_saturn_cr = this.system.addNode('saturn_cr', {
-            'color': '#2b2e3b',
-            'shape': 'square',
-            'label': 'Join: saturn_cr'
-        });
-        var saturn_hg_node = this.system.getNode('saturn_hg');
-        var saturn_lg_node = this.system.getNode('saturn_lg');
-        var uranus_hg_node = this.system.getNode('uranus_hg');
-        var mars_hg_node = this.system.getNode('mars_hg');
-
-        this.system.addEdge(join_saturn_cr, saturn_hg_node, {directed: true, weight: 2});
-        this.system.addEdge(join_saturn_cr, saturn_lg_node, {directed: true, weight: 2});
-        //this.system.addEdge(join_saturn_cr, uranus_hg_node, {directed: true, weight: 2});
-        this.system.addEdge(join_saturn_cr, mars_hg_node, {directed: true, weight: 2});
-    }
-
 
     handleDragStart(e) {
         e.target.style.opacity = '0.4';  // this / e.target is the source node.
@@ -196,7 +167,7 @@ export class PitGroupView extends View {
                     'shape': 'dot',
                     'label': childPit.pitName
                 });
-                that.system.addEdge(options.selectedNode, pitNode, {directed: true, weight: 2});
+                that.system.addEdge(pitNode, options.selectedNode, {directed: true, weight: 2});
             },
             error: function (data) {
                 alert('Error adding pit to group.');
