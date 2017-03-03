@@ -176,30 +176,6 @@ export class DumpDefinitionView extends View {
                     tableRow += '</select>';
                     return tableRow;
                 },
-                "expression": function (column, row) {
-                    var expression = that.getExpressionById(row.expressionId);
-                    var expressionName;
-                    var tableRow = '';
-                    if (expression && expression.name) {
-                        expressionName = expression.name;
-                        tableRow = (
-                            '<select class="expression" value="test">' +
-                            '<option selected disabled hidden>' + expressionName + '</option>'
-                        );
-                    } else {
-                        expressionName = '';
-                        tableRow = (
-                            '<select disabled class="expression" value="test">' +
-                            '<option selected disabled hidden>' + expressionName + '</option>'
-                        );
-                    }
-                    that.expressions.forEach(function (expression) {
-                        tableRow += '<option data-expression-id="' + expression.id + '">' + expression.name + '</option>';
-                    });
-
-                    tableRow += '</select>';
-                    return tableRow;
-                },
                 "condition": function (column, row) {
                     var condition = row.condition || '';
                     return (

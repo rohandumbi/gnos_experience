@@ -1,20 +1,21 @@
 import {View} from '../core/view';
-import {GnosModel} from '../models/gnosModel';
-import {ExpressionModel} from '../models/expressionModel';
+import {StockpileModel} from '../models/stockpileModel';
+import {PitModel} from '../models/pitModel';
+import {PitGroupModel} from '../models/pitGroupModel';
 
 export class StockpileDefinitionView extends View {
 
     constructor(options) {
         super();
-        var that = this;
         this.projectId = options.projectId;
-        this.model = new GnosModel({projectId: this.projectId});
-        this.expressionModel = new ExpressionModel({projectId: this.projectId});
+        this.stockpileModel = new StockpileModel({projectId: this.projectId});
+        this.pitModel = new PitModel({projectId: this.projectId});
+        this.pitGroupModel = new PitGroupModel({projectId: this.projectId});
     }
 
     getHtml() {
         var promise = new Promise(function (resolve, reject) {
-            $.get("../content/modelDefinitionView.html", function (data) {
+            $.get("../content/stockpileDefinitionView.html", function (data) {
                 resolve(data);
             })
         });
@@ -75,21 +76,63 @@ export class StockpileDefinitionView extends View {
         });
     }
 
-    onDomLoaded() {
-        this.fetchExpressions();
+    fetchPits() {
+        var that = this;
+        this.pitModel.fetch({
+            success: function (data) {
+                that.pits = data;
+                that.fetchPitGroups();
+            },
+            error: function (data) {
+                alert('Error fetching pits');
+            }
+        });
     }
 
-    initializeGrid(modelData) {
+    fetchPitGroups() {
         var that = this;
-        //var data = this.model.fetch();
+        this.pitGroupModel.fetch({
+            success: function (data) {
+                that.pitGroups = data;
+                that.fetchStockpiles();
+            },
+            error: function (data) {
+                alert('Error fetching pits');
+            }
+        });
+    }
+
+    fetchStockpiles() {
+        var that = this;
+        this.stockpileModel.fetch({
+            success: function (data) {
+                that.stockPiles = data;
+                that.initializeGrid(data);
+            },
+            error: function (data) {
+                alert('Error fetching pits');
+            }
+        });
+    }
+
+    onDomLoaded() {
+        this.fetchPits();
+    }
+
+    initializeGrid(stockpileData) {
+        var that = this;
         var row = '';
-        for (var i = 0; i < modelData.length; i++) {
-            var model = modelData[i];
+        for (var i = 0; i < stockpileData.length; i++) {
+            var stockpile = stockpileData[i];
             row += (
                 '<tr>' +
-                '<td>' + model.name + '</td>' +
-                '<td>' + model.expressionId + '</td>' +
-                '<td>' + (model.condition || '') + '</td>' +
+                '<td>' + stockpile.name + '</td>' +
+                '<td>' + stockpile.type + '</td>' +
+                '<td>' + stockpile.mappedTo + '</td>' +
+                '<td>' + (stockpile.condition || '') + '</td>' +
+                '<td>' + stockpile.hasCapacity + '</td>' +
+                '<td>' + stockpile.capacity + '</td>' +
+                '<td>' + stockpile.isReclaim + '</td>' +
                 '</tr>'
             )
         }
@@ -101,35 +144,72 @@ export class StockpileDefinitionView extends View {
             rowSelect: true,
             keepSelection: true,
             formatters: {
-                "expression": function (column, row) {
-                    var expression = that.getExpressionById(row.expressionId);
-                    var expressionName;
-                    var tableRow = '';
-                    if (expression && expression.name) {
-                        expressionName = expression.name;
-                        tableRow = (
-                            '<select class="expression" value="test">' +
-                            '<option selected disabled hidden>' + expressionName + '</option>'
-                        );
+                "type": function (column, row) {
+                    var stockpileTypeIndex = row.type;
+                    var stockpileType;
+                    if (stockpileTypeIndex.toString() === '0') {
+                        stockpileType = 'External'
                     } else {
-                        expressionName = '';
-                        tableRow = (
-                            '<select disabled class="expression" value="test">' +
-                            '<option selected disabled hidden>' + expressionName + '</option>'
-                        );
+                        stockpileType = 'Internal'
                     }
-                    that.expressions.forEach(function (expression) {
-                        tableRow += '<option data-expression-id="' + expression.id + '">' + expression.name + '</option>';
-                    });
+                    var tableRow = (
+                        '<select class="stockpile_type">' +
+                        '<option selected disabled hidden>' + stockpileType + '</option>' +
+                        '<option data-stockpile-type="0">External</option>' +
+                        '<option data-stockpile-type="1">Internal</option>' +
+                        '</select>'
 
+                    );
+                    return tableRow;
+                },
+                "mappedTo": function (column, row) {
+                    var groupName = row.mappedTo;
+                    var tableRow = (
+                        '<select class="stockpile_mapping" value="test">' +
+                        '<option selected disabled hidden>' + groupName + '</option>'
+                    );
+                    that.pits.forEach(function (pit) {
+                        tableRow += '<option data-mapping-type="0">' + pit.pitName + '</option>';
+                    });
+                    that.pitGroups.forEach(function (pitGroup) {
+                        tableRow += '<option data-mapping-type="1">' + pitGroup.name + '</option>';
+                    });
                     tableRow += '</select>';
                     return tableRow;
                 },
                 "condition": function (column, row) {
                     var condition = row.condition || '';
                     return (
-                        '<input data-model-name="' + row.name + '" class="model_condition" style="width:200px" type="text" value="' + condition + '"' + '>'
+                        '<input data-stockpile-name="' + row.name + '" class="stockpile_condition" style="width:200px" type="text" value="' + condition + '"' + '>'
                     );
+                },
+                "capacity": function (column, row) {
+                    var capacity = row.capacity || '';
+                    return (
+                        '<input data-stockpile-name="' + row.name + '" class="stockpile_capacity" style="width:200px" type="text" value="' + capacity + '"' + '>'
+                    );
+                },
+                "hasCapacity": function (column, row) {
+                    if (row.hasCapacity.toString() === 'true') {
+                        return (
+                            '<input class="stockpile_hasCapacity" type="checkbox" value="' + row.hasCapacity + '"' + 'checked  >'
+                        )
+                    } else {
+                        return (
+                            '<input class="stockpile_hasCapacity" type="checkbox" value="' + row.hasCapacity + '"' + '>'
+                        )
+                    }
+                },
+                "isReclaim": function (column, row) {
+                    if (row.isReclaim.toString() === 'true') {
+                        return (
+                            '<input class="stockpile_isReclaim" type="checkbox" value="' + row.isReclaim + '"' + 'checked  >'
+                        )
+                    } else {
+                        return (
+                            '<input class="stockpile_isReclaim" type="checkbox" value="' + row.isReclaim + '"' + '>'
+                        )
+                    }
                 }
             }
         }).on("loaded.rs.jquery.bootgrid", function () {
