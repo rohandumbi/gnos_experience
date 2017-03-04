@@ -32,27 +32,14 @@ export class StockpileDefinitionView extends View {
         return expressionObject;
     }
 
-    getModelByName(modelName) {
-        var modelObject;
-        this.modelData.forEach(function (model) {
-            if (model.name === modelName) {
-                modelObject = model;
+    getStockpileByName(stockpileName) {
+        var object = null;
+        this.stockPiles.forEach(function (stockpile) {
+            if (stockpile.name === stockpileName) {
+                object = stockpile;
             }
         });
-        return modelObject;
-    }
-
-    fetchExpressions() {
-        var that = this;
-        this.expressionModel.fetch({
-            success: function (data) {
-                that.expressions = data;
-                that.fetchModels();
-            },
-            error: function (data) {
-                alert('Error fetching expression list: ' + data);
-            }
-        })
+        return object;
     }
 
     fetchModels() {
@@ -228,17 +215,25 @@ export class StockpileDefinitionView extends View {
             that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
             that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
 
-            that.grid.find(".expression").change(function (event) {
-                //alert($(this).data('expression-name'));
-                var modelName = $(this).closest('tr').data('row-id');
-                var exprId = $(this).find(":selected").data('expression-id');
-                that.updateExpression({name: modelName, expressionId: exprId});
+            that.grid.find('.stockpile_type').change(function () {
+                that.updateType($(this));
             });
-            that.grid.find(".model_condition").change(function (event) {
-                var modelName = $(this).closest('tr').data('row-id');
-                var conditionValue = $(this).val();
-                that.updateCondition({name: modelName, condition: conditionValue});
+            that.grid.find('.stockpile_mapping').change(function () {
+                that.updateMapping($(this));
             });
+            that.grid.find(".stockpile_condition").change(function (event) {
+                that.updateCondition($(this));
+            });
+            that.grid.find(".stockpile_capacity").change(function (event) {
+                that.updateCapacity($(this));
+            });
+            that.grid.find(".stockpile_hasCapacity").change(function (event) {
+                that.updateHasCapacity($(this));
+            });
+            that.grid.find(".stockpile_isReclaim").change(function (event) {
+                that.updateIsReclaim($(this));
+            });
+
         });
         var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#stockpileDefinitionModal"></button>');
         $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
@@ -256,13 +251,15 @@ export class StockpileDefinitionView extends View {
         });
     }
 
-    updateExpression(options) {
-        var updatedModel = this.getModelByName(options.name);
-        updatedModel['expressionId'] = options.expressionId;
-        this.model.update({
-            id: updatedModel.id,
-            url: 'http://localhost:4567/model',
-            dataObject: updatedModel,
+    updateType($type) {
+        var stockpileName = $type.closest('tr').data('row-id');
+        var stockpileType = $type.find('option:checked').data('stockpile-type');
+        var updatedStockpile = this.getStockpileByName(stockpileName);
+        updatedStockpile['type'] = stockpileType;
+        this.stockpileModel.update({
+            id: updatedStockpile.id,
+            url: 'http://localhost:4567/stockpiles',
+            dataObject: updatedStockpile,
             success: function (data) {
                 alert('Successfully updated');
             },
@@ -272,13 +269,89 @@ export class StockpileDefinitionView extends View {
         });
     }
 
-    updateCondition(options) {
-        var updatedModel = this.getModelByName(options.name);
-        updatedModel['condition'] = options.condition;
-        this.model.update({
-            id: updatedModel.id,
-            url: 'http://localhost:4567/model',
-            dataObject: updatedModel,
+    updateMapping($mapping) {
+        var stockpileName = $mapping.closest('tr').data('row-id');
+        var mappingType = $mapping.find('option:checked').data('mapping-type');
+        var mappedTo = $mapping.find('option:checked').val();
+        var updatedStockpile = this.getStockpileByName(stockpileName);
+        updatedStockpile['mappingType'] = mappingType;
+        updatedStockpile['mappedTo'] = mappedTo;
+        this.stockpileModel.update({
+            id: updatedStockpile.id,
+            url: 'http://localhost:4567/stockpiles',
+            dataObject: updatedStockpile,
+            success: function (data) {
+                alert('Successfully updated');
+            },
+            error: function (data) {
+                alert('Failed to update: ' + data);
+            }
+        });
+    }
+
+    updateCondition($condition) {
+        var stockpileName = $condition.closest('tr').data('row-id');
+        var condition = $condition.val();
+        var updatedStockpile = this.getStockpileByName(stockpileName);
+        updatedStockpile['condition'] = condition;
+        this.stockpileModel.update({
+            id: updatedStockpile.id,
+            url: 'http://localhost:4567/stockpiles',
+            dataObject: updatedStockpile,
+            success: function (data) {
+                alert('Successfully updated');
+            },
+            error: function (data) {
+                alert('Failed to update: ' + data);
+            }
+        });
+    }
+
+    updateHasCapacity($hasCapacity) {
+        var stockpileName = $hasCapacity.closest('tr').data('row-id');
+        var hasCapacity = $hasCapacity.is(':checked');
+        var updatedStockpile = this.getStockpileByName(stockpileName);
+        updatedStockpile['hasCapacity'] = hasCapacity;
+        this.stockpileModel.update({
+            id: updatedStockpile.id,
+            url: 'http://localhost:4567/stockpiles',
+            dataObject: updatedStockpile,
+            success: function (data) {
+                alert('Successfully updated');
+            },
+            error: function (data) {
+                alert('Failed to update: ' + data);
+            }
+        });
+    }
+
+    updateCapacity($capacity) {
+        var stockpileName = $capacity.closest('tr').data('row-id');
+        var capacity = $capacity.val();
+        var updatedStockpile = this.getStockpileByName(stockpileName);
+        updatedStockpile['capacity'] = capacity;
+        this.stockpileModel.update({
+            id: updatedStockpile.id,
+            url: 'http://localhost:4567/stockpiles',
+            dataObject: updatedStockpile,
+            success: function (data) {
+                alert('Successfully updated');
+            },
+            error: function (data) {
+                alert('Failed to update: ' + data);
+            }
+        });
+    }
+
+    updateIsReclaim($isReclaim) {
+        var stockpileName = $isReclaim.closest('tr').data('row-id');
+        var isReclaim = $isReclaim.is(':checked');
+        var updatedStockpile = this.getStockpileByName(stockpileName);
+        updatedStockpile['isReclaim'] = isReclaim;
+        this.stockpileModel.update({
+            id: updatedStockpile.id,
+            url: 'http://localhost:4567/stockpiles',
+            dataObject: updatedStockpile,
             success: function (data) {
                 alert('Successfully updated');
             },
