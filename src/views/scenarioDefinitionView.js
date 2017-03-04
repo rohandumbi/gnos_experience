@@ -19,7 +19,7 @@ export class ScenarioDefinitionView extends View{
     }
 
     getScenarioByName(scenarioName) {
-        var object;
+        var object = null;
         this.data.forEach(function (scenario) {
             if (scenario.name === scenarioName) {
                 object = scenario;

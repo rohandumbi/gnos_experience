@@ -1,5 +1,4 @@
 import { View } from '../core/view';
-import { ScenarioModel } from '../models/scenarioModel';
 import { CapexCollection } from '../models/capexCollection'
 import { CapexView } from './capexView'
 
@@ -7,8 +6,12 @@ export class CapexCollectionView extends View{
 
     constructor(options) {
         super();
-        this.model = new ScenarioModel({});
-        this.capexCollection = new CapexCollection({});
+        this.scenario = options.scenario;
+        if (!this.scenario) {
+            alert('Please select a scenario first');
+        }
+        this.projectId = options.projectId;
+        this.capexCollection = new CapexCollection({scenario: this.scenario});
     }
 
     getHtml() {
@@ -21,20 +24,40 @@ export class CapexCollectionView extends View{
     }
 
     onDomLoaded() {
-        this.initializeExistingCapex();
+        if (!this.scenario) {
+            return;
+        }
+        this.fetchCapex();
+        this.$el.find('#scenario_name').val(this.scenario.name);
     }
 
-    initializeExistingCapex() {
-        var data = this.capexCollection.fetch();
-        for(var i=0; i<data.capexCollection.length; i++){
-            var capex = data.capexCollection[i];
+    fetchCapex() {
+        var that = this;
+        this.capexCollection.fetch({
+            success: function (data) {
+                that.capex = data;
+                that.initializeExistingCapex(that.capex);
+            },
+            error: function (data) {
+                alert('Error fetching capex list');
+            }
+        });
+    }
+
+    initializeExistingCapex(capexData) {
+        //var data = this.capexCollection.fetch();
+        for (var i = 0; i < capexData.length; i++) {
+            var capex = capexData[i];
             this.initializeCapexView(capex);
         }
     }
 
     initializeCapexView(capex) {
         console.log("initializing capex with id: " + capex.id);
-        var capexView = new CapexView(capex);
+        var capexView = new CapexView({capex: capex, projectId: this.projectId});
+        capexView.on('update:capex', function (updatedCapex) {
+            console.log(updatedCapex);
+        });
         capexView.render();
         this.$el.find('#capex-container').append(capexView.$el);
     }

@@ -127,7 +127,7 @@ export class MainView extends View{
         this.$el.find("#page-content-wrapper").html(this.dumpDependencyView.$el);
     }
     initializeCapexConstraint(){
-        this.capexCollectionView = new CapexCollectionView({scenario: this.scenario});
+        this.capexCollectionView = new CapexCollectionView({projectId: this.projectId, scenario: this.scenario});
         this.capexCollectionView.render();
         this.$el.find("#page-content-wrapper").html(this.capexCollectionView.$el);
     }

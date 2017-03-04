@@ -42,27 +42,6 @@ export class StockpileDefinitionView extends View {
         return object;
     }
 
-    fetchModels() {
-        var that = this;
-        this.model.fetch({
-            success: function (data) {
-                that.modelData = data;
-                var tableRow = (
-                    '<select id="expression_name" class="expression_name form-control" value="test">'
-                );
-                that.expressions.forEach(function (expression) {
-                    tableRow += '<option data-expression-name="' + expression.name + '" data-expression-id="' + expression.id + '">' + expression.name + '</option>';
-                });
-                tableRow += '</select>';
-                that.$el.find('#expression_list').append(tableRow);
-                that.initializeGrid(data);
-            },
-            error: function (data) {
-                alert('Error fetching model list');
-            }
-        });
-    }
-
     fetchPits() {
         var that = this;
         this.pitModel.fetch({

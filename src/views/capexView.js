@@ -6,10 +6,11 @@ export class CapexView extends View{
 
     constructor(options) {
         super();
-        this.id = options.id;
+        /*this.id = options.id;
         this.name = options.name;
         this.model = new ScenarioModel({});
-        this.capexModel = new CapexModel({id: this.id});
+         this.capexModel = new CapexModel({id: this.id});*/
+        this.capex = options.capex;
     }
 
     getHtml() {
@@ -29,14 +30,15 @@ export class CapexView extends View{
     initializeGrid() {
         var that = this;
         var row = '';
-        var data = that.capexModel.fetch();
-        for(var i=0; i<data.capexInstances.length; i++){
-            var instance = data.capexInstances[i];
+        //var data = that.capexModel.fetch();
+        var capexInstances = this.capex.listOfCapexInstances;
+        for (var i = 0; i < capexInstances.length; i++) {
+            var instance = capexInstances[i];
             row += (
                 '<tr>' +
                 '<td>' + instance.name + '</td>' +
-                '<td>' + instance.groupName + '</td>' +
-                '<td>' + instance.capex + '</td>' +
+                '<td>' + instance.groupingName + '</td>' +
+                '<td>' + instance.capexAmount + '</td>' +
                 '<td>' + instance.expansionCapacity + '</td>' +
                 '</tr>'
             )
@@ -70,9 +72,6 @@ export class CapexView extends View{
                         '<input type="text" value="' + row.expansion_capacity + '"' + 'readonly>'
                     );
                 }
-                /*"commands": function(column, row){
-                    return "<button title='Load Scenario' type=\"button\" class=\"btn btn-xs btn-default command-upload\" data-row-id=\"" + row.name + "\"><span class=\"glyphicon glyphicon-upload\"></span></button>";
-                }*/
             }
         }).on("loaded.rs.jquery.bootgrid", function()
         {
