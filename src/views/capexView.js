@@ -79,6 +79,10 @@ export class CapexView extends View{
         });
     }
 
+    render() {
+        super.render(this.capex);
+    }
+
     fetchPitGroups() {
         var that = this;
         this.pitGroupModel.fetch({
@@ -170,7 +174,7 @@ export class CapexView extends View{
             });
 
         });
-        var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#capexInstanceDefinitionModal"></button>');
+        var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#' + this.capex.name + '"></button>');
         $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
 
         var $removeButton = $('<button type="button" class="btn btn-default"></button>');

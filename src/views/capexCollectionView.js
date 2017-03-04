@@ -24,11 +24,35 @@ export class CapexCollectionView extends View{
     }
 
     onDomLoaded() {
+        var that = this;
         if (!this.scenario) {
             return;
         }
         this.fetchCapex();
         this.$el.find('#scenario_name').val(this.scenario.name);
+        this.$el.find('#add_capex').click(function (event) {
+            that.addCapex();
+        });
+    }
+
+    addCapex() {
+        var that = this;
+        var newCapex = {};
+        newCapex['scenarioId'] = this.scenario.id;
+        newCapex['name'] = this.$el.find('#new_capex_name').val();
+        newCapex['listOfCapexInstances'] = [];
+        this.capexCollection.add({
+            dataObject: newCapex,
+            success: function (data) {
+                that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
+                that.capex.push(data);
+                that.initializeCapexView(data);
+                that.$el.find('#new_capex_name').val('');
+            },
+            error: function (data) {
+                alert('Failed to create capex');
+            }
+        });
     }
 
     fetchCapex() {
