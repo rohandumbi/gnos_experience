@@ -25,6 +25,16 @@ export class CapexView extends View{
         return promise;
     }
 
+    getInstanceByName(name) {
+        var object = null;
+        this.capex.listOfCapexInstances.forEach(function (instance) {
+            if (instance.name == name) {
+                object = instance;
+            }
+        });
+        return object;
+    }
+
     onDomLoaded() {
         this.$el.find('#capex_name').html(this.capex.name);
         this.fetchProcessses();
@@ -116,18 +126,18 @@ export class CapexView extends View{
                         '<select class="instance_grouping" value="test">' +
                         '<option selected disabled hidden>' + groupName + '</option>'
                     );
-                    tableRow += '<option data-grouping-type="0">' + 'NONE' + '</option>';
+                    tableRow += '<option data-grouping-name="" data-grouping-type="0">' + 'NONE' + '</option>';
                     that.processJoins.forEach(function (processJoin) {
-                        tableRow += '<option data-grouping-type="1">' + processJoin.name + '</option>';
+                        tableRow += '<option data-grouping-name="' + processJoin.name + '" data-grouping-type="1">' + processJoin.name + '</option>';
                     });
                     that.processes.forEach(function (process) {
-                        tableRow += '<option data-grouping-type="2">' + process.name + '</option>';
+                        tableRow += '<option data-grouping-name="' + process.name + '" data-grouping-type="2">' + process.name + '</option>';
                     });
                     that.pits.forEach(function (pit) {
-                        tableRow += '<option data-grouping-type="3">' + pit.pitName + '</option>';
+                        tableRow += '<option data-grouping-name="' + pit.pitName + '" data-grouping-type="3">' + pit.pitName + '</option>';
                     });
                     that.pitGroups.forEach(function (pitGroup) {
-                        tableRow += '<option data-grouping-type="4">' + pitGroup.name + '</option>';
+                        tableRow += '<option data-grouping-name="' + pitGroup.name + '" data-grouping-type="4">' + pitGroup.name + '</option>';
                     });
                     tableRow += '</select>';
                     return tableRow;
@@ -148,6 +158,16 @@ export class CapexView extends View{
             /* Executes after data is loaded and rendered */
             that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
             that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
+
+            that.grid.find('.instance_grouping').change(function () {
+                that.updateGrouping($(this));
+            });
+            that.grid.find('.instance_capex').change(function () {
+                that.updateCapex($(this));
+            });
+            that.grid.find('.instance_expansion').change(function () {
+                that.updateExpansion($(this));
+            });
 
         });
         var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#modelDefinitionModal"></button>');
@@ -170,6 +190,25 @@ export class CapexView extends View{
             that.deleteCapex();
         });
 
+    }
+
+    updateGrouping($grouping) {
+        var updatedInstance = this.getInstanceByName($grouping.closest('tr').data('row-id'));
+        updatedInstance['groupingType'] = $grouping.find('option:checked').data('grouping-type');
+        updatedInstance['groupingName'] = $grouping.find('option:checked').data('grouping-name');
+        this.trigger('update:capex', this.capex);
+    }
+
+    updateCapex($capex) {
+        var updatedInstance = this.getInstanceByName($capex.closest('tr').data('row-id'));
+        updatedInstance['capexAmount'] = $capex.val();
+        this.trigger('update:capex', this.capex);
+    }
+
+    updateExpansion($expansion) {
+        var updatedInstance = this.getInstanceByName($expansion.closest('tr').data('row-id'));
+        updatedInstance['expansionCapacity'] = $expansion.val();
+        this.trigger('update:capex', this.capex);
     }
 
     deleteCapex() {
