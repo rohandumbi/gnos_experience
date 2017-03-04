@@ -1,16 +1,19 @@
 import { View } from '../core/view';
-import { ScenarioModel } from '../models/scenarioModel';
-import { CapexModel } from '../models/capexModel';
+import {ProcessModel} from '../models/processModel';
+import {ProcessJoinModel} from '../models/processJoinModel';
+import {PitModel} from '../models/pitModel';
+import {PitGroupModel} from '../models/pitGroupModel';
 
 export class CapexView extends View{
 
     constructor(options) {
         super();
-        /*this.id = options.id;
-        this.name = options.name;
-        this.model = new ScenarioModel({});
-         this.capexModel = new CapexModel({id: this.id});*/
         this.capex = options.capex;
+        this.projectId = options.projectId;
+        this.processModel = new ProcessModel({projectId: this.projectId});
+        this.processJoinModel = new ProcessJoinModel({projectId: this.projectId});
+        this.pitModel = new PitModel({projectId: this.projectId});
+        this.pitGroupModel = new PitGroupModel({projectId: this.projectId});
     }
 
     getHtml() {
@@ -23,17 +26,69 @@ export class CapexView extends View{
     }
 
     onDomLoaded() {
-        this.$el.find('#capex_name').html(this.name);
-        this.initializeGrid();
+        this.$el.find('#capex_name').html(this.capex.name);
+        this.fetchProcessses();
+    }
+
+    fetchProcessses() {
+        var that = this;
+        this.processModel.fetch({
+            success: function (data) {
+                that.processes = data;
+                that.fetchProcessJoins();
+            },
+            error: function (data) {
+                alert('Error fetching list of processes.');
+            }
+        });
+    }
+
+    fetchProcessJoins() {
+        var that = this;
+        this.processJoinModel.fetch({
+            success: function (data) {
+                that.processJoins = data;
+                that.fetchPits();
+            },
+            error: function (data) {
+                alert('Error fetching list of process joins.');
+            }
+        });
+    }
+
+    fetchPits() {
+        var that = this;
+        this.pitModel.fetch({
+            success: function (data) {
+                that.pits = data;
+                that.fetchPitGroups();
+            },
+            error: function (data) {
+                alert('Error fetching list of pits.');
+            }
+        });
+    }
+
+    fetchPitGroups() {
+        var that = this;
+        this.pitGroupModel.fetch({
+            success: function (data) {
+                that.pitGroups = data;
+                that.initializeGrid();
+            },
+            error: function (data) {
+                alert('Error fetching list of pit groups.');
+            }
+        });
     }
 
     initializeGrid() {
         var that = this;
         var row = '';
         //var data = that.capexModel.fetch();
-        var capexInstances = this.capex.listOfCapexInstances;
-        for (var i = 0; i < capexInstances.length; i++) {
-            var instance = capexInstances[i];
+        this.capexInstances = this.capex.listOfCapexInstances;
+        for (var i = 0; i < this.capexInstances.length; i++) {
+            var instance = this.capexInstances[i];
             row += (
                 '<tr>' +
                 '<td>' + instance.name + '</td>' +
@@ -53,23 +108,38 @@ export class CapexView extends View{
             keepSelection: true,
             formatters: {
                 "group": function(column, row){
-                    return (
-                    '<select value="test">' +
-                        '<option selected disabled hidden>' + row.group + '</option>'+
-                        '<option value="process">process 1</option>' +
-                        '<option value="process_join">process Join</option>' +
-                        '<option value="pit">pit 1</option>' +
-                        '<option value="pit_group">pit group</option>' +
-                    '</select>') ;
+                    var groupName = row.groupingName;
+                    if (!groupName) {
+                        groupName = 'NONE';
+                    }
+                    var tableRow = (
+                        '<select class="instance_grouping" value="test">' +
+                        '<option selected disabled hidden>' + groupName + '</option>'
+                    );
+                    tableRow += '<option data-grouping-type="0">' + 'NONE' + '</option>';
+                    that.processJoins.forEach(function (processJoin) {
+                        tableRow += '<option data-grouping-type="1">' + processJoin.name + '</option>';
+                    });
+                    that.processes.forEach(function (process) {
+                        tableRow += '<option data-grouping-type="2">' + process.name + '</option>';
+                    });
+                    that.pits.forEach(function (pit) {
+                        tableRow += '<option data-grouping-type="3">' + pit.pitName + '</option>';
+                    });
+                    that.pitGroups.forEach(function (pitGroup) {
+                        tableRow += '<option data-grouping-type="4">' + pitGroup.name + '</option>';
+                    });
+                    tableRow += '</select>';
+                    return tableRow;
                 },
                 "capex": function(column, row){
                     return (
-                        '<input type="text" value="' + row.capex + '"' + 'readonly>'
+                        '<input class="instance_capex" type="text" value="' + row.capexAmount + '"' + '>'
                     );
                 },
                 "expansion_capacity": function(column, row){
                     return (
-                        '<input type="text" value="' + row.expansion_capacity + '"' + 'readonly>'
+                        '<input class="instance_expansion" type="text" value="' + row.expansionCapacity + '"' + '>'
                     );
                 }
             }
