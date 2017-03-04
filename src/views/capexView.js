@@ -216,14 +216,13 @@ export class CapexView extends View{
     }
 
     deleteCapex() {
+        this.trigger('delete:capex', this.capex);
+        this.$el.find("#datatype-grid-basic").bootgrid("remove");
         this.$el.html('');
     }
 
     addRowToGrid() {
         var instanceName = this.$el.find('#new_instance_name').val();
-        /*var group = this.$el.find('#group').val();
-        var capex = this.$el.find('#capex').val();
-         var expansion_capacity = this.$el.find('#expansion_capacity').val();*/
         if (instanceName) {
             var newInstance = {};
             newInstance['id'] = -1;
@@ -241,7 +240,8 @@ export class CapexView extends View{
     }
 
     deleteRows(rowIds) {
-        this.$el.find("#datatype-grid-basic").bootgrid("remove");
+        /* this.trigger('delete:capex', this.capex);
+         this.$el.find("#datatype-grid-basic").bootgrid("remove");*/
     }
 
 }
