@@ -107,6 +107,17 @@ export class StockpileDefinitionView extends View {
         this.stockpileModel.fetch({
             success: function (data) {
                 that.stockPiles = data;
+                var tableRow = (
+                    '<select id="mapping_name" class="dump_mapping form-control" value="test">'
+                );
+                that.pits.forEach(function (pit) {
+                    tableRow += '<option data-mapping-type="0">' + pit.pitName + '</option>';
+                });
+                that.pitGroups.forEach(function (pitGroup) {
+                    tableRow += '<option data-mapping-type="1">' + pitGroup.name + '</option>';
+                });
+                tableRow += '</select>';
+                that.$el.find('#mapping_list').append(tableRow);
                 that.initializeGrid(data);
             },
             error: function (data) {
@@ -229,7 +240,7 @@ export class StockpileDefinitionView extends View {
                 that.updateCondition({name: modelName, condition: conditionValue});
             });
         });
-        var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#modelDefinitionModal"></button>');
+        var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#stockpileDefinitionModal"></button>');
         $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
 
         var $removeButton = $('<button type="button" class="btn btn-default"></button>');
@@ -240,7 +251,7 @@ export class StockpileDefinitionView extends View {
         $removeButton.click(function () {
             that.deleteRows();
         });
-        this.$el.find('#addModel').click(function () {
+        this.$el.find('#addStockpile').click(function () {
             that.addRowToGrid();
         });
     }
@@ -279,23 +290,29 @@ export class StockpileDefinitionView extends View {
 
     addRowToGrid() {
         var that = this;
-        var modelName = this.$el.find('#model_name').val();
-        var expressionId = this.$el.find('select#expression_name option:checked').data('expression-id');
-        var newModel = {};
-        newModel['name'] = modelName;
-        newModel['expressionId'] = expressionId;
-        if (modelName && expressionId) {
-            this.model.add({
-                url: 'http://localhost:4567/project/' + that.projectId + '/model',
-                dataObject: newModel,
+        var stockpileName = this.$el.find('#stockpile_name').val();
+        var mappingType = this.$el.find('select#mapping_name option:checked').data('mapping-type');
+        var mappedTo = this.$el.find('select#mapping_name option:checked').val();
+        var newStockpile = {};
+        newStockpile['name'] = stockpileName;
+        newStockpile['mappingType'] = mappingType;
+        newStockpile['mappedTo'] = mappedTo;
+        newStockpile['hasCapacity'] = false;
+        newStockpile['condition'] = '';
+        newStockpile['type'] = 0;
+        newStockpile['capacity'] = 0;
+        newStockpile['isReclaim'] = false;
+        if (stockpileName && mappedTo) {
+            this.stockpileModel.add({
+                dataObject: newStockpile,
                 success: function (data) {
-                    that.modelData = data;
                     that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
-                    that.$el.find('#model_name').val('');
-                    that.$el.find('#expression_name').val('');
+                    that.stockPiles.push(data);
+                    that.$el.find('#stockpile_name').val('');
+                    that.$el.find('#mapping_name').val('');
                 },
                 error: function (data) {
-                    alert('Failed to create model');
+                    alert('Failed to create stockpile');
                 }
             });
         }

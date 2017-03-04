@@ -107,6 +107,17 @@ export class DumpDefinitionView extends View {
         this.dumpModel.fetch({
             success: function (data) {
                 that.dumps = data;
+                var tableRow = (
+                    '<select id="mapping_name" class="dump_mapping form-control" value="test">'
+                );
+                that.pits.forEach(function (pit) {
+                    tableRow += '<option data-mapping-type="0">' + pit.pitName + '</option>';
+                });
+                that.pitGroups.forEach(function (pitGroup) {
+                    tableRow += '<option data-mapping-type="1">' + pitGroup.name + '</option>';
+                });
+                tableRow += '</select>';
+                that.$el.find('#mapping_list').append(tableRow);
                 that.initializeGrid(data);
             },
             error: function (data) {
@@ -217,7 +228,7 @@ export class DumpDefinitionView extends View {
                 that.updateCondition({name: modelName, condition: conditionValue});
             });
         });
-        var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#modelDefinitionModal"></button>');
+        var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#dumpDefinitionModal"></button>');
         $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
 
         var $removeButton = $('<button type="button" class="btn btn-default"></button>');
@@ -228,7 +239,7 @@ export class DumpDefinitionView extends View {
         $removeButton.click(function () {
             that.deleteRows();
         });
-        this.$el.find('#addModel').click(function () {
+        this.$el.find('#addDump').click(function () {
             that.addRowToGrid();
         });
     }
@@ -267,23 +278,28 @@ export class DumpDefinitionView extends View {
 
     addRowToGrid() {
         var that = this;
-        var modelName = this.$el.find('#model_name').val();
-        var expressionId = this.$el.find('select#expression_name option:checked').data('expression-id');
-        var newModel = {};
-        newModel['name'] = modelName;
-        newModel['expressionId'] = expressionId;
-        if (modelName && expressionId) {
-            this.model.add({
-                url: 'http://localhost:4567/project/' + that.projectId + '/model',
-                dataObject: newModel,
+        var dumpName = this.$el.find('#dump_name').val();
+        var mappingType = this.$el.find('select#mapping_name option:checked').data('mapping-type');
+        var mappedTo = this.$el.find('select#mapping_name option:checked').val();
+        var newDump = {};
+        newDump['name'] = dumpName;
+        newDump['mappingType'] = mappingType;
+        newDump['mappedTo'] = mappedTo;
+        newDump['hasCapacity'] = false;
+        newDump['condition'] = '';
+        newDump['type'] = 0;
+        newDump['capacity'] = 0;
+        if (dumpName && mappedTo) {
+            this.dumpModel.add({
+                dataObject: newDump,
                 success: function (data) {
-                    that.modelData = data;
                     that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
-                    that.$el.find('#model_name').val('');
-                    that.$el.find('#expression_name').val('');
+                    that.dumps.push(data);
+                    that.$el.find('#dump_name').val('');
+                    that.$el.find('#mapping_name').val('');
                 },
                 error: function (data) {
-                    alert('Failed to create model');
+                    alert('Failed to create dump');
                 }
             });
         }

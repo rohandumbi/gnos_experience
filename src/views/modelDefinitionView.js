@@ -210,7 +210,7 @@ export class ModelDefinitionView extends View{
                 url: 'http://localhost:4567/project/' + that.projectId + '/model',
                 dataObject: newModel,
                 success: function (data) {
-                    that.modelData = data;
+                    that.modelData.push(data);
                     that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
                     that.$el.find('#model_name').val('');
                     that.$el.find('#expression_name').val('');
