@@ -6,6 +6,7 @@ export class ScenarioDefinitionView extends View{
     constructor(options) {
         super();
         this.model = new ScenarioCollection(options);
+        this.scenario = options.scenario;
     }
 
     getHtml() {
@@ -33,6 +34,9 @@ export class ScenarioDefinitionView extends View{
             success: function (data) {
                 that.data = data;
                 that.initializeGrid(data);
+                if (that.scenario) {
+                    that.$el.find('#scenario_name').val(that.scenario.name);
+                }
             },
             error: function (data) {
                 alert('Could not fetch scenario list: ' + data);
@@ -63,26 +67,6 @@ export class ScenarioDefinitionView extends View{
             rowSelect: true,
             keepSelection: true,
             formatters: {
-                /*"name": function(column, row){
-                    return (
-                    '<input type="text" value="' + row.name + '"' + 'readonly>'
-                    );
-                },*/
-                /*"expression": function(column, row){
-                    return (
-                    '<select value="test">' +
-                    '<option selected disabled hidden>' + row.expressionName + '</option>'+
-                    '<option value="grouptext">Group By(Text)</option>' +
-                    '<option value="groupnumeric">Group By(Numeric)</option>' +
-                    '<option value="unit">Unit</option>' +
-                    '<option value="grade">Grade</option>' +
-                    '</select>') ;
-                },
-                "filter": function(column, row){
-                    return (
-                        '<input type="text" value="' + row.filter + '"' + '>'
-                    );
-                }*/
                 "commands": function(column, row){
                     return "<button title='Load Scenario' type=\"button\" class=\"btn btn-xs btn-default command-upload\" data-row-id=\"" + row.name + "\"><span class=\"glyphicon glyphicon-upload\"></span></button>";
                 }
