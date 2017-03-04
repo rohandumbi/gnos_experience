@@ -373,16 +373,16 @@ export class DumpDefinitionView extends View {
         var selectedRows = this.$el.find("#datatype-grid-basic").bootgrid("getSelectedRows");
         var that = this;
         selectedRows.forEach(function (selectedRow) {
-            var deletedModel = that.getModelByName(selectedRow);
-            console.log(deletedModel);
-            that.model.delete({
-                url: 'http://localhost:4567/model',
-                id: deletedModel.id,
+            var deletedDump = that.getDumpByName(selectedRow);
+            console.log(deletedDump);
+            that.dumpModel.delete({
+                url: 'http://localhost:4567/dumps',
+                id: deletedDump.id,
                 success: function (data) {
-                    alert('Successfully deleted expression.');
+                    alert('Successfully deleted dump.');
                 },
                 error: function (data) {
-                    alert('Failed to delete expression.');
+                    alert('Failed to delete dump.');
                 }
             });
         });
