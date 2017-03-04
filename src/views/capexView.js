@@ -170,7 +170,7 @@ export class CapexView extends View{
             });
 
         });
-        var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#modelDefinitionModal"></button>');
+        var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#capexInstanceDefinitionModal"></button>');
         $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
 
         var $removeButton = $('<button type="button" class="btn btn-default"></button>');
@@ -190,6 +190,10 @@ export class CapexView extends View{
             that.deleteCapex();
         });
 
+    }
+
+    refreshCapex(capex) {
+        this.capex = capex;
     }
 
     updateGrouping($grouping) {
@@ -217,25 +221,23 @@ export class CapexView extends View{
 
     addRowToGrid() {
         var instanceName = this.$el.find('#new_instance_name').val();
-        var group = this.$el.find('#group').val();
+        /*var group = this.$el.find('#group').val();
         var capex = this.$el.find('#capex').val();
-        var expansion_capacity = this.$el.find('#expansion_capacity').val();
-
-        if(instanceName && group && capex && expansion_capacity) {
-            this.$el.find("#datatype-grid-basic").bootgrid("append", [{
-                name: instanceName,
-                id: -1,
-                group: group,
-                groupType: 1,
-                capex: capex,
-                expansion_capacity: expansion_capacity
-            }]);
-            //this.$el.find('#model_name').val('');
-            this.$el.find('#new_instance_name').val('');
-            this.$el.find('#group').val('');
-            this.$el.find('#capex').val('');
-            this.$el.find('#expansion_capacity').val('');
+         var expansion_capacity = this.$el.find('#expansion_capacity').val();*/
+        if (instanceName) {
+            var newInstance = {};
+            newInstance['id'] = -1;
+            newInstance['capexId'] = this.capex.id;
+            newInstance['name'] = instanceName;
+            newInstance['groupingName'] = '';
+            newInstance['groupingType'] = 0;
+            newInstance['capexAmount'] = 0;
+            newInstance['expansionCapacity'] = 0;
         }
+        this.capex.listOfCapexInstances.push(newInstance);
+        this.trigger('update:capex', this.capex);
+        this.$el.find("#datatype-grid-basic").bootgrid("append", [newInstance]);
+        this.$el.find('#new_instance_name').val('');
     }
 
     deleteRows(rowIds) {
