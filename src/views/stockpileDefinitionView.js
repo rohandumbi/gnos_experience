@@ -395,16 +395,16 @@ export class StockpileDefinitionView extends View {
         var selectedRows = this.$el.find("#datatype-grid-basic").bootgrid("getSelectedRows");
         var that = this;
         selectedRows.forEach(function (selectedRow) {
-            var deletedModel = that.getModelByName(selectedRow);
-            console.log(deletedModel);
-            that.model.delete({
-                url: 'http://localhost:4567/model',
-                id: deletedModel.id,
+            var deletedStockpile = that.getStockpileByName(selectedRow);
+            console.log(deletedStockpile);
+            that.stockpileModel.delete({
+                url: 'http://localhost:4567/stockpiles',
+                id: deletedStockpile.id,
                 success: function (data) {
-                    alert('Successfully deleted expression.');
+                    alert('Successfully deleted stockpile.');
                 },
                 error: function (data) {
-                    alert('Failed to delete expression.');
+                    alert('Failed to delete stockpile.');
                 }
             });
         });
