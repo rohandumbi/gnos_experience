@@ -25,26 +25,43 @@ export class ProcessConstraintView extends View{
         return this;
     }
 
-    onDomLoaded() {
-        //this.initializeGrid();
+    fetchProcessConstraints() {
+        var that = this;
+        this.processConstraintModel.fetch({
+            success: function (data) {
+                that.processConstraints = data;
+                that.initializeGrid(data);
+            },
+            error: function () {
+                alert('Failed to fetch process constraints.');
+            }
+        });
     }
 
-    initializeGrid() {
+    onDomLoaded() {
+        this.fetchProcessConstraints();
+    }
+
+    initializeGrid(dataObject) {
         var that = this;
-        var data = this.processConstraintModel.fetch();
+        //var data = this.processConstraintModel.fetch();
         var row = '';
-        for(var i=0; i<data.processConstraints.length; i++){
-            var processConstraint = data.processConstraints[i];
+        for (var i = 0; i < dataObject.length; i++) {
+            var processConstraint = dataObject[i];
             row += (
                 '<tr>' +
-                '<td>' + processConstraint.expression + '</td>'
+                '<td>' + processConstraint.coefficient_name + '</td>'
             )
             row += '<td>' + processConstraint.inUse + '</td>';
-            row += '<td>' + processConstraint.grouping + '</td>';
-            row += '<td>' + processConstraint.constraint_type + '</td>';
-            processConstraint.values.forEach(function(data){
-                row += '<td>' + data.value + '</td>';
-            });
+            row += '<td>' + processConstraint.selector_name + '</td>';
+            row += '<td>' + processConstraint.isMax + '</td>';
+            var constraintData = processConstraint.constraintData;
+            var scenarioStartYear = this.scenario.startYear;
+            var scenarioTimePeriod = this.scenario.timePeriod;
+            for (var j = 0; j < scenarioTimePeriod; j++) {
+                var presentYear = scenarioStartYear + j;
+                row += '<td>' + constraintData[presentYear.toString()] + '</td>';
+            }
             row += '</tr>';
         }
         this.$el.find("#tableBody").append($(row));

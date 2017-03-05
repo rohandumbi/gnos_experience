@@ -25,27 +25,43 @@ export class GradeConstraintView extends View{
         return this;
     }
 
-    onDomLoaded() {
-        //this.initializeGrid();
+    fetchGradeConstraints() {
+        var that = this;
+        this.gradeConstraintModel.fetch({
+            success: function (data) {
+                that.gradeConstraints = data;
+                that.initializeGrid(data);
+            },
+            error: function () {
+                alert('Failed to fetch process constraints.');
+            }
+        });
     }
 
-    initializeGrid() {
+    onDomLoaded() {
+        this.fetchGradeConstraints();
+    }
+
+    initializeGrid(dataObject) {
         var that = this;
-        var data = this.gradeConstraintModel.fetch();
         var row = '';
-        for(var i=0; i<data.gradeConstraints.length; i++){
-            var gradeConstraint = data.gradeConstraints[i];
+        for (var i = 0; i < dataObject.length; i++) {
+            var gradeConstraint = dataObject[i];
             row += (
                 '<tr>' +
-                '<td>' + gradeConstraint.expression + '</td>'
+                '<td>' + gradeConstraint.productJoinName + '</td>'
             )
             row += '<td>' + gradeConstraint.inUse + '</td>';
-            row += '<td>' + gradeConstraint.grade + '</td>';
-            row += '<td>' + gradeConstraint.grouping + '</td>';
-            row += '<td>' + gradeConstraint.constraint_type + '</td>';
-            gradeConstraint.values.forEach(function(data){
-                row += '<td>' + data.value + '</td>';
-            });
+            row += '<td>' + gradeConstraint.selectedGradeName + '</td>';
+            row += '<td>' + gradeConstraint.selectorName + '</td>';
+            row += '<td>' + gradeConstraint.isMax + '</td>';
+            var constraintData = gradeConstraint.constraintData;
+            var scenarioStartYear = this.scenario.startYear;
+            var scenarioTimePeriod = this.scenario.timePeriod;
+            for (var j = 0; j < scenarioTimePeriod; j++) {
+                var presentYear = scenarioStartYear + j;
+                row += '<td>' + constraintData[presentYear.toString()] + '</td>';
+            }
             row += '</tr>';
         }
         this.$el.find("#tableBody").append($(row));
