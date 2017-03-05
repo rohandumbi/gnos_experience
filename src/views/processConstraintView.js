@@ -1,13 +1,14 @@
 import { View } from '../core/view';
-import { ScenarioModel } from '../models/scenarioModel';
 import { ProcessConstraintModel } from '../models/processConstraintModel';
 
 export class ProcessConstraintView extends View{
 
     constructor(options) {
         super();
-        this.model = new ScenarioModel({});
-        this.processConstraintModel = new ProcessConstraintModel({});
+        if (!options.scenario) alert('Load a scenario');
+        this.projectId = options.projectId;
+        this.scenario = options.scenario;
+        this.processConstraintModel = new ProcessConstraintModel({projectId: this.projectId, scenario: this.scenario});
     }
 
     getHtml() {
@@ -19,8 +20,13 @@ export class ProcessConstraintView extends View{
         return promise;
     }
 
+    render() {
+        super.render(this.scenario);
+        return this;
+    }
+
     onDomLoaded() {
-        this.initializeGrid();
+        //this.initializeGrid();
     }
 
     initializeGrid() {

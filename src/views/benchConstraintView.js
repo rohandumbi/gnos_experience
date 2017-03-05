@@ -187,13 +187,6 @@ export class BenchConstraintView extends View{
             var pitName = that.$el.find('select#new_pit option:checked').val();
             that.addRowToGrid(pitName);
         });
-        /*$addButton.click(function () {
-            that.addRowToGrid();
-         });*/
-    }
-
-    loadScenario(scenarioName) {
-        this.$el.find('#scenario_name').val(scenarioName);
     }
 
     updateBenchConstraint(options) {

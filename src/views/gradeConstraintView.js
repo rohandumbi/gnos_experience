@@ -1,13 +1,14 @@
 import { View } from '../core/view';
-import { ScenarioModel } from '../models/scenarioModel';
 import { GradeConstraintModel } from '../models/gradeConstraintModel';
 
 export class GradeConstraintView extends View{
 
     constructor(options) {
         super();
-        this.model = new ScenarioModel({});
-        this.gradeConstraintModel = new GradeConstraintModel({});
+        if (!options.scenario) alert('Load a scenario');
+        this.projectId = options.projectId;
+        this.scenario = options.scenario;
+        this.gradeConstraintModel = new GradeConstraintModel({projectId: this.projectId, scenario: this.scenario});
     }
 
     getHtml() {
@@ -19,8 +20,13 @@ export class GradeConstraintView extends View{
         return promise;
     }
 
+    render() {
+        super.render(this.scenario);
+        return this;
+    }
+
     onDomLoaded() {
-        this.initializeGrid();
+        //this.initializeGrid();
     }
 
     initializeGrid() {
