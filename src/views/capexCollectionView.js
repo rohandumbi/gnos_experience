@@ -101,6 +101,19 @@ export class CapexCollectionView extends View{
                 }
             });
         });
+        capexView.on('delete:instance', function (instance) {
+            console.log(instance);
+            that.capexCollection.delete({
+                url: 'http://localhost:4567/capex/' + instance.capexId + '/capexInstance',
+                id: instance.id,
+                success: function (data) {
+                    alert('Successfully deleted instance.');
+                },
+                error: function (data) {
+                    alert('Failed to delete capex.');
+                }
+            });
+        });
         capexView.render();
         this.$el.find('#capex-container').append(capexView.$el);
     }
