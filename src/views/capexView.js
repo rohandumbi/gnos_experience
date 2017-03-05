@@ -250,20 +250,8 @@ export class CapexView extends View{
             var deletedCapexInstance = that.getInstanceByName(selectedRow);
             console.log(deletedCapexInstance);
             that.trigger('delete:instance', deletedCapexInstance);
-            /*that.dumpModel.delete({
-             url: 'http://localhost:4567/dumps',
-             id: deletedDump.id,
-             success: function (data) {
-             alert('Successfully deleted dump.');
-             },
-             error: function (data) {
-             alert('Failed to delete dump.');
-             }
-             });*/
         });
         this.$el.find("#datatype-grid-basic").bootgrid("remove");
-        /* this.trigger('delete:capex', this.capex);
-         this.$el.find("#datatype-grid-basic").bootgrid("remove");*/
     }
 
 }
