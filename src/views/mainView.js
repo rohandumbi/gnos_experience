@@ -100,12 +100,12 @@ export class MainView extends View{
         this.$el.find("#page-content-wrapper").html(this.fixedCostDefinitionView.$el);
     }
     initializeMaterialConstraint(){
-        this.processConstraintView = new ProcessConstraintView({scenario: this.scenario});
+        this.processConstraintView = new ProcessConstraintView({projectId: this.projectId, scenario: this.scenario});
         this.processConstraintView.render();
         this.$el.find("#page-content-wrapper").html(this.processConstraintView.$el);
     }
     initializeGradeConstraint(){
-        this.gradeConstraintView = new GradeConstraintView({scenario: this.scenario});
+        this.gradeConstraintView = new GradeConstraintView({projectId: this.projectId, scenario: this.scenario});
         this.gradeConstraintView.render();
         this.$el.find("#page-content-wrapper").html(this.gradeConstraintView.$el);
     }

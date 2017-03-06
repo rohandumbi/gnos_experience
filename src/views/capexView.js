@@ -79,10 +79,6 @@ export class CapexView extends View{
         });
     }
 
-    render() {
-        super.render(this.capex);
-    }
-
     fetchPitGroups() {
         var that = this;
         this.pitGroupModel.fetch({
@@ -94,6 +90,10 @@ export class CapexView extends View{
                 alert('Error fetching list of pit groups.');
             }
         });
+    }
+
+    render() {
+        super.render(this.capex);
     }
 
     initializeGrid() {

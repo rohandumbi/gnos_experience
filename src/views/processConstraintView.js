@@ -1,5 +1,12 @@
 import { View } from '../core/view';
 import { ProcessConstraintModel } from '../models/processConstraintModel';
+import {ProcessModel} from '../models/processModel';
+import {ProcessJoinModel} from '../models/processJoinModel';
+import {PitModel} from '../models/pitModel';
+import {PitGroupModel} from '../models/pitGroupModel';
+import {ExpressionModel} from '../models/expressionModel';
+import {ProductModel} from '../models/productModel';
+import {ProductJoinModel} from '../models/productJoinModel';
 
 export class ProcessConstraintView extends View{
 
@@ -9,6 +16,13 @@ export class ProcessConstraintView extends View{
         this.projectId = options.projectId;
         this.scenario = options.scenario;
         this.processConstraintModel = new ProcessConstraintModel({projectId: this.projectId, scenario: this.scenario});
+        this.processModel = new ProcessModel({projectId: this.projectId});
+        this.processJoinModel = new ProcessJoinModel({projectId: this.projectId});
+        this.pitModel = new PitModel({projectId: this.projectId});
+        this.pitGroupModel = new PitGroupModel({projectId: this.projectId});
+        this.expressionModel = new ExpressionModel({projectId: this.projectId});
+        this.productModel = new ProductModel({projectId: this.projectId});
+        this.productJoinModel = new ProductJoinModel({projectId: this.projectId});
     }
 
     getHtml() {
@@ -25,6 +39,49 @@ export class ProcessConstraintView extends View{
         return this;
     }
 
+    onDomLoaded() {
+        this.fetchExpressions();
+    }
+
+    fetchExpressions() {
+        var that = this;
+        this.expressionModel.fetch({
+            success: function (data) {
+                that.expressions = data;
+                that.fetchProducts(data);
+            },
+            error: function () {
+                alert('Failed to fetch process constraints.');
+            }
+        });
+    }
+
+    fetchProducts() {
+        var that = this;
+        this.productModel.fetch({
+            success: function (data) {
+                that.products = data;
+                that.fetchProductJoins(data);
+            },
+            error: function () {
+                alert('Failed to fetch process constraints.');
+            }
+        });
+    }
+
+    fetchProductJoins() {
+        var that = this;
+        this.productJoinModel.fetch({
+            success: function (data) {
+                that.productJoins = data;
+                that.fetchProcesses(data);
+            },
+            error: function () {
+                alert('Failed to fetch process constraints.');
+            }
+        });
+    }
+
     fetchProcessConstraints() {
         var that = this;
         this.processConstraintModel.fetch({
@@ -38,8 +95,56 @@ export class ProcessConstraintView extends View{
         });
     }
 
-    onDomLoaded() {
-        this.fetchProcessConstraints();
+    fetchProcesses() {
+        var that = this;
+        this.processModel.fetch({
+            success: function (data) {
+                that.processes = data;
+                that.fetchProcessJoins();
+            },
+            error: function (data) {
+                alert('Error fetching list of processes.');
+            }
+        });
+    }
+
+    fetchProcessJoins() {
+        var that = this;
+        this.processJoinModel.fetch({
+            success: function (data) {
+                that.processJoins = data;
+                that.fetchPits();
+            },
+            error: function (data) {
+                alert('Error fetching list of process joins.');
+            }
+        });
+    }
+
+    fetchPits() {
+        var that = this;
+        this.pitModel.fetch({
+            success: function (data) {
+                that.pits = data;
+                that.fetchPitGroups();
+            },
+            error: function (data) {
+                alert('Error fetching list of pits.');
+            }
+        });
+    }
+
+    fetchPitGroups() {
+        var that = this;
+        this.pitGroupModel.fetch({
+            success: function (data) {
+                that.pitGroups = data;
+                that.fetchProcessConstraints();
+            },
+            error: function (data) {
+                alert('Error fetching list of pit groups.');
+            }
+        });
     }
 
     initializeGrid(dataObject) {
@@ -72,71 +177,85 @@ export class ProcessConstraintView extends View{
             rowSelect: true,
             keepSelection: false,
             formatters: {
-                "expression": function(column, row){
-                    return (
-                    '<select value="test"  style="max-width: 120px">' +
-                        '<option selected disabled hidden>' + row.expression + '</option>'+
-                        '<option value="default">Expression 1</option>' +
-                        '<option value="b1p12">Expression 2</option>'+
-                    '</select>') ;
+                "grouping": function (column, row) {
+                    var groupName = row.selector_name;
+                    if (!groupName) {
+                        groupName = 'NONE';
+                    }
+                    var tableRow = (
+                        '<select class="constraint_grouping" value="test">' +
+                        '<option selected disabled hidden>' + groupName + '</option>'
+                    );
+                    tableRow += '<option data-grouping-name="" data-grouping-type="0">' + 'NONE' + '</option>';
+                    that.processJoins.forEach(function (processJoin) {
+                        tableRow += '<option data-grouping-name="' + processJoin.name + '" data-grouping-type="1">' + processJoin.name + '</option>';
+                    });
+                    that.processes.forEach(function (process) {
+                        tableRow += '<option data-grouping-name="' + process.name + '" data-grouping-type="2">' + process.name + '</option>';
+                    });
+                    that.pits.forEach(function (pit) {
+                        tableRow += '<option data-grouping-name="' + pit.pitName + '" data-grouping-type="3">' + pit.pitName + '</option>';
+                    });
+                    that.pitGroups.forEach(function (pitGroup) {
+                        tableRow += '<option data-grouping-name="' + pitGroup.name + '" data-grouping-type="4">' + pitGroup.name + '</option>';
+                    });
+                    tableRow += '</select>';
+                    return tableRow;
                 },
-                "value": function(column, row){
+                "values": function (column, row) {
+                    var yearlyValue = row[column.id] || row.constraintData[column.id]
                     return (
-                        '<input style="max-width: 100px" type="text" value="' + row[column.id] + '"' + 'checked  >'
+                        '<input class="constraint" data-year="' + column.id + '" type="text" value="' + yearlyValue + '"' + '>'
                     );
                 },
                 "inUse": function (column, row) {
-                    if(row.in_use.toString().toLowerCase() === "true"){
+                    if (row.inUse.toString() === 'true') {
                         return (
-                            '<input type="checkbox" value="' + row.in_use + '"' + 'checked  >'
+                            '<input class="use" type="checkbox" value="' + row.inUse + '"' + 'checked  >'
                         )
                     }else{
                         return (
-                            '<input type="checkbox" value="' + row.in_use + '"' + '>'
+                            '<input class="use" type="checkbox" value="' + row.inUse + '"' + '>'
                         )
                     }
                 },
-                "grouping": function(column, row){
+                "isMax": function (column, row) {
+                    var type;
+                    if (row.isMax.toString() === 'true') {
+                        type = 'Max';
+                    } else {
+                        type = 'Min';
+                    }
                     return (
                     '<select value="test"  style="max-width: 120px">' +
-                        '<option selected disabled hidden>' + row.grouping + '</option>'+
-                        '<option value="process 1">process 1</option>' +
-                        '<option value="process 1">process 2</option>' +
-                        '<option value="process 1">process 3</option>' +
-                        '<option value="group 1">group 1</option>'+
+                    '<option selected disabled hidden>' + type + '</option>' +
+                    '<option data-isMax="true" value="max">MAX</option>' +
+                    '<option data-isMax="false" value="min">MIN</option>' +
                     '</select>') ;
                 },
-                "constraint_type": function(column, row){
-                    return (
-                    '<select value="test"  style="max-width: 120px">' +
-                        '<option selected disabled hidden>' + row.constraint_type + '</option>'+
-                        '<option value="max">MAX</option>' +
-                        '<option value="min">MIN</option>'+
-                    '</select>') ;
+                "coefficient": function (column, row) {
+                    var coefficientName = row.coefficient_name;
+                    if (!coefficientName) {
+                        coefficientName = 'NONE';
+                    }
+                    var tableRow = (
+                        '<select class="constraint_coefficient" value="test">' +
+                        '<option selected disabled hidden>' + coefficientName + '</option>'
+                    );
+                    tableRow += '<option data-grouping-name="" data-grouping-type="0">' + 'NONE' + '</option>';
+                    that.expressions.forEach(function (expression) {
+                        tableRow += '<option data-coefficient-name="' + expression.name + '" data-coefficient-type="1">' + expression.name + '</option>';
+                    });
+                    that.products.forEach(function (product) {
+                        tableRow += '<option data-coefficient-name="' + product.name + '" data-coefficient-type="2">' + product.name + '</option>';
+                    });
+                    that.productJoins.forEach(function (productJoin) {
+                        tableRow += '<option data-coefficient-name="' + productJoin.name + '" data-coefficient-type="3">' + productJoin.name + '</option>';
+                    });
+                    tableRow += '<option data-coefficient-name="Total_TH" data-coefficient-type="4">' + 'Total_TH' + '</option>';
+                    tableRow += '</select>';
+                    return tableRow;
                 }
-                /*"year": function(column, row){
-                 return (
-                 '<input type="text" value="' + row.year + '"' + 'readonly>'
-                 );
-                 }*/
-                /*"expression": function(column, row){
-                 return (
-                 '<select value="test">' +
-                 '<option selected disabled hidden>' + row.expressionName + '</option>'+
-                 '<option value="grouptext">Group By(Text)</option>' +
-                 '<option value="groupnumeric">Group By(Numeric)</option>' +
-                 '<option value="unit">Unit</option>' +
-                 '<option value="grade">Grade</option>' +
-                 '</select>') ;
-                 },
-                 "filter": function(column, row){
-                 return (
-                 '<input type="text" value="' + row.filter + '"' + '>'
-                 );
-                 }*/
-                /*"commands": function(column, row){
-                 return "<button title='Load Scenario' type=\"button\" class=\"btn btn-xs btn-default command-upload\" data-row-id=\"" + row.name + "\"><span class=\"glyphicon glyphicon-upload\"></span></button>";
-                 }*/
             }
         }).on("loaded.rs.jquery.bootgrid", function()
         {
