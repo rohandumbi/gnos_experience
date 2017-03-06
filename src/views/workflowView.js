@@ -1,13 +1,15 @@
 import { View } from '../core/view';
 import { ProcessModel } from '../models/processModel';
 import { GnosModel } from '../models/gnosModel';
+import {ProcessTreeNodeModel} from '../models/processTreeNodeModel'
 
 export class WorkflowView extends View{
 
     constructor(options) {
         super();
-        this.processModel = new ProcessModel({});
-        this.gnosModel = new GnosModel({});
+        this.processModel = new ProcessModel({projectId: options.projectId});
+        this.gnosModel = new GnosModel({projectId: options.projectId});
+        this.processTreeModel = new ProcessTreeNodeModel({projectId: options.projectId});
     }
 
     getHtml() {
@@ -19,24 +21,121 @@ export class WorkflowView extends View{
         return promise;
     }
 
-    addProcessToGraph(parent, processes) {
+    getModelWithId(modelId) {
+        var object = null;
+        this.models.forEach(function (model) {
+            if (model.id === modelId) {
+                object = model;
+            }
+        });
+        return object;
+    }
+
+    getNodeWithName(nodeName) {
+        return this.system.getNode(nodeName);
+    }
+
+    addProcessToGraph(processes) {
         var that = this;
         processes.forEach(function (process) {
-            var processNode = that.system.addNode(process.name,{'color':'#95cde5','shape':'dot','label':process.name});
-            that.system.addEdge(parent, processNode, {directed: true, weight: 2});
+            var modelId = process.modelId;
+            var parentModelId = process.parentModelId;
+            var model = that.getModelWithId(modelId);
+            var parentModel = that.getModelWithId(parentModelId);
+
+            var modelNode = that.getNodeWithName(model.name);
+            if (!modelNode) {
+                modelNode = that.system.addNode(model.name, {'color': '#95cde5', 'shape': 'dot', 'label': model.name});
+            }
+            var parentNode = null;
+            if (parentModel) {
+                parentNode = that.getNodeWithName(parentModel.name);
+                if (!parentNode) {
+                    parentNode = that.system.addNode(parentModel.name, {
+                        'color': '#95cde5',
+                        'shape': 'dot',
+                        'label': parentModel.name
+                    });
+                }
+            } else {
+                parentNode = that.getNodeWithName('Block');
+            }
+
+            that.system.addEdge(parentNode, modelNode, {directed: true, weight: 2});
+
+            /*if(parentModelNode){
+             var parentModelNode = that.system.addNode(parentModel.name,{'color':'#95cde5','shape':'dot','label':parentModel.name});
+             that.system.addEdge(parentModelNode, modelNode, {directed: true, weight: 2});
+             }*/
+            /*that.system.addEdge(parent, processNode, {directed: true, weight: 2});
             if(process.processes && (process.processes.length > 1)){
                 that.addProcessToGraph(processNode, process.processes);
-            }
+             }*/
         })
     }
 
-    onDomLoaded() {
-        this.initializeModelList();
-        this.initializeGraph();
-        this.bindDomEvents();
+    fetchProcesses() {
+        var that = this;
+        this.processModel.fetch({
+            success: function (data) {
+                that.processes = data;
+                /*var $liGroup = that.$el.find('ul.list-group');
+                 var $li;
+                 data.forEach(function (process) {
+                 $li = $('<li data-process-id="' + process.id + '" draggable="true">' + process.name + '</li>');
+                 $li.attr('title', process.name);
+                 $li.addClass('list-group-item list-group-item-info');
+                 $liGroup.append($li);
+                 });*/
+                //that.fetchPitGroups();
+                //that.initializeGraph();
+            },
+            error: function (data) {
+                alert('Error fetching list of pits: ' + data);
+            }
+        });
     }
 
-    initializeModelList() {
+    fetchProcessTreeNodes() {
+        var that = this;
+        this.processTreeModel.fetch({
+            success: function (data) {
+                that.treeNodes = data;
+                that.initializeGraph(data);
+                that.bindDomEvents();
+            }
+        });
+    }
+
+    fetchModels() {
+        var that = this;
+        this.gnosModel.fetch({
+            success: function (data) {
+                that.models = data;
+                var $liGroup = that.$el.find('ul.list-group');
+                var $li;
+                data.forEach(function (model) {
+                    $li = $('<li data-model-id="' + model.id + '" draggable="true">' + model.name + '</li>');
+                    $li.attr('title', model.name);
+                    $li.addClass('list-group-item list-group-item-info');
+                    $liGroup.append($li);
+                });
+                that.fetchProcessTreeNodes();
+                //that.initializeGraph();
+            },
+            error: function (data) {
+                alert('Error fetching list of pits: ' + data);
+            }
+        });
+    }
+
+    onDomLoaded() {
+        this.fetchModels();
+        //this.initializeGraph();
+        //this.bindDomEvents();
+    }
+
+    /*initializeModelList() {
         var data = this.gnosModel.fetch();
         var $liGroup = this.$el.find('ul.list-group');
         var $li;
@@ -46,9 +145,9 @@ export class WorkflowView extends View{
             $li.addClass('list-group-item list-group-item-info');
             $liGroup.append($li);
         });
-    }
+     }*/
 
-    initializeGraph() {
+    initializeGraph(nodeData) {
         var $canvas = this.$el.find("#viewport");
         //var $container = $canvas.parent();
         $canvas.attr('width', '1300');
@@ -59,11 +158,11 @@ export class WorkflowView extends View{
         this.system.renderer = Renderer($canvas);
         this.system.screenPadding(20);
 
-        var data = this.processModel.fetch();
+        //var data = this.processModel.fetch();
 
-        var block = this.system.addNode('Block',{'color':'red','shape':'dot','label':'BLOCK'});
-        this.addProcessToGraph(block, data.processes);
-        this.addProcessJoins();
+        var block = this.system.addNode('Block', {'color': 'red', 'shape': 'dot', 'label': 'Block'});
+        this.addProcessToGraph(this.treeNodes);
+        //this.addProcessJoins();
     }
 
     addProcessJoins() {
@@ -102,9 +201,31 @@ export class WorkflowView extends View{
         if ((selected.node !== null) && (draggedModel!==null)){
             // dragged.node.tempMass = 10000
             //dragged.node.fixed = true;
-            console.log('need to add');
-            this.addProcessToGraph(selected.node, [draggedModel]);
+            var parentModel = this.getModelWithName(selected.node.name);
+            console.log(draggedModel.name + ':' + parentModel.name);
+            this.addModelToProcessFlow({draggedModel: draggedModel, parentModel: parentModel})
+            //this.addProcessToGraph(selected.node, [draggedModel]);
         }
+    }
+
+    addModelToProcessFlow(options) {
+        var that = this;
+        var draggedModel = options.draggedModel;
+        var parentModel = options.parentModel;
+        var newModel = {
+            modelId: draggedModel.id,
+            parentModelId: parentModel.id || -1
+        }
+        this.processTreeModel.add({
+            dataObject: newModel,
+            success: function (data) {
+                console.log('Successfully created model: ' + data);
+                that.addProcessToGraph([data])
+            },
+            error: function (data) {
+                alert('Error adding model: ' + data);
+            }
+        });
     }
 
     bindDomEvents() {
@@ -124,10 +245,10 @@ export class WorkflowView extends View{
     }
 
     getModelWithName(modelName) {
-        var data = this.gnosModel.fetch();
-        var models = data.models;
+        //var data = this.gnosModel.fetch();
+        // var models = data.models;
         var selectedModel = null;
-        models.forEach(function(model){
+        this.models.forEach(function (model) {
             if(model.name === modelName) {
                 selectedModel = model;
             }
