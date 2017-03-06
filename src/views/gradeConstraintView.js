@@ -1,5 +1,11 @@
 import { View } from '../core/view';
 import { GradeConstraintModel } from '../models/gradeConstraintModel';
+import {ProcessModel} from '../models/processModel';
+import {ProcessJoinModel} from '../models/processJoinModel';
+import {PitModel} from '../models/pitModel';
+import {PitGroupModel} from '../models/pitGroupModel';
+import {ProductJoinModel} from '../models/productJoinModel';
+import {GradeModel} from '../models/gradeModel';
 
 export class GradeConstraintView extends View{
 
@@ -9,6 +15,12 @@ export class GradeConstraintView extends View{
         this.projectId = options.projectId;
         this.scenario = options.scenario;
         this.gradeConstraintModel = new GradeConstraintModel({projectId: this.projectId, scenario: this.scenario});
+        this.processModel = new ProcessModel({projectId: this.projectId});
+        this.processJoinModel = new ProcessJoinModel({projectId: this.projectId});
+        this.pitModel = new PitModel({projectId: this.projectId});
+        this.pitGroupModel = new PitGroupModel({projectId: this.projectId});
+        this.productJoinModel = new ProductJoinModel({projectId: this.projectId});
+        this.gradeModel = new GradeModel({projectId: this.projectId});
     }
 
     getHtml() {
@@ -25,6 +37,88 @@ export class GradeConstraintView extends View{
         return this;
     }
 
+    onDomLoaded() {
+        this.fetchProductJoins();
+    }
+
+    fetchProductJoins() {
+        var that = this;
+        this.productJoinModel.fetch({
+            success: function (data) {
+                that.productJoins = data;
+                that.fetchGrades();
+            },
+            error: function (data) {
+                alert('Error fetching list of processes.');
+            }
+        });
+    }
+
+    fetchGrades() {
+        var that = this;
+        this.gradeModel.fetch({
+            success: function (data) {
+                that.grades = data;
+                that.fetchProcesses();
+            },
+            error: function (data) {
+                alert('Error fetching list of processes.');
+            }
+        });
+    }
+
+    fetchProcesses() {
+        var that = this;
+        this.processModel.fetch({
+            success: function (data) {
+                that.processes = data;
+                that.fetchProcessJoins();
+            },
+            error: function (data) {
+                alert('Error fetching list of processes.');
+            }
+        });
+    }
+
+    fetchProcessJoins() {
+        var that = this;
+        this.processJoinModel.fetch({
+            success: function (data) {
+                that.processJoins = data;
+                that.fetchPits();
+            },
+            error: function (data) {
+                alert('Error fetching list of process joins.');
+            }
+        });
+    }
+
+    fetchPits() {
+        var that = this;
+        this.pitModel.fetch({
+            success: function (data) {
+                that.pits = data;
+                that.fetchPitGroups();
+            },
+            error: function (data) {
+                alert('Error fetching list of pits.');
+            }
+        });
+    }
+
+    fetchPitGroups() {
+        var that = this;
+        this.pitGroupModel.fetch({
+            success: function (data) {
+                that.pitGroups = data;
+                that.fetchGradeConstraints();
+            },
+            error: function (data) {
+                alert('Error fetching list of pit groups.');
+            }
+        });
+    }
+
     fetchGradeConstraints() {
         var that = this;
         this.gradeConstraintModel.fetch({
@@ -36,10 +130,6 @@ export class GradeConstraintView extends View{
                 alert('Failed to fetch process constraints.');
             }
         });
-    }
-
-    onDomLoaded() {
-        this.fetchGradeConstraints();
     }
 
     initializeGrid(dataObject) {
@@ -72,81 +162,100 @@ export class GradeConstraintView extends View{
             rowSelect: true,
             keepSelection: false,
             formatters: {
-                "expression": function(column, row){
-                    return (
-                    '<select value="test"  style="max-width: 120px">' +
-                        '<option selected disabled hidden>' + row.expression + '</option>'+
-                        '<option value="default">Expression 1</option>' +
-                        '<option value="b1p12">Expression 2</option>'+
-                    '</select>') ;
+                "grouping": function (column, row) {
+                    var groupName = row.selectorName;
+                    if (!groupName) {
+                        groupName = 'NONE';
+                    }
+                    var tableRow = (
+                        '<select class="constraint_grouping" value="test">' +
+                        '<option selected disabled hidden>' + groupName + '</option>'
+                    );
+                    tableRow += '<option data-grouping-name="" data-grouping-type="0">' + 'NONE' + '</option>';
+                    that.processJoins.forEach(function (processJoin) {
+                        tableRow += '<option data-grouping-name="' + processJoin.name + '" data-grouping-type="1">' + processJoin.name + '</option>';
+                    });
+                    that.processes.forEach(function (process) {
+                        tableRow += '<option data-grouping-name="' + process.name + '" data-grouping-type="2">' + process.name + '</option>';
+                    });
+                    that.pits.forEach(function (pit) {
+                        tableRow += '<option data-grouping-name="' + pit.pitName + '" data-grouping-type="3">' + pit.pitName + '</option>';
+                    });
+                    that.pitGroups.forEach(function (pitGroup) {
+                        tableRow += '<option data-grouping-name="' + pitGroup.name + '" data-grouping-type="4">' + pitGroup.name + '</option>';
+                    });
+                    tableRow += '</select>';
+                    return tableRow;
                 },
-                "value": function(column, row){
+                "grade": function (column, row) {
+                    var gradeName = row.selectedGradeName;
+                    if (!gradeName) {
+                        gradeName = 'NONE';
+                    }
+                    var tableRow = (
+                        '<select class="constraint_grouping" value="test">' +
+                        '<option selected disabled hidden>' + gradeName + '</option>'
+                    );
+                    tableRow += '<option data-grade-name="" data-grade-type="-1">' + 'NONE' + '</option>';
+                    /*that.grades.forEach(function (grade) {
+                     tableRow += '<option data-grade-name="' + grade.name + '" data-grade-type="0">' + grade.name + '</option>';
+                     });*/
+                    /*that.processes.forEach(function (process) {
+                     tableRow += '<option data-grade-name="' + process.name + '" data-grade-type="1">' + process.name + '</option>';
+                     });*/
+                    tableRow += '</select>';
+                    return tableRow;
+                },
+                "productJoin": function (column, row) {
+                    var productJoinName = row.productJoinName;
+                    if (!productJoinName) {
+                        productJoinName = 'NONE';
+                    }
+                    var tableRow = (
+                        '<select class="constraint_grouping" value="test">' +
+                        '<option selected disabled hidden>' + productJoinName + '</option>'
+                    );
+                    /*tableRow += '<option data-grade-name="" data-grade-type="-1">' + 'NONE' + '</option>';*/
+                    that.productJoins.forEach(function (productJoin) {
+                        tableRow += '<option data-join-name="' + productJoin.name + '">' + productJoin.name + '</option>';
+                    });
+                    /*that.processes.forEach(function (process) {
+                     tableRow += '<option data-grade-name="' + process.name + '" data-grade-type="1">' + process.name + '</option>';
+                     });*/
+                    tableRow += '</select>';
+                    return tableRow;
+                },
+                "values": function (column, row) {
+                    var yearlyValue = row[column.id] || row.constraintData[column.id]
                     return (
-                        '<input style="max-width: 100px" type="text" value="' + row[column.id] + '"' + 'checked  >'
+                        '<input class="value" data-year="' + column.id + '" type="text" value="' + yearlyValue + '"' + '>'
                     );
                 },
                 "inUse": function (column, row) {
-                    if(row.in_use.toString().toLowerCase() === "true"){
+                    if (row.inUse.toString() === 'true') {
                         return (
-                            '<input type="checkbox" value="' + row.in_use + '"' + 'checked  >'
+                            '<input class="use" type="checkbox" value="' + row.inUse + '"' + 'checked  >'
                         )
                     }else{
                         return (
-                            '<input type="checkbox" value="' + row.in_use + '"' + '>'
+                            '<input class="use" type="checkbox" value="' + row.inUse + '"' + '>'
                         )
                     }
                 },
-                "grade": function(column, row){
+                "isMax": function (column, row) {
+                    var type;
+                    if (row.isMax.toString() === 'true') {
+                        type = 'Max';
+                    } else {
+                        type = 'Min';
+                    }
                     return (
                     '<select value="test"  style="max-width: 120px">' +
-                    '<option selected disabled hidden>' + row.grade + '</option>'+
-                    '<option value="grade 1">grade 1</option>' +
-                    '<option value="grade 2">grade 2</option>' +
-                    '<option value="grade 3">grade 3</option>' +
-                    '<option value="grade 4">grade 4</option>'+
-                    '</select>') ;
-                },
-                "grouping": function(column, row){
-                    return (
-                    '<select value="test"  style="max-width: 120px">' +
-                        '<option selected disabled hidden>' + row.grouping + '</option>'+
-                        '<option value="process 1">process 1</option>' +
-                        '<option value="process 1">process 2</option>' +
-                        '<option value="process 1">process 3</option>' +
-                        '<option value="group 1">group 1</option>'+
-                    '</select>') ;
-                },
-                "constraint_type": function(column, row){
-                    return (
-                    '<select value="test"  style="max-width: 120px">' +
-                        '<option selected disabled hidden>' + row.constraint_type + '</option>'+
-                        '<option value="max">MAX</option>' +
-                        '<option value="min">MIN</option>'+
+                    '<option selected disabled hidden>' + type + '</option>' +
+                    '<option data-isMax="true" value="max">MAX</option>' +
+                    '<option data-isMax="false" value="min">MIN</option>' +
                     '</select>') ;
                 }
-                /*"year": function(column, row){
-                 return (
-                 '<input type="text" value="' + row.year + '"' + 'readonly>'
-                 );
-                 }*/
-                /*"expression": function(column, row){
-                 return (
-                 '<select value="test">' +
-                 '<option selected disabled hidden>' + row.expressionName + '</option>'+
-                 '<option value="grouptext">Group By(Text)</option>' +
-                 '<option value="groupnumeric">Group By(Numeric)</option>' +
-                 '<option value="unit">Unit</option>' +
-                 '<option value="grade">Grade</option>' +
-                 '</select>') ;
-                 },
-                 "filter": function(column, row){
-                 return (
-                 '<input type="text" value="' + row.filter + '"' + '>'
-                 );
-                 }*/
-                /*"commands": function(column, row){
-                 return "<button title='Load Scenario' type=\"button\" class=\"btn btn-xs btn-default command-upload\" data-row-id=\"" + row.name + "\"><span class=\"glyphicon glyphicon-upload\"></span></button>";
-                 }*/
             }
         }).on("loaded.rs.jquery.bootgrid", function()
         {

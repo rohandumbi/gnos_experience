@@ -205,7 +205,7 @@ export class ProcessConstraintView extends View{
                 "values": function (column, row) {
                     var yearlyValue = row[column.id] || row.constraintData[column.id]
                     return (
-                        '<input class="constraint" data-year="' + column.id + '" type="text" value="' + yearlyValue + '"' + '>'
+                        '<input class="value" data-year="' + column.id + '" type="text" value="' + yearlyValue + '"' + '>'
                     );
                 },
                 "inUse": function (column, row) {
