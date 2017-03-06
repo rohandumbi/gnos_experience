@@ -227,10 +227,10 @@ export class ProcessConstraintView extends View{
                         type = 'Min';
                     }
                     return (
-                    '<select value="test"  style="max-width: 120px">' +
+                    '<select class="isMax" value="test"  style="max-width: 120px">' +
                     '<option selected disabled hidden>' + type + '</option>' +
-                    '<option data-isMax="true" value="max">MAX</option>' +
-                    '<option data-isMax="false" value="min">MIN</option>' +
+                    '<option data-is-max="true" value="max">Max</option>' +
+                    '<option data-is-max="false" value="min">Min</option>' +
                     '</select>') ;
                 },
                 "coefficient": function (column, row) {
@@ -242,7 +242,7 @@ export class ProcessConstraintView extends View{
                         '<select class="constraint_coefficient" value="test">' +
                         '<option selected disabled hidden>' + coefficientName + '</option>'
                     );
-                    tableRow += '<option data-grouping-name="" data-grouping-type="0">' + 'NONE' + '</option>';
+                    tableRow += '<option data-coefficient-name="" data-coefficient-type="0">' + 'NONE' + '</option>';
                     that.expressions.forEach(function (expression) {
                         tableRow += '<option data-coefficient-name="' + expression.name + '" data-coefficient-type="1">' + expression.name + '</option>';
                     });
@@ -262,6 +262,26 @@ export class ProcessConstraintView extends View{
             /* Executes after data is loaded and rendered */
             that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
             that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
+
+            that.grid.find('.value').change(function (e) {
+                that.updateValues($(this));
+            });
+
+            that.grid.find(".use").change(function (event) {
+                that.updateInUse($(this));
+            });
+
+            that.grid.find('.constraint_grouping').change(function () {
+                that.updateGrouping($(this));
+            });
+
+            that.grid.find('.constraint_coefficient').change(function () {
+                that.updateCoefficient($(this));
+            });
+
+            that.grid.find('.isMax').change(function () {
+                that.updateIsMax($(this));
+            });
 
             /*that.grid.find(".command-upload").on("click", function(e){
              that.loadScenario($(this).data("row-id"));
@@ -284,8 +304,67 @@ export class ProcessConstraintView extends View{
         });
     }
 
-    loadScenario(scenarioName) {
-        this.$el.find('#scenario_name').val(scenarioName);
+    updateValues($row) {
+        var index = $row.closest('tr').data('row-id');
+        var year = $row.data('year');
+        var value = $row.val();
+        var processConstraint = this.processConstraints[index];
+        processConstraint.constraintData[year] = parseInt(value);
+        console.log(processConstraint);
+        this.updateConstraint({processConstraint: processConstraint});
+    }
+
+    updateInUse($row) {
+        var index = $row.closest('tr').data('row-id');
+        var inUse = $row.is(':checked');
+        var processConstraint = this.processConstraints[index];
+        processConstraint['inUse'] = inUse;
+        console.log(processConstraint);
+        this.updateConstraint({processConstraint: processConstraint});
+    }
+
+    updateGrouping($grouping) {
+        var index = $grouping.closest('tr').data('row-id');
+        var processConstraint = this.processConstraints[index];
+        processConstraint['selectionType'] = $grouping.find('option:checked').data('grouping-type');
+        processConstraint['selector_name'] = $grouping.find('option:checked').data('grouping-name');
+        console.log(processConstraint);
+        this.updateConstraint({processConstraint: processConstraint});
+    }
+
+    updateCoefficient($coefficient) {
+        var index = $coefficient.closest('tr').data('row-id');
+        var processConstraint = this.processConstraints[index];
+        processConstraint['coefficientType'] = $coefficient.find('option:checked').data('coefficient-type');
+        processConstraint['coefficient_name'] = $coefficient.find('option:checked').data('coefficient-name');
+        console.log(processConstraint);
+        this.updateConstraint({processConstraint: processConstraint});
+    }
+
+    updateIsMax($isMax) {
+        var index = $isMax.closest('tr').data('row-id');
+        var processConstraint = this.processConstraints[index];
+        var isMax = ($isMax.find('option:checked').data('is-max').toString() === "true");
+        processConstraint['isMax'] = isMax;
+        //processConstraint['selector_name'] = $grouping.find('option:checked').data('grouping-name');
+        console.log(processConstraint);
+        this.updateConstraint({processConstraint: processConstraint});
+    }
+
+    updateConstraint(options) {
+        this.processConstraintModel.update({
+            url: 'http://localhost:4567/processconstraints',
+            id: options.processConstraint.id,
+            dataObject: options.processConstraint,
+            success: function (data) {
+                alert('Successfully updated.');
+                if (options.success) options.success(data);
+            },
+            error: function (data) {
+                alert('failed update' + data);
+                if (options.success) options.error(data);
+            }
+        });
     }
 
     addRowToGrid() {

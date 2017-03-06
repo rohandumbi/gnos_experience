@@ -37,10 +37,10 @@ export class CapexView extends View{
 
     onDomLoaded() {
         this.$el.find('#capex_name').html(this.capex.name);
-        this.fetchProcessses();
+        this.fetchProcesses();
     }
 
-    fetchProcessses() {
+    fetchProcesses() {
         var that = this;
         this.processModel.fetch({
             success: function (data) {
