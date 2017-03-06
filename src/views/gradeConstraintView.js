@@ -250,10 +250,10 @@ export class GradeConstraintView extends View{
                         type = 'Min';
                     }
                     return (
-                    '<select value="test"  style="max-width: 120px">' +
+                    '<select class="isMax" value="test"  style="max-width: 120px">' +
                     '<option selected disabled hidden>' + type + '</option>' +
-                    '<option data-isMax="true" value="max">MAX</option>' +
-                    '<option data-isMax="false" value="min">MIN</option>' +
+                    '<option data-is-max="true" value="max">Max</option>' +
+                    '<option data-is-max="false" value="min">Min</option>' +
                     '</select>') ;
                 }
             }
@@ -291,7 +291,7 @@ export class GradeConstraintView extends View{
              that.loadScenario($(this).data("row-id"));
              })*/
         });
-        var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#modelDefinitionModal"></button>');
+        var $addButton = $('<button type="button" class="btn btn-default"></button>');
         $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
 
         var $removeButton = $('<button type="button" class="btn btn-default"></button>');
@@ -303,7 +303,7 @@ export class GradeConstraintView extends View{
         $removeButton.click(function(){
             that.deleteRows();
         });
-        this.$el.find('#addScenario').click(function(){
+        $addButton.click(function () {
             that.addRowToGrid();
         });
     }
@@ -381,25 +381,36 @@ export class GradeConstraintView extends View{
     }
 
     addRowToGrid() {
-        var scenarioName = this.$el.find('#new_scenario_name').val();
-        var startYear = this.$el.find('#start_year').val();
-        var timePeriod = this.$el.find('#time_period').val();
-        var discountFactor = this.$el.find('#discount_factor').val();
+        var that = this;
+        var newGradeConstraint = {};
+        newGradeConstraint['productJoinName'] = '';
+        newGradeConstraint['selectedGradeName'] = '';
+        newGradeConstraint['selectorName'] = 'NONE';
+        newGradeConstraint['selectionType'] = 0;
+        newGradeConstraint['inUse'] = true;
+        newGradeConstraint['isMax'] = true;
 
-        if(scenarioName && startYear && timePeriod && discountFactor) {
-            this.$el.find("#datatype-grid-basic").bootgrid("append", [{
-                name: scenarioName,
-                id: -1,
-                startYear: startYear,
-                timePeriod: timePeriod,
-                discountFactor: discountFactor
-            }]);
-            //this.$el.find('#model_name').val('');
-            this.$el.find('#new_scenario_name').val('');
-            this.$el.find('#start_year').val('');
-            this.$el.find('#time_period').val('');
-            this.$el.find('#discount_factor').val('');
+        var constraintData = {}
+        var startYear = this.scenario.startYear;
+        var timePeriod = this.scenario.timePeriod;
+        for (var i = 0; i < timePeriod; i++) {
+            var presentYear = startYear + i;
+            constraintData[presentYear.toString()] = 0;
         }
+        newGradeConstraint['constraintData'] = constraintData;
+        console.log(newGradeConstraint);
+        this.gradeConstraintModel.add({
+            dataObject: newGradeConstraint,
+            success: function (data) {
+                alert('added new data');
+                that.gradeConstraints.push(data);
+                that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
+            },
+            error: function (data) {
+                alert('Error creating opex data');
+            }
+
+        });
     }
 
     deleteRows(rowIds) {
