@@ -193,13 +193,13 @@ export class GradeConstraintView extends View{
                         gradeName = 'NONE';
                     }
                     var tableRow = (
-                        '<select class="constraint_grouping" value="test">' +
+                        '<select class="constraint_grade" value="test">' +
                         '<option selected disabled hidden>' + gradeName + '</option>'
                     );
-                    tableRow += '<option data-grade-name="" data-grade-type="-1">' + 'NONE' + '</option>';
-                    /*that.grades.forEach(function (grade) {
-                     tableRow += '<option data-grade-name="' + grade.name + '" data-grade-type="0">' + grade.name + '</option>';
-                     });*/
+                    /*tableRow += '<option data-grade-name="" data-grade-type="-1">' + 'NONE' + '</option>';*/
+                    that.grades.forEach(function (grade) {
+                        tableRow += '<option data-grade-name="' + grade.mappedName + '" data-grade-type="0">' + grade.mappedName + '</option>';
+                    });
                     /*that.processes.forEach(function (process) {
                      tableRow += '<option data-grade-name="' + process.name + '" data-grade-type="1">' + process.name + '</option>';
                      });*/
@@ -212,7 +212,7 @@ export class GradeConstraintView extends View{
                         productJoinName = 'NONE';
                     }
                     var tableRow = (
-                        '<select class="constraint_grouping" value="test">' +
+                        '<select class="product_join" value="test">' +
                         '<option selected disabled hidden>' + productJoinName + '</option>'
                     );
                     /*tableRow += '<option data-grade-name="" data-grade-type="-1">' + 'NONE' + '</option>';*/
@@ -263,6 +263,30 @@ export class GradeConstraintView extends View{
             that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
             that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
 
+            that.grid.find('.value').change(function (e) {
+                that.updateValues($(this));
+            });
+
+            that.grid.find(".use").change(function (event) {
+                that.updateInUse($(this));
+            });
+
+            that.grid.find('.constraint_grouping').change(function () {
+                that.updateGrouping($(this));
+            });
+
+            that.grid.find('.product_join').change(function () {
+                that.updateProductJoin($(this));
+            });
+
+            that.grid.find('.constraint_grade').change(function () {
+                that.updateGrade($(this));
+            });
+
+            that.grid.find('.isMax').change(function () {
+                that.updateIsMax($(this));
+            });
+
             /*that.grid.find(".command-upload").on("click", function(e){
              that.loadScenario($(this).data("row-id"));
              })*/
@@ -284,8 +308,76 @@ export class GradeConstraintView extends View{
         });
     }
 
-    loadScenario(scenarioName) {
-        this.$el.find('#scenario_name').val(scenarioName);
+    updateValues($row) {
+        var index = $row.closest('tr').data('row-id');
+        var year = $row.data('year');
+        var value = $row.val();
+        var gradeConstraint = this.gradeConstraints[index];
+        gradeConstraint.constraintData[year] = parseInt(value);
+        console.log(gradeConstraint);
+        this.updateConstraint({gradeConstraint: gradeConstraint});
+    }
+
+    updateInUse($row) {
+        var index = $row.closest('tr').data('row-id');
+        var inUse = $row.is(':checked');
+        var gradeConstraint = this.gradeConstraints[index];
+        gradeConstraint['inUse'] = inUse;
+        console.log(gradeConstraint);
+        this.updateConstraint({gradeConstraint: gradeConstraint});
+    }
+
+    updateProductJoin($productJoin) {
+        var index = $productJoin.closest('tr').data('row-id');
+        var gradeConstraint = this.gradeConstraints[index];
+        gradeConstraint['productJoinName'] = $productJoin.find('option:checked').val();
+        //gradeConstraint['selectorName'] = $grouping.find('option:checked').data('grouping-name');
+        console.log(gradeConstraint);
+        this.updateConstraint({gradeConstraint: gradeConstraint});
+    }
+
+    updateGrade($grade) {
+        var index = $grade.closest('tr').data('row-id');
+        var gradeConstraint = this.gradeConstraints[index];
+        gradeConstraint['selectedGradeName'] = $grade.find('option:checked').val();
+        //gradeConstraint['selectorName'] = $grouping.find('option:checked').data('grouping-name');
+        console.log(gradeConstraint);
+        this.updateConstraint({gradeConstraint: gradeConstraint});
+    }
+
+    updateGrouping($grouping) {
+        var index = $grouping.closest('tr').data('row-id');
+        var gradeConstraint = this.gradeConstraints[index];
+        gradeConstraint['selectionType'] = $grouping.find('option:checked').data('grouping-type');
+        gradeConstraint['selectorName'] = $grouping.find('option:checked').data('grouping-name');
+        console.log(gradeConstraint);
+        this.updateConstraint({gradeConstraint: gradeConstraint});
+    }
+
+    updateIsMax($isMax) {
+        var index = $isMax.closest('tr').data('row-id');
+        var gradeConstraint = this.gradeConstraints[index];
+        var isMax = ($isMax.find('option:checked').data('is-max').toString() === "true");
+        gradeConstraint['isMax'] = isMax;
+        //processConstraint['selector_name'] = $grouping.find('option:checked').data('grouping-name');
+        console.log(gradeConstraint);
+        this.updateConstraint({gradeConstraint: gradeConstraint});
+    }
+
+    updateConstraint(options) {
+        this.gradeConstraintModel.update({
+            url: 'http://localhost:4567/gradeconstraints',
+            id: options.gradeConstraint.id,
+            dataObject: options.gradeConstraint,
+            success: function (data) {
+                alert('Successfully updated.');
+                if (options.success) options.success(data);
+            },
+            error: function (data) {
+                alert('failed update' + data);
+                if (options.success) options.error(data);
+            }
+        });
     }
 
     addRowToGrid() {
