@@ -287,7 +287,7 @@ export class ProcessConstraintView extends View{
              that.loadScenario($(this).data("row-id"));
              })*/
         });
-        var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#modelDefinitionModal"></button>');
+        var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal"></button>');
         $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
 
         var $removeButton = $('<button type="button" class="btn btn-default"></button>');
@@ -299,7 +299,7 @@ export class ProcessConstraintView extends View{
         $removeButton.click(function(){
             that.deleteRows();
         });
-        this.$el.find('#addScenario').click(function(){
+        $addButton.click(function () {
             that.addRowToGrid();
         });
     }
@@ -368,25 +368,36 @@ export class ProcessConstraintView extends View{
     }
 
     addRowToGrid() {
-        var scenarioName = this.$el.find('#new_scenario_name').val();
-        var startYear = this.$el.find('#start_year').val();
-        var timePeriod = this.$el.find('#time_period').val();
-        var discountFactor = this.$el.find('#discount_factor').val();
-
-        if(scenarioName && startYear && timePeriod && discountFactor) {
-            this.$el.find("#datatype-grid-basic").bootgrid("append", [{
-                name: scenarioName,
-                id: -1,
-                startYear: startYear,
-                timePeriod: timePeriod,
-                discountFactor: discountFactor
-            }]);
-            //this.$el.find('#model_name').val('');
-            this.$el.find('#new_scenario_name').val('');
-            this.$el.find('#start_year').val('');
-            this.$el.find('#time_period').val('');
-            this.$el.find('#discount_factor').val('');
+        var that = this;
+        var newProcessConstraint = {};
+        newProcessConstraint['coefficient_name'] = 'NONE';
+        newProcessConstraint['selector_name'] = 'NONE';
+        newProcessConstraint['coefficientType'] = 0;
+        newProcessConstraint['selectionType'] = 0;
+        newProcessConstraint['inUse'] = true;
+        newProcessConstraint['isMax'] = true;
+        //newOpex['costData'] = {};
+        var constraintData = {}
+        var startYear = this.scenario.startYear;
+        var timePeriod = this.scenario.timePeriod;
+        for (var i = 0; i < timePeriod; i++) {
+            var presentYear = startYear + i;
+            constraintData[presentYear.toString()] = 0;
         }
+        newProcessConstraint['constraintData'] = constraintData;
+        console.log(newProcessConstraint);
+        this.processConstraintModel.add({
+            dataObject: newProcessConstraint,
+            success: function (data) {
+                alert('added new data');
+                that.processConstraints.push(data);
+                that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
+            },
+            error: function (data) {
+                alert('Error creating opex data');
+            }
+
+        });
     }
 
     deleteRows(rowIds) {
