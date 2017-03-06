@@ -7,6 +7,7 @@ export class WorkflowView extends View{
 
     constructor(options) {
         super();
+        this.projectId = options.projectId;
         this.processModel = new ProcessModel({projectId: options.projectId});
         this.gnosModel = new GnosModel({projectId: options.projectId});
         this.processTreeModel = new ProcessTreeNodeModel({projectId: options.projectId});
@@ -45,7 +46,12 @@ export class WorkflowView extends View{
 
             var modelNode = that.getNodeWithName(model.name);
             if (!modelNode) {
-                modelNode = that.system.addNode(model.name, {'color': '#95cde5', 'shape': 'dot', 'label': model.name});
+                modelNode = that.system.addNode(model.name, {
+                    'color': '#95cde5',
+                    'shape': 'dot',
+                    'label': model.name,
+                    'id': model.id
+                });
             }
             var parentNode = null;
             if (parentModel) {
@@ -54,7 +60,8 @@ export class WorkflowView extends View{
                     parentNode = that.system.addNode(parentModel.name, {
                         'color': '#95cde5',
                         'shape': 'dot',
-                        'label': parentModel.name
+                        'label': parentModel.name,
+                        'id': parentModel.id
                     });
                 }
             } else {
@@ -62,16 +69,7 @@ export class WorkflowView extends View{
             }
 
             that.system.addEdge(parentNode, modelNode, {directed: true, weight: 2});
-
-            /*if(parentModelNode){
-             var parentModelNode = that.system.addNode(parentModel.name,{'color':'#95cde5','shape':'dot','label':parentModel.name});
-             that.system.addEdge(parentModelNode, modelNode, {directed: true, weight: 2});
-             }*/
-            /*that.system.addEdge(parent, processNode, {directed: true, weight: 2});
-            if(process.processes && (process.processes.length > 1)){
-                that.addProcessToGraph(processNode, process.processes);
-             }*/
-        })
+        });
     }
 
     fetchProcesses() {
@@ -148,6 +146,7 @@ export class WorkflowView extends View{
      }*/
 
     initializeGraph(nodeData) {
+        var that = this;
         var $canvas = this.$el.find("#viewport");
         //var $container = $canvas.parent();
         $canvas.attr('width', '1300');
@@ -158,11 +157,55 @@ export class WorkflowView extends View{
         this.system.renderer = Renderer($canvas);
         this.system.screenPadding(20);
 
-        //var data = this.processModel.fetch();
-
         var block = this.system.addNode('Block', {'color': 'red', 'shape': 'dot', 'label': 'Block'});
         this.addProcessToGraph(this.treeNodes);
-        //this.addProcessJoins();
+        /*$canvas.contextmenu(function(event){
+         //alert('display context menu');
+         that.handleRightClick(event);
+         });*/
+        $canvas.contextMenu({
+            menuSelector: "#workflowContextMenu",
+            menuSelected: function (invokedOn, selectedMenu, event) {
+                /*var msg = "You selected the menu item '" + selectedMenu.text() +
+                 "' on the value '" + invokedOn.text() + "'";
+                 alert(msg);*/
+                var selectedAction = selectedMenu.text();
+                if (selectedAction.toString() === 'Delete') {
+                    that.handleDelete(event);
+                } else if ((selectedAction.toString() === 'Add product')) {
+                    that.handleAddProduct(event);
+                }
+            }
+        });
+    }
+
+    handleDelete(event) {
+        var that = this;
+        var pos = this.$el.find('#viewport').offset();
+        var p = {x: event.pageX - pos.left, y: event.pageY - pos.top}
+        var selected = this.system.nearest(p);
+        if (selected.node) {
+            console.log('Delete: ' + selected.node.name);
+            this.processTreeModel.delete({
+                url: 'http://localhost:4567/project/' + that.projectId + '/processtreenodes/model',
+                id: selected.node.data.id,
+                success: function () {
+                    that.system.pruneNode(selected.node);
+                },
+                error: function (data) {
+                    alert('Failed to delete model.');
+                }
+            });
+        }
+    }
+
+    handleAddProduct(event) {
+        var pos = this.$el.find('#viewport').offset();
+        var p = {x: event.pageX - pos.left, y: event.pageY - pos.top}
+        var selected = this.system.nearest(p);
+        if (selected.node) {
+            console.log('Add product to: ' + selected.node.name);
+        }
     }
 
     addProcessJoins() {
@@ -202,6 +245,9 @@ export class WorkflowView extends View{
             // dragged.node.tempMass = 10000
             //dragged.node.fixed = true;
             var parentModel = this.getModelWithName(selected.node.name);
+            if (!parentModel) {
+                parentModel = this.system.getNode('Block');
+            }
             console.log(draggedModel.name + ':' + parentModel.name);
             this.addModelToProcessFlow({draggedModel: draggedModel, parentModel: parentModel})
             //this.addProcessToGraph(selected.node, [draggedModel]);
