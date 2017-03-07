@@ -9,7 +9,9 @@
         <div id="canvas-container" class="col-sm-10">
             <h4 style="display: inline-block"><small>WORKFLOW DIAGRAM</small></h4>
             <div style="display: inline-block; float:right" class="btn-group" role="group" aria-label="...">
-                <button id="join_processes" type="button" class="btn btn-primary">Join Processes</button>
+                <button data-toggle="modal" data-target="#processJoinModal" type="button" class="btn btn-primary">Create
+                    Join
+                </button>
                 <button type="button" class="btn btn-default">Zoom In</button>
                 <button type="button" class="btn btn-default">Zoom Out</button>
             </div>
@@ -20,8 +22,61 @@
     <ul id="workflowContextMenu" class="dropdown-menu" role="menu" style="display:none">
         <li><a tabindex="-1" href="#">Delete</a></li>
         <li><a tabindex="-1" href="#">Add product</a></li>
-        <li><a tabindex="-1" href="#">Future actions</a></li>
+        <li><a tabindex="-1" href="#">Add to join</a></li>
         <li class="divider"></li>
         <li><a tabindex="-1" href="#">Future Separated link</a></li>
     </ul>
+    <div class="modal fade" id="processJoinModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Join Definition</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-inline">
+                        <form class="form">
+                            <div class="form-group">
+                                <label for="join_name">Join Name:</label>
+                                <input type="text" class="form-control" id="join_name">
+                            </div>
+                            <br/>
+                        </form>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="join_processes" type="button" class="btn btn-primary" data-dismiss="modal">Add join
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="addProcessToJoinModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Add Process</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-inline">
+                        <form class="form">
+                            <div class="form-group">
+                                <label for="target_join">Join Name:</label>
+                                <input type="text" class="form-control" id="target_join">
+                            </div>
+                            <br/>
+                        </form>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="add-to-join" type="button" class="btn btn-primary" data-dismiss="modal">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

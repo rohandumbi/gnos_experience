@@ -48,42 +48,12 @@ export class WorkflowView extends View{
                 'category': 'processJoin'
             });
             processJoin.childProcessList.forEach(function (childProcessId) {
-                var childModel = that.getModelWithId(childProcessId);
-                var childModelNode = that.system.getNode(childModel.name);
-                that.system.addEdge(processNode, childModelNode, {directed: true, weight: 2});
+                if (childProcessId > 0) {
+                    var childModel = that.getModelWithId(childProcessId);
+                    var childModelNode = that.system.getNode(childModel.name);
+                    that.system.addEdge(processNode, childModelNode, {directed: true, weight: 2});
+                }
             });
-            /*var modelId = process.modelId;
-             var parentModelId = process.parentModelId;
-             var model = that.getModelWithId(modelId);
-             var parentModel = that.getModelWithId(parentModelId);
-
-             var modelNode = that.getNodeWithName(model.name);
-             if (!modelNode) {
-             modelNode = that.system.addNode(model.name, {
-             'color': '#95cde5',
-             'shape': 'dot',
-             'label': model.name,
-             'id': model.id,
-             'category': 'model'
-             });
-             }
-             var parentNode = null;
-             if (parentModel) {
-             parentNode = that.getNodeWithName(parentModel.name);
-             if (!parentNode) {
-             parentNode = that.system.addNode(parentModel.name, {
-             'color': '#95cde5',
-             'shape': 'dot',
-             'label': parentModel.name,
-             'id': parentModel.id,
-             'category': 'block'
-             });
-             }
-             } else {
-             parentNode = that.getNodeWithName('Block');
-             }
-
-             that.system.addEdge(parentNode, modelNode, {directed: true, weight: 2});*/
         });
     }
 
@@ -122,28 +92,6 @@ export class WorkflowView extends View{
             }
 
             that.system.addEdge(parentNode, modelNode, {directed: true, weight: 2});
-        });
-    }
-
-    fetchProcesses() {
-        var that = this;
-        this.processModel.fetch({
-            success: function (data) {
-                that.processes = data;
-                /*var $liGroup = that.$el.find('ul.list-group');
-                 var $li;
-                 data.forEach(function (process) {
-                 $li = $('<li data-process-id="' + process.id + '" draggable="true">' + process.name + '</li>');
-                 $li.attr('title', process.name);
-                 $li.addClass('list-group-item list-group-item-info');
-                 $liGroup.append($li);
-                 });*/
-                //that.fetchPitGroups();
-                //that.initializeGraph();
-            },
-            error: function (data) {
-                alert('Error fetching list of pits: ' + data);
-            }
         });
     }
 
@@ -196,18 +144,6 @@ export class WorkflowView extends View{
         //this.bindDomEvents();
     }
 
-    /*initializeModelList() {
-        var data = this.gnosModel.fetch();
-        var $liGroup = this.$el.find('ul.list-group');
-        var $li;
-        data.models.forEach(function(model) {
-            $li = $('<li draggable="true">' + model.name + '</li>');
-            $li.attr('title', model.name);
-            $li.addClass('list-group-item list-group-item-info');
-            $liGroup.append($li);
-        });
-     }*/
-
     initializeGraph(nodeData) {
         var that = this;
         var $canvas = this.$el.find("#viewport");
@@ -231,6 +167,8 @@ export class WorkflowView extends View{
                     that.handleDelete(event);
                 } else if ((selectedAction.toString() === 'Add product')) {
                     that.handleAddProduct(event);
+                } else if ((selectedAction.toString() === 'Add to join')) {
+                    that.handleAddProcessToJoin(event);
                 }
             }
         });
@@ -265,24 +203,44 @@ export class WorkflowView extends View{
         }
     }
 
-    addProcessJoins() {
-        var join_uranus_cr = this.system.addNode('uranus_cr',{'color':'#2b2e3b','shape':'square','label':'Join: uranus_cr'});
-        var uranus_lg_node = this.system.getNode('uranus_lg');
-        var uranus_hg_node = this.system.getNode('uranus_hg');
-        this.system.addEdge(join_uranus_cr, uranus_lg_node, {directed: true, weight: 2});
-        this.system.addEdge(join_uranus_cr, uranus_hg_node, {directed: true, weight: 2});
-
-
-        var join_saturn_cr = this.system.addNode('saturn_cr',{'color':'#2b2e3b','shape':'square','label':'Join: saturn_cr'});
-        var saturn_hg_node = this.system.getNode('saturn_hg');
-        var saturn_lg_node = this.system.getNode('saturn_lg');
-        var uranus_hg_node = this.system.getNode('uranus_hg');
-        var mars_hg_node = this.system.getNode('mars_hg');
-
-        this.system.addEdge(join_saturn_cr, saturn_hg_node, {directed: true, weight: 2});
-        this.system.addEdge(join_saturn_cr, saturn_lg_node, {directed: true, weight: 2});
-        //this.system.addEdge(join_saturn_cr, uranus_hg_node, {directed: true, weight: 2});
-        this.system.addEdge(join_saturn_cr, mars_hg_node, {directed: true, weight: 2});
+    handleAddProcessToJoin(event) {
+        var that = this;
+        var pos = this.$el.find('#viewport').offset();
+        var p = {x: event.pageX - pos.left, y: event.pageY - pos.top}
+        var selected = this.system.nearest(p);
+        if (selected.node) {
+            console.log('Adding to process: ' + selected.node.name);
+            this.$el.find('#add-to-join').click(function (event) {
+                $(this).off('click');
+                var processJoinName = that.$el.find('#target_join').val();
+                var processJoinNode = that.system.getNode(processJoinName.trim());
+                if (processJoinNode) {
+                    var newProcessJoin = {}
+                    newProcessJoin['name'] = processJoinName;
+                    newProcessJoin['processId'] = selected.node.data.id;
+                    that.processJoinModel.add({
+                        dataObject: newProcessJoin,
+                        success: function (data) {
+                            alert('Successfully added to join.');
+                            //that.addProcessJoinsToGraph([data]);
+                            that.system.addEdge(processJoinNode, selected.node, {directed: true, weight: 2});
+                            that.$el.find('#target_join').val('');
+                        }
+                    });
+                }
+            });
+            this.$el.find('#addProcessToJoinModal').modal();
+            /*this.processTreeModel.delete({
+             url: 'http://localhost:4567/project/' + that.projectId + '/processtreenodes/model',
+             id: selected.node.data.id,
+             success: function () {
+             that.system.pruneNode(selected.node);
+             },
+             error: function (data) {
+             alert('Failed to delete model.');
+             }
+             });*/
+        }
     }
 
 
@@ -331,9 +289,27 @@ export class WorkflowView extends View{
     }
 
     bindDomEvents() {
+        var that = this;
         this.bindDragEventsOnModels();
-        this.$el.find('#join_processes').click(function() {
-           alert("To display process join form");
+        this.$el.find('#join_processes').click(function (event) {
+            //alert("To display process join form");
+            that.addProcessJoin();
+        });
+    }
+
+    addProcessJoin() {
+        var that = this;
+        //alert(this.$el.find('#join_name').val());
+        var newProcessJoin = {}
+        newProcessJoin['name'] = this.$el.find('#join_name').val();
+        newProcessJoin['processId'] = 0;
+        this.processJoinModel.add({
+            dataObject: newProcessJoin,
+            success: function (data) {
+                alert('Successfully created join.');
+                that.addProcessJoinsToGraph([data]);
+                that.$el.find('#join_name').val('');
+            }
         });
     }
 
@@ -347,8 +323,6 @@ export class WorkflowView extends View{
     }
 
     getModelWithName(modelName) {
-        //var data = this.gnosModel.fetch();
-        // var models = data.models;
         var selectedModel = null;
         this.models.forEach(function (model) {
             if(model.name === modelName) {
