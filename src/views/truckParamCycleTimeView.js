@@ -52,16 +52,6 @@ export class TruckParamCycleTimeView extends View {
 
     onDomLoaded() {
         this.fetchCycleTimes();
-        //var that = this;
-        /*this.model.fetch({
-         success: function (data) {
-         that.data = data;
-         that.initializeGrid(data);
-         },
-         error: function (data) {
-         alert('Error fetching expressions ' + data);
-         }
-         });*/
     }
 
     initializeGrid(modelData) {
