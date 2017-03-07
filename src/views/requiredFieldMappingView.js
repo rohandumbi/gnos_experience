@@ -6,8 +6,9 @@ export class RequiredFieldMappingView extends View{
 
     constructor(options) {
         super();
-        this.requiredFieldModel = new RequiredFieldModel({});
-        this.allFieldsModel = new AllFieldsModel({});
+		this.projectId = options.projectId;
+        this.requiredFieldModel = new RequiredFieldModel({projectId: this.projectId});
+        this.allFieldsModel = new AllFieldsModel({projectId: this.projectId});
     }
 
     getHtml() {
@@ -24,45 +25,52 @@ export class RequiredFieldMappingView extends View{
     }
 
     initializeGrid() {
-        var that = this;
-        var data = this.requiredFieldModel.fetch();
-        var allFields = this.allFieldsModel.fetch();
-        var row = '';
-        var sourceOptions = '';
-
-        for(var i=0; i<data.fields.length; i++){
-            var field = data.fields[i];
-            row += (
-                '<tr>' +
-                '<td>' + field.name + '</td>' +
-                '<td>' + field.source + '</td>' +
-                '</tr>'
-            )
-        }
-
-        for(var j=0; j<allFields.fields.length; j++){
-            var option = allFields.fields[j];
-            sourceOptions += (
-                '<option value="' + option.name + '">' + option.name + '</option>'
-            )
-        }
-        this.$el.find("#tableBody").append($(row));
-        this.$el.find("#requiredField-grid-basic").bootgrid({
-            /*rowCount: 15,*/
-            formatters: {
-                "source": function(column, row){
-                    return (
-                    '<select value="test">' +
-                    '<option selected disabled hidden>' + row.source + '</option>'+
-                    sourceOptions +
-                    '</select>') ;
-                }
+		var allFields = this.allFieldsModel.fetch();
+		var that = this;
+		this.requiredFieldModel.fetch({
+            success: function(data){
+				var row = '';
+				var sourceOptions = '';
+				for(var i=0; i<data.length; i++){
+					var field = data[i];
+					row += (
+						'<tr>' +
+						'<td>' + field.fieldName + '</td>' +
+						'<td>' + field.mappedFieldname + '</td>' +
+						'</tr>'
+					)
+					var $row = $(row);
+                    $row.data('data', field);
+				}
+/*
+				for(var j=0; j< allFields.fields.length; j++){
+					var option = allFields.fields[j];
+					sourceOptions += (
+						'<option value="' + option.name + '">' + option.name + '</option>'
+					)
+				} */
+				that.$el.find("#tableBody").append($(row));
+				that.$el.find("#requiredField-grid-basic").bootgrid({
+					/*rowCount: 15,*/
+					formatters: {
+						"source": function(column, row){
+							return (
+							'<select value="test">' +
+							'<option selected disabled hidden>' + row.source + '</option>'+
+							sourceOptions +
+							'</select>') ;
+						}
+					}
+				}).on("loaded.rs.jquery.bootgrid", function()
+				{
+					/* Executes after data is loaded and rendered */
+					that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
+					that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
+				});
+			},
+            error: function(data){
+                alert("Error: " + data);
             }
-        }).on("loaded.rs.jquery.bootgrid", function()
-        {
-            /* Executes after data is loaded and rendered */
-            that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
-            that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
         });
     }
 }
