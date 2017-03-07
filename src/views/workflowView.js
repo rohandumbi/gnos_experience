@@ -140,8 +140,6 @@ export class WorkflowView extends View{
 
     onDomLoaded() {
         this.fetchModels();
-        //this.initializeGraph();
-        //this.bindDomEvents();
     }
 
     initializeGraph(nodeData) {
@@ -181,16 +179,30 @@ export class WorkflowView extends View{
         var selected = this.system.nearest(p);
         if (selected.node) {
             console.log('Delete: ' + selected.node.name);
-            this.processTreeModel.delete({
-                url: 'http://localhost:4567/project/' + that.projectId + '/processtreenodes/model',
-                id: selected.node.data.id,
-                success: function () {
-                    that.system.pruneNode(selected.node);
-                },
-                error: function (data) {
-                    alert('Failed to delete model.');
-                }
-            });
+            var category = selected.node.data.category;
+            if (category.toString() === 'model') {
+                this.processTreeModel.delete({
+                    url: 'http://localhost:4567/project/' + that.projectId + '/processtreenodes/model',
+                    id: selected.node.data.id,
+                    success: function () {
+                        that.system.pruneNode(selected.node);
+                    },
+                    error: function (data) {
+                        alert('Failed to delete model.');
+                    }
+                });
+            } else if (category.toString() === 'processJoin') {
+                this.processJoinModel.delete({
+                    url: 'http://localhost:4567/project/' + that.projectId + '/processjoins',
+                    id: selected.node.name,
+                    success: function () {
+                        that.system.pruneNode(selected.node);
+                    },
+                    error: function (data) {
+                        alert('Failed to delete model.');
+                    }
+                });
+            }
         }
     }
 
@@ -222,7 +234,6 @@ export class WorkflowView extends View{
                         dataObject: newProcessJoin,
                         success: function (data) {
                             alert('Successfully added to join.');
-                            //that.addProcessJoinsToGraph([data]);
                             that.system.addEdge(processJoinNode, selected.node, {directed: true, weight: 2});
                             that.$el.find('#target_join').val('');
                         }
@@ -230,16 +241,6 @@ export class WorkflowView extends View{
                 }
             });
             this.$el.find('#addProcessToJoinModal').modal();
-            /*this.processTreeModel.delete({
-             url: 'http://localhost:4567/project/' + that.projectId + '/processtreenodes/model',
-             id: selected.node.data.id,
-             success: function () {
-             that.system.pruneNode(selected.node);
-             },
-             error: function (data) {
-             alert('Failed to delete model.');
-             }
-             });*/
         }
     }
 
