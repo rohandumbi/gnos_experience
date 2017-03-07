@@ -1,12 +1,16 @@
 import {View} from '../core/view';
 import {ExpressionModel} from '../models/expressionModel';
+import {ProcessModel} from '../models/processModel'
+import {TruckCycleTimeModel} from '../models/truckCycleTimeModel';
 
 export class TruckParamCycleTimeView extends View {
 
     constructor(options) {
         super();
         this.projectId = options.projectId;
-        this.model = new ExpressionModel({projectId: this.projectId});
+        this.expressionModel = new ExpressionModel({projectId: this.projectId});
+        this.processModel = new ProcessModel({projectId: this.projectId});
+        this.cycleTimeModel = new TruckCycleTimeModel({projectId: this.projectId});
     }
 
     getHtml() {
@@ -18,7 +22,36 @@ export class TruckParamCycleTimeView extends View {
         return promise;
     }
 
+    render() {
+        var that = this;
+        this.processModel.fetch({
+            success: function (data) {
+                that.processes = data;
+                that.renderToView({processes: data});
+            },
+            error: function (data) {
+                alert('Error fetching processes.');
+            }
+        });
+        return this;
+    }
+
+    fetchCycleTimes() {
+        var that = this;
+        this.cycleTimeModel.fetch({
+            success: function (data) {
+                that.cycleTimes = data;
+                that.initializeGrid(data);
+                //that.renderToView({processes: data});
+            },
+            error: function (data) {
+                alert('Error fetching processes.');
+            }
+        });
+    }
+
     onDomLoaded() {
+        this.fetchCycleTimes();
         //var that = this;
         /*this.model.fetch({
          success: function (data) {
@@ -36,16 +69,16 @@ export class TruckParamCycleTimeView extends View {
         //var data = this.model.fetch();
         var row = '';
         for (var i = 0; i < modelData.length; i++) {
-            var expression = modelData[i];
+            var cycleTime = modelData[i];
+            var processData = cycleTime.processData;
             row += (
                 '<tr>' +
-                '<td>' + expression.name + '</td>' +
-                '<td>' + expression.isGrade + '</td>' +
-                '<td>' + expression.exprvalue + '</td>' +
-                '<td>' + (expression.filter || '') + '</td>' +
-                /*'<td>' + model.id + '</td>' +*/
-                '</tr>'
+                '<td>' + cycleTime.stockPileName + '</td>'
             )
+            that.processes.forEach(function (process) {
+                row += '<td>' + processData[process.name.toString()] + '</td>';
+            })
+            row += '</tr>';
         }
         this.$el.find("#tableBody").append($(row));
         this.grid = this.$el.find("#datatype-grid-basic").bootgrid({

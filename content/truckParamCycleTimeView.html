@@ -3,7 +3,10 @@
         <thead>
         <tr>
             <th data-identifier="true" data-column-id="name">Stockpile</th>
-            <th data-column-id="startYear">Processes---</th>
+
+            <% _.each(processes, function(process){ %>
+            <th data-formatter="value" data-column-id="<%= process.name %>"><%= process.name %></th>
+            <% }); %>
         </tr>
         </thead>
         <tbody id="tableBody">
