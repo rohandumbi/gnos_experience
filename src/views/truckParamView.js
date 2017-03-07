@@ -2,12 +2,14 @@ import {View} from '../core/view';
 import {ExpressionModel} from '../models/expressionModel';
 import {TruckParamPayloadView} from './truckParamPayloadView';
 import {TruckParamCycleTimeView} from './truckParamCycleTimeView';
+import {FixedTimeModel} from '../models/fixedTimeModel';
 
 export class TruckParamView extends View {
 
     constructor(options) {
         super();
         this.projectId = options.projectId;
+        this.fixedTimeModel = new FixedTimeModel({projectId: this.projectId});
         this.model = new ExpressionModel({projectId: this.projectId});
     }
 
@@ -20,7 +22,33 @@ export class TruckParamView extends View {
         return promise;
     }
 
+    fetchFixedTime() {
+        var that = this;
+        this.fixedTimeModel.fetch({
+            success: function (data) {
+                that.fixedTime = data;
+                that.$el.find('#fixed_time').val(data);
+                that.$el.find('#fixed_time').change(function (event) {
+                    that.fixedTimeModel.update({
+                        url: 'http://localhost:4567/project/' + that.projectId + '/fixedtime/' + $(this).val(),
+                        success: function (data) {
+                            alert('Successfully updated fixed time');
+                        },
+                        error: function (data) {
+                            alert('Error updating fixed time: ' + data);
+                        }
+                    });
+                });
+            },
+            error: function (data) {
+                alert('Error fetching fixed time');
+            }
+        });
+    }
+
     onDomLoaded() {
+        this.fetchFixedTime();
+
         this.truckParamPayloadView = new TruckParamPayloadView({projectId: this.projectId});
         this.truckParamPayloadView.render();
         this.$el.find('#payload-container').append(this.truckParamPayloadView.$el);
