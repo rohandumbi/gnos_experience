@@ -1,47 +1,33 @@
-<div id="scenarioDefinitionView">
-    <table style="height:50%" id="datatype-grid-payload" class="table table-condensed table-hover table-striped">
+<div id="truckParamPayloadView">
+    <table style="height:50%" id="datatype-grid-basic" class="table table-condensed table-hover table-striped">
         <thead>
         <tr>
-            <th data-identifier="true" data-column-id="name">Material Name</th>
-            <th data-column-id="startYear">Payload</th>
+            <th data-identifier="true" data-column-id="materialName">Material Name</th>
+            <th data-formatter="payload" data-column-id="payload">Payload</th>
         </tr>
         </thead>
         <tbody id="tableBody">
         </tbody>
     </table>
     <!--Modal Dialog for model definition-->
-    <div class="modal fade" id="modelDefinitionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal fade" id="payloadDefinitionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Scenario Definition</h4>
+                    <h4 class="modal-title" id="myModalLabel">Payload Definition</h4>
                 </div>
                 <div class="modal-body">
                     <form class="form">
-                        <div class="form-group">
-                            <label for="new_scenario_name">Scenario Name:</label>
-                            <input type="text" class="form-control" id="new_scenario_name">
-                        </div>
-                        <div class="form-group">
-                            <label for="start_year">Start Year:</label>
-                            <input type="text" class="form-control" id="start_year">
-                        </div>
-                        <div class="form-group">
-                            <label for="time_period">Time Period:</label>
-                            <input type="text" class="form-control" id="time_period">
-                        </div>
-                        <div class="form-group">
-                            <label for="discount_factor">Discount Factor:</label>
-                            <input type="text" class="form-control" id="discount_factor">
+                        <div id="expression-list" class="form-group">
+                            <label>Payload Name:</label>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button id="addScenario" type="button" class="btn btn-primary" data-dismiss="modal">Add scenario
-                    </button>
+                    <button id="addPayload" type="button" class="btn btn-primary" data-dismiss="modal">Add</button>
                 </div>
             </div>
         </div>

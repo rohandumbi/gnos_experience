@@ -32,7 +32,7 @@ export class ModelDefinitionView extends View{
     }
 
     getModelByName(modelName) {
-        var modelObject;
+        var modelObject = null;
         this.modelData.forEach(function (model) {
             if (model.name === modelName) {
                 modelObject = model;
