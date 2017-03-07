@@ -2,6 +2,7 @@ import { View } from '../core/view';
 import { ProcessModel } from '../models/processModel';
 import { GnosModel } from '../models/gnosModel';
 import {ProcessTreeNodeModel} from '../models/processTreeNodeModel'
+import {ProcessJoinModel} from '../models/processJoinModel'
 
 export class WorkflowView extends View{
 
@@ -11,6 +12,7 @@ export class WorkflowView extends View{
         this.processModel = new ProcessModel({projectId: options.projectId});
         this.gnosModel = new GnosModel({projectId: options.projectId});
         this.processTreeModel = new ProcessTreeNodeModel({projectId: options.projectId});
+        this.processJoinModel = new ProcessJoinModel({projectId: options.projectId});
     }
 
     getHtml() {
@@ -36,7 +38,56 @@ export class WorkflowView extends View{
         return this.system.getNode(nodeName);
     }
 
-    addProcessToGraph(processes) {
+    addProcessJoinsToGraph(processJoins) {
+        var that = this;
+        processJoins.forEach(function (processJoin) {
+            var processNode = that.system.addNode(processJoin.name, {
+                'color': '#00ff52',
+                'shape': 'dot',
+                'label': processJoin.name,
+                'category': 'processJoin'
+            });
+            processJoin.childProcessList.forEach(function (childProcessId) {
+                var childModel = that.getModelWithId(childProcessId);
+                var childModelNode = that.system.getNode(childModel.name);
+                that.system.addEdge(processNode, childModelNode, {directed: true, weight: 2});
+            });
+            /*var modelId = process.modelId;
+             var parentModelId = process.parentModelId;
+             var model = that.getModelWithId(modelId);
+             var parentModel = that.getModelWithId(parentModelId);
+
+             var modelNode = that.getNodeWithName(model.name);
+             if (!modelNode) {
+             modelNode = that.system.addNode(model.name, {
+             'color': '#95cde5',
+             'shape': 'dot',
+             'label': model.name,
+             'id': model.id,
+             'category': 'model'
+             });
+             }
+             var parentNode = null;
+             if (parentModel) {
+             parentNode = that.getNodeWithName(parentModel.name);
+             if (!parentNode) {
+             parentNode = that.system.addNode(parentModel.name, {
+             'color': '#95cde5',
+             'shape': 'dot',
+             'label': parentModel.name,
+             'id': parentModel.id,
+             'category': 'block'
+             });
+             }
+             } else {
+             parentNode = that.getNodeWithName('Block');
+             }
+
+             that.system.addEdge(parentNode, modelNode, {directed: true, weight: 2});*/
+        });
+    }
+
+    addProcessesToGraph(processes) {
         var that = this;
         processes.forEach(function (process) {
             var modelId = process.modelId;
@@ -50,7 +101,8 @@ export class WorkflowView extends View{
                     'color': '#95cde5',
                     'shape': 'dot',
                     'label': model.name,
-                    'id': model.id
+                    'id': model.id,
+                    'category': 'model'
                 });
             }
             var parentNode = null;
@@ -61,7 +113,8 @@ export class WorkflowView extends View{
                         'color': '#95cde5',
                         'shape': 'dot',
                         'label': parentModel.name,
-                        'id': parentModel.id
+                        'id': parentModel.id,
+                        'category': 'block'
                     });
                 }
             } else {
@@ -94,13 +147,23 @@ export class WorkflowView extends View{
         });
     }
 
+    fetchProcessJoins() {
+        var that = this;
+        this.processJoinModel.fetch({
+            success: function (data) {
+                that.processJoins = data;
+                that.initializeGraph(data);
+                that.bindDomEvents();
+            }
+        });
+    }
+
     fetchProcessTreeNodes() {
         var that = this;
         this.processTreeModel.fetch({
             success: function (data) {
                 that.treeNodes = data;
-                that.initializeGraph(data);
-                that.bindDomEvents();
+                that.fetchProcessJoins();
             }
         });
     }
@@ -158,17 +221,11 @@ export class WorkflowView extends View{
         this.system.screenPadding(20);
 
         var block = this.system.addNode('Block', {'color': 'red', 'shape': 'dot', 'label': 'Block'});
-        this.addProcessToGraph(this.treeNodes);
-        /*$canvas.contextmenu(function(event){
-         //alert('display context menu');
-         that.handleRightClick(event);
-         });*/
+        this.addProcessesToGraph(this.treeNodes);
+        this.addProcessJoinsToGraph(this.processJoins);
         $canvas.contextMenu({
             menuSelector: "#workflowContextMenu",
             menuSelected: function (invokedOn, selectedMenu, event) {
-                /*var msg = "You selected the menu item '" + selectedMenu.text() +
-                 "' on the value '" + invokedOn.text() + "'";
-                 alert(msg);*/
                 var selectedAction = selectedMenu.text();
                 if (selectedAction.toString() === 'Delete') {
                     that.handleDelete(event);
@@ -249,8 +306,7 @@ export class WorkflowView extends View{
                 parentModel = this.system.getNode('Block');
             }
             console.log(draggedModel.name + ':' + parentModel.name);
-            this.addModelToProcessFlow({draggedModel: draggedModel, parentModel: parentModel})
-            //this.addProcessToGraph(selected.node, [draggedModel]);
+            this.addModelToProcessFlow({draggedModel: draggedModel, parentModel: parentModel});
         }
     }
 
@@ -266,7 +322,7 @@ export class WorkflowView extends View{
             dataObject: newModel,
             success: function (data) {
                 console.log('Successfully created model: ' + data);
-                that.addProcessToGraph([data])
+                that.addProcessesToGraph([data])
             },
             error: function (data) {
                 alert('Error adding model: ' + data);
