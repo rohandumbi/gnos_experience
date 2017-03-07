@@ -4,6 +4,7 @@ import {GnosModel} from '../models/gnosModel';
 import {ProcessTreeNodeModel} from '../models/processTreeNodeModel'
 import {ProcessJoinModel} from '../models/processJoinModel'
 import {ProductModel} from '../models/productModel'
+import {ProductJoinModel} from '../models/productJoinModel'
 
 export class WorkflowView extends View{
 
@@ -15,6 +16,7 @@ export class WorkflowView extends View{
         this.processTreeModel = new ProcessTreeNodeModel({projectId: options.projectId});
         this.processJoinModel = new ProcessJoinModel({projectId: options.projectId});
         this.productModel = new ProductModel({projectId: options.projectId});
+        this.productJoinModel = new ProductJoinModel({projectId: options.projectId});
     }
 
     getHtml() {
@@ -38,6 +40,36 @@ export class WorkflowView extends View{
 
     getNodeWithName(nodeName) {
         return this.system.getNode(nodeName);
+    }
+
+    addProductJoinsToGraph(productJoins) {
+        var that = this;
+        productJoins.forEach(function (productJoin) {
+            var productJoinNode = that.system.addNode(productJoin.name, {
+                'color': '#B3B3B3',
+                'shape': 'grey',
+                'label': productJoin.name,
+                'category': 'productJoin'
+            });
+            productJoin.productList.forEach(function (productName) {
+                if (productName) {
+                    var childProductNode = that.system.getNode(productName);
+                    that.system.addEdge(productJoinNode, childProductNode, {directed: true, weight: 2});
+                }
+            });
+            productJoin.productJoinList.forEach(function (productJoinName) {
+                var childProductJoinNode = that.getNodeWithName(productJoinName);
+                if (!childProductJoinNode) {
+                    childProductJoinNode = that.system.addNode(productJoinName, {
+                        'color': '#B3B3B3',
+                        'shape': 'rect',
+                        'label': productJoinName,
+                        'category': 'parentProductJoin'
+                    });
+                }
+                that.system.addEdge(childProductJoinNode, productJoinNode, {directed: true, weight: 2});
+            });
+        });
     }
 
     addProductsToGraph(products) {
@@ -114,13 +146,23 @@ export class WorkflowView extends View{
         });
     }
 
+    fetchProductJoins() {
+        var that = this;
+        this.productJoinModel.fetch({
+            success: function (data) {
+                that.productJoins = data;
+                that.initializeGraph(data);
+                that.bindDomEvents();
+            }
+        });
+    }
+
     fetchProducts() {
         var that = this;
         this.productModel.fetch({
             success: function (data) {
                 that.products = data;
-                that.initializeGraph(data);
-                that.bindDomEvents();
+                that.fetchProductJoins();
             }
         });
     }
@@ -187,6 +229,7 @@ export class WorkflowView extends View{
         this.addProcessesToGraph(this.treeNodes);
         this.addProcessJoinsToGraph(this.processJoins);
         this.addProductsToGraph(this.products);
+        this.addProductJoinsToGraph(this.productJoins);
         $canvas.contextMenu({
             menuSelector: "#workflowContextMenu",
             menuSelected: function (invokedOn, selectedMenu, event) {
@@ -323,14 +366,12 @@ export class WorkflowView extends View{
         var that = this;
         this.bindDragEventsOnModels();
         this.$el.find('#join_processes').click(function (event) {
-            //alert("To display process join form");
             that.addProcessJoin();
         });
     }
 
     addProcessJoin() {
         var that = this;
-        //alert(this.$el.find('#join_name').val());
         var newProcessJoin = {}
         newProcessJoin['name'] = this.$el.find('#join_name').val();
         newProcessJoin['processId'] = 0;
