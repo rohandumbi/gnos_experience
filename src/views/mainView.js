@@ -17,6 +17,7 @@ import {PitDependencyView} from './pitDependencyView';
 import {DumpDependencyView} from './dumpDependencyView';
 import { OpexDefinitionView } from './opexDefinitionView';
 import { CapexCollectionView } from './capexCollectionView';
+import {TruckParamView} from './truckParamView'
 
 export class MainView extends View{
 
@@ -78,6 +79,16 @@ export class MainView extends View{
         this.stockpileDefinitionView = new StockpileDefinitionView({projectId: this.projectId});
         this.stockpileDefinitionView.render();
         this.$el.find("#page-content-wrapper").html(this.stockpileDefinitionView.$el);
+    }
+
+    initializeTruckParamter() {
+        this.truckParamView = new TruckParamView({projectId: this.projectId});
+        this.truckParamView.render();
+        this.$el.find("#page-content-wrapper").html(this.truckParamView.$el);
+    }
+
+    initializeMaterialPayload() {
+
     }
 
     initializeScenarioDefinition() {
@@ -190,7 +201,9 @@ export class MainView extends View{
             case "capex":
                 this.initializeCapexConstraint();
                 break;
-
+            case "truck_param":
+                this.initializeTruckParamter();
+                break;
         }
     }
 
