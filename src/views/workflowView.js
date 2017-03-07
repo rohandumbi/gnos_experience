@@ -1,8 +1,9 @@
-import { View } from '../core/view';
-import { ProcessModel } from '../models/processModel';
-import { GnosModel } from '../models/gnosModel';
+import {View} from '../core/view';
+import {ProcessModel} from '../models/processModel';
+import {GnosModel} from '../models/gnosModel';
 import {ProcessTreeNodeModel} from '../models/processTreeNodeModel'
 import {ProcessJoinModel} from '../models/processJoinModel'
+import {ProductModel} from '../models/productModel'
 
 export class WorkflowView extends View{
 
@@ -13,6 +14,7 @@ export class WorkflowView extends View{
         this.gnosModel = new GnosModel({projectId: options.projectId});
         this.processTreeModel = new ProcessTreeNodeModel({projectId: options.projectId});
         this.processJoinModel = new ProcessJoinModel({projectId: options.projectId});
+        this.productModel = new ProductModel({projectId: options.projectId});
     }
 
     getHtml() {
@@ -36,6 +38,23 @@ export class WorkflowView extends View{
 
     getNodeWithName(nodeName) {
         return this.system.getNode(nodeName);
+    }
+
+    addProductsToGraph(products) {
+        var that = this;
+        products.forEach(function (product) {
+            var productNode = that.system.addNode(product.name, {
+                'color': '#96660E',
+                'shape': 'rect',
+                'label': product.name,
+                'category': 'product'
+            });
+
+            var modelId = product.modelId;
+            var associatedModel = that.getModelWithId(modelId);
+            var modelNode = that.system.getNode(associatedModel.name);
+            that.system.addEdge(modelNode, productNode, {directed: false, weight: 2});
+        });
     }
 
     addProcessJoinsToGraph(processJoins) {
@@ -95,13 +114,23 @@ export class WorkflowView extends View{
         });
     }
 
+    fetchProducts() {
+        var that = this;
+        this.productModel.fetch({
+            success: function (data) {
+                that.products = data;
+                that.initializeGraph(data);
+                that.bindDomEvents();
+            }
+        });
+    }
+
     fetchProcessJoins() {
         var that = this;
         this.processJoinModel.fetch({
             success: function (data) {
                 that.processJoins = data;
-                that.initializeGraph(data);
-                that.bindDomEvents();
+                that.fetchProducts();
             }
         });
     }
@@ -157,6 +186,7 @@ export class WorkflowView extends View{
         var block = this.system.addNode('Block', {'color': 'red', 'shape': 'dot', 'label': 'Block'});
         this.addProcessesToGraph(this.treeNodes);
         this.addProcessJoinsToGraph(this.processJoins);
+        this.addProductsToGraph(this.products);
         $canvas.contextMenu({
             menuSelector: "#workflowContextMenu",
             menuSelected: function (invokedOn, selectedMenu, event) {
