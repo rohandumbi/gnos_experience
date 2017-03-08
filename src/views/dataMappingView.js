@@ -32,9 +32,9 @@ export class DataMappingView extends View{
         this.fetchFields();
     }
 
-    getObjectByName(name) {
+    getFieldByName(name) {
         var object;
-        this.data.forEach(function (field) {
+        this.fields.forEach(function (field) {
             if (field.name === name) {
                 object = field;
             }
@@ -75,7 +75,7 @@ export class DataMappingView extends View{
                     }
 
                     return (
-                        '<select data-fieldname="' + row.name + '" class="data-type">' +
+                        '<select class="data-type" data-fieldname="' + row.name + '" class="data-type">' +
                         '<option selected disabled hidden>' + dataTypeName + '</option>' +
                         '<option value="1">Group By(Text)</option>' +
                         '<option value="2">Group By(Numeric)</option>' +
@@ -86,11 +86,11 @@ export class DataMappingView extends View{
                 },
                 "weightedunit": function (column, row) {
                     var weightedUnitName = row.weightedUnit;
-                    if (weightedUnitName) {
+                    if (!weightedUnitName) {
                         weightedUnitName = '';
                     }
                     return (
-                        '<input type="text" name="fname" value="' + weightedUnitName + '"' + '>'
+                        '<input data-fieldname="' + row.name + '" class="weightedunit" type="text" name="fname" value="' + weightedUnitName + '"' + '>'
                     );
                 }
             }
@@ -101,8 +101,15 @@ export class DataMappingView extends View{
             grid.find(".data-type").change(function (e) {
                 var fieldName = $(this).data('fieldname');
                 var dataType = parseInt($(this).val());
-                var field = that.getObjectByName(fieldName);
+                var field = that.getFieldByName(fieldName);
                 field['dataType'] = dataType
+                that.updateField(field);
+            });
+            grid.find(".weightedunit").change(function (e) {
+                var fieldName = $(this).data('fieldname');
+                var weightedUnit = $(this).val();
+                var field = that.getFieldByName(fieldName);
+                field['weightedUnit'] = weightedUnit;
                 that.updateField(field);
             });
         });
@@ -110,7 +117,7 @@ export class DataMappingView extends View{
 
     updateField(field) {
         console.log('field');
-        this.model.update({
+        this.fieldsModel.update({
             url: 'http://localhost:4567/field',
             id: field.id,
             dataObject: field,
