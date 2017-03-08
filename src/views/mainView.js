@@ -204,6 +204,9 @@ export class MainView extends View{
             case "truck_param":
                 this.initializeTruckParamter();
                 break;
+            case "cycle_time":
+                this.initializeTruckParamter();
+                break;
         }
     }
 
