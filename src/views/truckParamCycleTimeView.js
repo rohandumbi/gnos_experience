@@ -113,19 +113,6 @@ export class TruckParamCycleTimeView extends View {
                 that.updateProcessData($(this));
             });
         });
-
-        this.$el.find(".actionBar").append($addButton);
-        this.$el.find(".actionBar").append($removeButton);
-        /*$addButton.click(function(){
-         that.addRowToGrid();
-         });*/
-        $removeButton.click(function () {
-            that.deleteRows();
-        });
-        this.$el.find('#addModel').click(function () {
-            that.addRowToGrid();
-        });
-
     }
 
     updateProcessData($cell) {
