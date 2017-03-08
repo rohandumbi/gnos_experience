@@ -18,6 +18,7 @@ import {DumpDependencyView} from './dumpDependencyView';
 import { OpexDefinitionView } from './opexDefinitionView';
 import { CapexCollectionView } from './capexCollectionView';
 import {TruckParamView} from './truckParamView'
+import {ControlScreenView} from './controlScreenView'
 
 export class MainView extends View{
 
@@ -142,6 +143,12 @@ export class MainView extends View{
         this.capexCollectionView.render();
         this.$el.find("#page-content-wrapper").html(this.capexCollectionView.$el);
     }
+	initializeControlScreen(){
+        this.controlScreenView = new ControlScreenView({projectId: this.projectId, scenario: this.scenario});
+        this.controlScreenView.render();
+        this.$el.find("#page-content-wrapper").html(this.controlScreenView.$el);
+    }
+	
 
     initializeContentView($el) {
         console.log($el);
@@ -206,6 +213,9 @@ export class MainView extends View{
                 break;
             case "cycle_time":
                 this.initializeTruckParamter();
+                break;
+			case "control":
+                this.initializeControlScreen();
                 break;
         }
     }

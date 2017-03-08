@@ -1,0 +1,48 @@
+<div id="controlScreen">
+    <form id="controlScreenForm">
+	  <div class="form-group" id="mode-option">
+		<label class="radio-inline">
+		  <input type="radio" name="modeoption" value="1" checked="checked">GLobal
+		</label>
+		<label class="radio-inline">
+		  <input type="radio" name="modeoption" value="2">Sliding Window
+		</label>
+	  </div>
+	  
+	  
+	  <div class="checkbox">
+		<label><input id="reclaimoption" type="checkbox" checked="checked" value="isReclaim">Reclaim</label>
+	  </div>
+	  
+	  <div id="equations">
+		<div class="checkbox">
+			<label><input type="checkbox" checked="checked" value="PROCESS_CONSTRAINT">Process Constraint</label>
+		</div>
+		<div class="checkbox">
+			<label><input type="checkbox" checked="checked" value="BENCH_CONSTRAINT">Bench Constraint</label>
+		</div>
+		<div class="checkbox">
+			<label><input type="checkbox" checked="checked" value="GRADE_CONSTRAINT">Grade Constraint</label>
+		</div>
+		<div class="checkbox">
+			<label><input type="checkbox" checked="checked" value="BENCH_PROPORTION">Bench Proportion</label>
+		</div>
+		<div class="checkbox">
+			<label><input type="checkbox" checked="checked" value="DUMP_CAPACITIES">Dump Capacities</label>
+		</div>
+		<div class="checkbox">
+			<label><input type="checkbox" checked="checked" value="DUMP_DEPENDENCY">Dump Dependency</label>
+		</div>
+		<div class="checkbox">
+			<label><input type="checkbox" checked="checked" value="CAPEX">Capex</label>
+		</div>
+		<div class="checkbox">
+			<label><input type="checkbox" checked="checked" value="PIT_DEPENDENCY">Pit Dependency</label>
+		</div>
+		<div class="checkbox">
+			<label><input type="checkbox" checked="checked" value="BOUNDARY_VARIABLES">Boundary Variable</label>
+		</div>
+	  </div>
+	  <button id="run" type="submit" class="btn btn-default">Run</button>
+	</form>
+</div>
