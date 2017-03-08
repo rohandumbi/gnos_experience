@@ -93,26 +93,10 @@ export class TruckParamCycleTimeView extends View {
             rowSelect: true,
             keepSelection: true,
             formatters: {
-                "definition": function (column, row) {
+                "value": function (column, row) {
                     return (
-                        '<input data-expression-name="' + row.name + '" class="expression_definition" type="text" value="' + row.exprvalue + '"' + '>'
+                        '<input data-process-name="' + column.id + '" class="process-data" type="text" value="' + row[column.id] + '"' + '>'
                     );
-                },
-                "filter": function (column, row) {
-                    return (
-                        '<input data-expression-name="' + row.name + '" class="expression_filter" style="width:200px" type="text" value="' + row.filter + '"' + '>'
-                    );
-                },
-                "grade": function (column, row) {
-                    if (row.isGrade.toString().toLowerCase() === "true") {
-                        return (
-                            '<input data-expression-name="' + row.name + '" class="expression_isgrade" type="checkbox" value="' + row.isGrade + '"' + 'checked  >'
-                        )
-                    } else {
-                        return (
-                            '<input data-expression-name="' + row.name + '" class="expression_isgrade" type="checkbox" value="' + row.isGrade + '"' + '>'
-                        )
-                    }
                 }
             }
         }).on("loaded.rs.jquery.bootgrid", function () {
@@ -125,11 +109,8 @@ export class TruckParamCycleTimeView extends View {
             /* Executes after data is loaded and rendered */
             that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
             that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
-            that.grid.find(".expression_definition").change(function (event) {
-                //alert($(this).data('expression-name'));
-                var expressionName = $(this).data('expression-name');
-                var exprValue = $(this).val();
-                that.updateExpressionDefinition({name: expressionName, exprvalue: exprValue});
+            that.grid.find(".process-data").change(function (event) {
+                that.updateProcessData($(this));
             });
             that.grid.find(".expression_filter").change(function (event) {
                 var expressionName = $(this).data('expression-name');
@@ -160,6 +141,26 @@ export class TruckParamCycleTimeView extends View {
             that.addRowToGrid();
         });
 
+    }
+
+    updateProcessData($cell) {
+        var processName = $cell.data('process-name');
+        var stockpileName = $cell.closest('tr').data('row-id');
+        var value = $cell.val();
+        var object = {}
+        object['processName'] = processName;
+        object['stockpileName'] = stockpileName;
+        object['value'] = value;
+        this.cycleTimeModel.update({
+            dataObject: object,
+            success: function (data) {
+                alert('Successfully updated data');
+            },
+            error: function (data) {
+                alert('Error updating process data');
+            }
+
+        });
     }
 
     isStockpilePresent(stockpileName) {
