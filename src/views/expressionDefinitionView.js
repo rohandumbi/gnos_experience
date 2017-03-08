@@ -43,6 +43,7 @@ export class ExpressionDefinitionView extends View{
                 '<td>' + expression.isGrade + '</td>' +
                 '<td>' + expression.exprvalue + '</td>' +
                 '<td>' + (expression.filter || '') + '</td>' +
+                '<td>' + (expression.weightedField || '') + '</td>' +
                     /*'<td>' + model.id + '</td>' +*/
                 '</tr>'
             )
@@ -61,8 +62,21 @@ export class ExpressionDefinitionView extends View{
                     ) ;
                 },
                 "filter": function(column, row){
+                    var filter = row.filter;
+                    if (!filter) {
+                        filter = '';
+                    }
                     return (
-                        '<input data-expression-name="' + row.name + '" class="expression_filter" style="width:200px" type="text" value="' + row.filter + '"' + '>'
+                        '<input data-expression-name="' + row.name + '" class="expression_filter" style="width:200px" type="text" value="' + filter + '"' + '>'
+                    );
+                },
+                "unit": function (column, row) {
+                    var unit = row.weightedField;
+                    if (!unit) {
+                        unit = '';
+                    }
+                    return (
+                        '<input data-expression-name="' + row.name + '" class="expression_unit" style="width:200px" type="text" value="' + unit + '"' + '>'
                     );
                 },
                 "grade": function(column, row) {
@@ -93,6 +107,13 @@ export class ExpressionDefinitionView extends View{
                 var filterValue = $(this).val();
                 that.updateExpressionFilter({name: expressionName, filter: filterValue});
             });
+
+            that.grid.find(".expression_unit").change(function (event) {
+                var expressionName = $(this).data('expression-name');
+                var weightedField = $(this).val();
+                that.updateWeightedUnit({name: expressionName, weightedField: weightedField});
+            });
+
             that.grid.find(".expression_isgrade").change(function (event) {
                 var expressionName = $(this).data('expression-name');
                 var expressionIsGrade = $(this).is(':checked');
@@ -122,6 +143,22 @@ export class ExpressionDefinitionView extends View{
     updateExpressionFilter(options) {
         var updatedExpression = this.getExpressionByName(options.name);
         updatedExpression['filter'] = options.filter;
+        this.model.update({
+            id: updatedExpression.id,
+            url: 'http://localhost:4567/expressions',
+            dataObject: updatedExpression,
+            success: function (data) {
+                alert('Successfully updated');
+            },
+            error: function (data) {
+                alert('Failed to update: ' + data);
+            }
+        });
+    }
+
+    updateWeightedUnit(options) {
+        var updatedExpression = this.getExpressionByName(options.name);
+        updatedExpression['weightedField'] = options.weightedField;
         this.model.update({
             id: updatedExpression.id,
             url: 'http://localhost:4567/expressions',
@@ -173,15 +210,14 @@ export class ExpressionDefinitionView extends View{
         var isGrade = this.$el.find('#expression_isGrade').is(':checked');
         var isComplex = this.$el.find('#expression_isComplex').is(':checked');
         var expressionDefinition = this.$el.find('#expression_definition').val();
-        var expressionFilter = this.$el.find('#expression_filter').val();
+        //var expressionFilter = this.$el.find('#expression_filter').val();
+        //var associatedUnit = this.$el.find('#associated_unit').val();
         if (expressionName && expressionDefinition) {
-            console.log(expressionName + '-' + isGrade + '-' + expressionDefinition + '-' + expressionFilter + '-' + isComplex);
             var newExpression = {
                 name: expressionName,
                 isGrade: isGrade || false,
                 isComplex: isComplex || false,
-                exprvalue: expressionDefinition,
-                filter: expressionFilter
+                exprvalue: expressionDefinition
             }
             this.model.add({
                 dataObject: newExpression,
@@ -230,7 +266,7 @@ export class ExpressionDefinitionView extends View{
     }
 
     getExpressionByName(expressionName) {
-        var object;
+        var object = null;
         this.data.forEach(function (data) {
             if (data.name === expressionName) {
                 object = data;
