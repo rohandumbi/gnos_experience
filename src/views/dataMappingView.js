@@ -52,7 +52,7 @@ export class DataMappingView extends View{
                 '<tr>' +
                 '<td>' + field.name + '</td>' +
                 '<td>' + field.dataType + '</td>' +
-                '<td>' + field.weightedUnit + '</td>' +
+                '<td>' + (field.weightedUnit || '') + '</td>' +
                 '</tr>'
             )
             var $row = $(row);
