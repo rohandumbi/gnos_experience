@@ -1,6 +1,7 @@
 import { View } from '../core/view';
 import { GnosModel } from '../models/gnosModel';
 import {ExpressionModel} from '../models/expressionModel';
+import {UnitModel} from '../models/unitModel';
 
 export class ModelDefinitionView extends View{
 
@@ -10,6 +11,7 @@ export class ModelDefinitionView extends View{
         this.projectId = options.projectId;
         this.model = new GnosModel({projectId: this.projectId});
         this.expressionModel = new ExpressionModel({projectId: this.projectId});
+        this.unitModel = new UnitModel({projectId: this.projectId});
     }
 
     getHtml() {
@@ -31,6 +33,36 @@ export class ModelDefinitionView extends View{
         return expressionObject;
     }
 
+    getUnitById(fieldId) {
+        var object = null;
+        this.units.forEach(function (unit) {
+            if (unit.id === parseInt(fieldId)) {
+                object = unit;
+            }
+        });
+        return object;
+    }
+
+    getExpressionByName(expressionName) {
+        var expressionObject;
+        this.expressions.forEach(function (expression) {
+            if (expression.name === expressionName) {
+                expressionObject = expression;
+            }
+        });
+        return expressionObject;
+    }
+
+    getUnitByName(unitName) {
+        var object = null;
+        this.units.forEach(function (unit) {
+            if (unit.name === unitName) {
+                object = unit;
+            }
+        });
+        return object;
+    }
+
     getModelByName(modelName) {
         var modelObject = null;
         this.modelData.forEach(function (model) {
@@ -39,6 +71,19 @@ export class ModelDefinitionView extends View{
             }
         });
         return modelObject;
+    }
+
+    fetchUnits() {
+        var that = this;
+        this.unitModel.fetch({
+            success: function (data) {
+                that.units = data;
+                that.fetchExpressions();
+            },
+            error: function (data) {
+                alert('Error fetching expression list: ' + data);
+            }
+        })
     }
 
     fetchExpressions() {
@@ -63,7 +108,10 @@ export class ModelDefinitionView extends View{
                     '<select id="expression_name" class="expression_name form-control" value="test">'
                 );
                 that.expressions.forEach(function (expression) {
-                    tableRow += '<option data-expression-name="' + expression.name + '" data-expression-id="' + expression.id + '">' + expression.name + '</option>';
+                    tableRow += '<option data-unit-type="2" data-unit-name="' + expression.name + '" data-unit-id="' + expression.id + '">' + expression.name + '</option>';
+                });
+                that.units.forEach(function (unit) {
+                    tableRow += '<option data-unit-type="1" data-unit-name="' + unit.name + '" data-unit-id="' + unit.id + '">' + unit.name + '</option>';
                 });
                 tableRow += '</select>';
                 that.$el.find('#expression_list').append(tableRow);
@@ -76,7 +124,7 @@ export class ModelDefinitionView extends View{
     }
 
     onDomLoaded() {
-        this.fetchExpressions();
+        this.fetchUnits();
     }
 
     initializeGrid(modelData) {
@@ -85,10 +133,20 @@ export class ModelDefinitionView extends View{
         var row = '';
         for (var i = 0; i < modelData.length; i++) {
             var model = modelData[i];
+            var unitName = '';
+            if (model.expressionId > 0) {//expression
+                var expressionId = model.expressionId;
+                var expression = this.getExpressionById(expressionId);
+                unitName = expression.name;
+            } else {//unit
+                var fieldId = model.fieldId;
+                var unit = this.getUnitById(fieldId);
+                unitName = unit.name;
+            }
             row += (
                 '<tr>' +
                     '<td>' + model.name + '</td>' +
-                '<td>' + model.expressionId + '</td>' +
+                '<td>' + unitName + '</td>' +
                 '<td>' + (model.condition || '') + '</td>' +
                 '</tr>'
             )
@@ -101,25 +159,20 @@ export class ModelDefinitionView extends View{
             rowSelect: true,
             keepSelection: true,
             formatters: {
-                "expression": function(column, row){
-                    var expression = that.getExpressionById(row.expressionId);
-                    var expressionName;
+                "unit": function (column, row) {
+                    var unitName = '';
                     var tableRow = '';
-                    if (expression && expression.name) {
-                        expressionName = expression.name;
-                        tableRow = (
-                            '<select class="expression" value="test">' +
-                            '<option selected disabled hidden>' + expressionName + '</option>'
-                        );
-                    } else {
-                        expressionName = '';
-                        tableRow = (
-                            '<select disabled class="expression" value="test">' +
-                            '<option selected disabled hidden>' + expressionName + '</option>'
-                        );
-                    }
+                    unitName = row.unitName || '';
+                    tableRow = (
+                        '<select class="expression" value="test">' +
+                        '<option selected disabled hidden>' + unitName + '</option>'
+                    );
+
                     that.expressions.forEach(function (expression) {
-                        tableRow += '<option data-expression-id="' + expression.id + '">' + expression.name + '</option>';
+                        tableRow += '<option data-unit-type="2" data-unit-name="' + expression.name + '">' + expression.name + '</option>';
+                    });
+                    that.units.forEach(function (unit) {
+                        tableRow += '<option data-unit-type="1" data-unit-name="' + unit.name + '">' + unit.name + '</option>';
                     });
 
                     tableRow += '</select>';
@@ -141,13 +194,23 @@ export class ModelDefinitionView extends View{
             that.grid.find(".expression").change(function (event) {
                 //alert($(this).data('expression-name'));
                 var modelName = $(this).closest('tr').data('row-id');
+                var unitType = $(this).find('option:checked').data('unit-type');
+                var unitName = $(this).find('option:checked').data('unit-name');
+                if (parseInt(unitType) === 2) {
+                    var expression = that.getExpressionByName(unitName);
+                    that.updateExpression({name: modelName, expressionId: expression.id});
+                } else {
+                    var unit = that.getUnitByName(unitName);
+                    that.updateUnit({name: modelName, unitId: unit.id});
+                }
+
                 var exprId = $(this).find(":selected").data('expression-id');
-                that.updateExpression({name: modelName, expressionId: exprId});
             });
             that.grid.find(".model_condition").change(function (event) {
                 var modelName = $(this).closest('tr').data('row-id');
                 var conditionValue = $(this).val();
-                that.updateCondition({name: modelName, condition: conditionValue});
+                var unitType = $(this).closest('tr').find('option:selected').data('unit-type');
+                that.updateCondition({name: modelName, condition: conditionValue, unitType: unitType});
             });
         });
         var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#modelDefinitionModal"></button>');
@@ -168,7 +231,25 @@ export class ModelDefinitionView extends View{
 
     updateExpression(options) {
         var updatedModel = this.getModelByName(options.name);
-        updatedModel['expressionId'] = options.expressionId;
+        updatedModel['unitId'] = options.expressionId;
+        updatedModel['unitType'] = 2;
+        this.model.update({
+            id: updatedModel.id,
+            url: 'http://localhost:4567/model',
+            dataObject: updatedModel,
+            success: function (data) {
+                alert('Successfully updated');
+            },
+            error: function (data) {
+                alert('Failed to update: ' + data);
+            }
+        });
+    }
+
+    updateUnit(options) {
+        var updatedModel = this.getModelByName(options.name);
+        updatedModel['unitId'] = options.unitId;
+        updatedModel['unitType'] = 1;
         this.model.update({
             id: updatedModel.id,
             url: 'http://localhost:4567/model',
@@ -185,6 +266,15 @@ export class ModelDefinitionView extends View{
     updateCondition(options) {
         var updatedModel = this.getModelByName(options.name);
         updatedModel['condition'] = options.condition;
+        var unitType = options.unitType;
+        if (!unitType) {
+            unitType = updatedModel.unitType;
+        }
+        if (unitType === 1) {
+            updatedModel['unitId'] = updatedModel.fieldId;
+        } else {
+            updatedModel['unitId'] = updatedModel.expressionId;
+        }
         this.model.update({
             id: updatedModel.id,
             url: 'http://localhost:4567/model',
@@ -201,16 +291,25 @@ export class ModelDefinitionView extends View{
     addRowToGrid() {
         var that = this;
         var modelName = this.$el.find('#model_name').val();
-        var expressionId = this.$el.find('select#expression_name option:checked').data('expression-id');
+        var unitId = this.$el.find('select#expression_name option:checked').data('unit-id');
+        var unitType = this.$el.find('select#expression_name option:checked').data('unit-type');
         var newModel = {};
         newModel['name'] = modelName;
-        newModel['expressionId'] = expressionId;
-        if (modelName && expressionId) {
+        newModel['unitId'] = unitId;
+        newModel['unitType'] = unitType;
+        if (modelName) {
             this.model.add({
                 url: 'http://localhost:4567/project/' + that.projectId + '/model',
                 dataObject: newModel,
                 success: function (data) {
                     that.modelData.push(data);
+                    var unitname = ''
+                    if (data.unitType === 1) {
+                        unitname = that.getUnitById(data.fieldId).name;
+                    } else {
+                        unitname = that.getExpressionById(data.expressionId).name;
+                    }
+                    data['unitName'] = unitname;
                     that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
                     that.$el.find('#model_name').val('');
                     that.$el.find('#expression_name').val('');
