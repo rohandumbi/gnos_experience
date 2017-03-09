@@ -2,6 +2,7 @@ import { View } from '../core/view';
 import { OpexModel } from '../models/opexModel';
 import {ExpressionModel} from '../models/expressionModel';
 import {GnosModel} from '../models/gnosModel';
+import {UnitModel} from '../models/unitModel';
 
 export class OpexDefinitionView extends View{
 
@@ -13,6 +14,7 @@ export class OpexDefinitionView extends View{
         this.opexModel = new OpexModel({scenarioId: this.scenario.id});
         this.expressionModel = new ExpressionModel({projectId: this.projectId});
         this.gnosModel = new GnosModel({projectId: this.projectId});
+        this.unitModel = new UnitModel({projectId: this.projectId});
     }
 
     render() {
@@ -27,6 +29,19 @@ export class OpexDefinitionView extends View{
             })
         });
         return promise;
+    }
+
+    fetchUnits() {
+        var that = this;
+        this.unitModel.fetch({
+            success: function (data) {
+                that.units = data;
+                that.fetchExpressionList();
+            },
+            error: function (data) {
+                alert('Error fetching expression list: ' + data);
+            }
+        })
     }
 
     fetchExpressionList() {
@@ -78,6 +93,36 @@ export class OpexDefinitionView extends View{
         return expressionObject;
     }
 
+    getExpressionByName(expressionName) {
+        var expressionObject;
+        this.expressions.forEach(function (expression) {
+            if (expression.name === expressionName) {
+                expressionObject = expression;
+            }
+        });
+        return expressionObject;
+    }
+
+    getUnitById(fieldId) {
+        var object = null;
+        this.units.forEach(function (unit) {
+            if (unit.id === parseInt(fieldId)) {
+                object = unit;
+            }
+        });
+        return object;
+    }
+
+    getUnitByName(unitName) {
+        var object = null;
+        this.units.forEach(function (unit) {
+            if (unit.name === unitName) {
+                object = unit;
+            }
+        });
+        return object;
+    }
+
     getModelById(modelId) {
         var modelObject;
         this.models.forEach(function (model) {
@@ -89,7 +134,7 @@ export class OpexDefinitionView extends View{
     }
 
     onDomLoaded() {
-        this.fetchExpressionList();
+        this.fetchUnits();
     }
 
     initializeGrid(opexData) {
@@ -98,12 +143,22 @@ export class OpexDefinitionView extends View{
         var row = '';
         for (var i = 0; i < opexData.length; i++) {
             var opex = opexData[i];
+            var unitName = '';
+            if (opex.expressionId > 0) {//expression
+                var expressionId = opex.expressionId;
+                var expression = this.getExpressionById(expressionId);
+                unitName = expression.name;
+            } else {//unit
+                var fieldId = opex.fieldId;
+                var unit = this.getUnitById(fieldId);
+                unitName = unit.name;
+            }
             row += (
                 '<tr>' +
                 '<td>' + opex.isRevenue + '</td>' +
                 '<td>' + opex.inUse + '</td>' +
                 '<td>' + opex.modelId + '</td>' +
-                '<td>' + opex.expressionId + '</td>'
+                '<td>' + unitName + '</td>'
             )
             var scenarioStartYear = this.scenario.startYear;
             var scenarioTimePeriod = this.scenario.timePeriod;
@@ -157,25 +212,20 @@ export class OpexDefinitionView extends View{
                     tableRow += '</select>';
                     return tableRow;
                 },
-                "expression": function(column, row) {
-                    var expression = that.getExpressionById(row.expressionId);
-                    var expressionName;
+                "unit": function (column, row) {
+                    var unitName = '';
                     var tableRow = '';
-                    if (expression && expression.name) {
-                        expressionName = expression.name;
-                        tableRow = (
-                            '<select class="expression" value="test">' +
-                            '<option selected disabled hidden>' + expressionName + '</option>'
-                        );
-                    }else{
-                        expressionName = '';
-                        tableRow = (
-                            '<select disabled class="expression" value="test">' +
-                            '<option selected disabled hidden>' + expressionName + '</option>'
-                        );
-                    }
+                    unitName = row.unitName || '';
+                    tableRow = (
+                        '<select class="unit">' +
+                        '<option selected disabled hidden>' + unitName + '</option>'
+                    );
+
                     that.expressions.forEach(function (expression) {
-                        tableRow += '<option data-expression-id="' + expression.id + '" value="model 1">' + expression.name + '</option>';
+                        tableRow += '<option data-unit-type="2" data-unit-name="' + expression.name + '">' + expression.name + '</option>';
+                    });
+                    that.units.forEach(function (unit) {
+                        tableRow += '<option data-unit-type="1" data-unit-name="' + unit.name + '">' + unit.name + '</option>';
                     });
 
                     tableRow += '</select>';
@@ -205,12 +255,21 @@ export class OpexDefinitionView extends View{
             that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
             that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
 
-            that.grid.find('.expression').change(function (e) {
+            that.grid.find('.unit').change(function (e) {
                 //alert('update expression of opex index: ' + $(this).closest('tr').data('row-id') + ':' + $(this).data('expression-id'));
-                that.updateExpressionId({
+                var unitType = $(this).find('option:checked').data('unit-type');
+                var unitName = $(this).find('option:checked').data('unit-name');
+                if (parseInt(unitType) === 2) {
+                    var expression = that.getExpressionByName(unitName);
+                    that.updateExpressionId({index: $(this).closest('tr').data('row-id'), expressionId: expression.id});
+                } else {
+                    var unit = that.getUnitByName(unitName);
+                    that.updateUnitId({index: $(this).closest('tr').data('row-id'), unitId: unit.id});
+                }
+                /*that.updateExpressionId({
                     expressionId: $(this).find(":selected").data('expression-id'),
                     index: $(this).closest('tr').data('row-id')
-                });
+                 });*/
             });
             that.grid.find('.identifier').change(function (e) {
                 //alert('update identifier of opex index: ' + $(this).closest('tr').data('row-id') + ':' + $(this).data('model-id'));
@@ -285,7 +344,16 @@ export class OpexDefinitionView extends View{
 
     updateExpressionId(options) {
         var opexData = this.opexData[options.index];
-        opexData['expressionId'] = options.expressionId;
+        opexData['unitType'] = 2;
+        opexData['unitId'] = options.expressionId;
+        console.log(opexData);
+        this.updateOpex({opexData: opexData});
+    }
+
+    updateUnitId(options) {
+        var opexData = this.opexData[options.index];
+        opexData['unitType'] = 1;
+        opexData['unitId'] = options.unitId;
         console.log(opexData);
         this.updateOpex({opexData: opexData});
     }
@@ -293,12 +361,25 @@ export class OpexDefinitionView extends View{
     updateModelId(options) {
         var opexData = this.opexData[options.index];
         opexData['modelId'] = options.modelId;
+        var unitType = opexData.unitType;
+        if (unitType === 1) {
+            opexData['unitId'] = opexData.fieldId;
+        } else {
+            opexData['unitId'] = opexData.expressionId;
+        }
         console.log(opexData);
         this.updateOpex({opexData: opexData});
     }
 
     updateCostData(options) {
         var opexData = this.opexData[options.index];
+        var unitType = opexData.unitType;
+        if (unitType === 1) {
+            opexData['unitId'] = opexData.fieldId;
+        } else {
+            opexData['unitId'] = opexData.expressionId;
+        }
+        opexData.costData = {};
         opexData.costData[options.year.toString()] = parseInt(options.value);
         console.log(opexData);
         this.updateOpex({opexData: opexData});
@@ -307,6 +388,12 @@ export class OpexDefinitionView extends View{
     updateInUse(options) {
         var opexData = this.opexData[options.index];
         opexData['inUse'] = options.inUse;
+        var unitType = opexData.unitType;
+        if (unitType === 1) {
+            opexData['unitId'] = opexData.fieldId;
+        } else {
+            opexData['unitId'] = opexData.expressionId;
+        }
         console.log(opexData);
         this.updateOpex({opexData: opexData});
     }
@@ -317,19 +404,21 @@ export class OpexDefinitionView extends View{
         if (!options.isRevenue) {
             opexData["expressionId"] = 0;
         }
+        var unitType = opexData.unitType;
+        if (unitType === 1) {
+            opexData['unitId'] = opexData.fieldId;
+        } else {
+            opexData['unitId'] = opexData.expressionId;
+        }
         console.log(opexData);
         this.updateOpex({opexData: opexData});
-    }
-
-    loadScenario(scenarioName) {
-        this.$el.find('#scenario_name').val(scenarioName);
     }
 
     addRowToGrid() {
         var that = this;
         var newOpex = {};
         newOpex['modelId'] = 0;
-        newOpex['expressionId'] = 0;
+        /*newOpex['expressionId'] = 0;*/
         newOpex['inUse'] = true;
         newOpex['isRevenue'] = true;
         //newOpex['costData'] = {};

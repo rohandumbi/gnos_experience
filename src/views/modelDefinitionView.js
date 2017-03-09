@@ -129,7 +129,6 @@ export class ModelDefinitionView extends View{
 
     initializeGrid(modelData) {
         var that = this;
-        //var data = this.model.fetch();
         var row = '';
         for (var i = 0; i < modelData.length; i++) {
             var model = modelData[i];
@@ -204,7 +203,6 @@ export class ModelDefinitionView extends View{
                     that.updateUnit({name: modelName, unitId: unit.id});
                 }
 
-                var exprId = $(this).find(":selected").data('expression-id');
             });
             that.grid.find(".model_condition").change(function (event) {
                 var modelName = $(this).closest('tr').data('row-id');

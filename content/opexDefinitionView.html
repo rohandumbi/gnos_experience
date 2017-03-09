@@ -1,4 +1,4 @@
-<div id="fixedCostDefinitionView">
+<div id="opexDefinitionView">
     <form class="form-inline">
         <div class="form-group">
             <label for="scenario_name">Scenario In Use:</label>
@@ -12,7 +12,7 @@
         <th data-formatter="classification" data-column-id="isRevenue">Classification</th>
         <th style="width:70px" data-column-id="inUse" data-formatter="inUse">In Use</th>
         <th data-column-id="modelId" data-formatter="identifier">Identifier</th>
-        <th data-column-id="expressionId" data-formatter="expression">Expression</th>
+        <th data-column-id="unitName" data-formatter="unit">Unit</th>
         <% var counter = timePeriod %>
         <% for(var i=0; i< counter; i++) { %>
         <th style="width:75px" data-formatter="value" data-column-id="<%= (startYear + i) %>"><%= (startYear + i) %></th>
