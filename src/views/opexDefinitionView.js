@@ -147,11 +147,15 @@ export class OpexDefinitionView extends View{
             if (opex.expressionId > 0) {//expression
                 var expressionId = opex.expressionId;
                 var expression = this.getExpressionById(expressionId);
-                unitName = expression.name;
+                unitName = expression.name || '';
             } else {//unit
                 var fieldId = opex.fieldId;
                 var unit = this.getUnitById(fieldId);
-                unitName = unit.name;
+                if (!unit) {
+                    unitName = '';
+                } else {
+                    unitName = unit.name || '';
+                }
             }
             row += (
                 '<tr>' +
@@ -298,12 +302,12 @@ export class OpexDefinitionView extends View{
                 var index = $(this).closest('tr').data('row-id');
                 var isRevenue = ($(this).find(":selected").data('revenue').toString() === "true");
                 if (!isRevenue) {
-                    $(this).closest('tr').find('.expression').val('');
-                    $(this).closest('tr').find('.expression').prop("disabled", true);
+                    $(this).closest('tr').find('.unit').val('');
+                    $(this).closest('tr').find('.unit').prop("disabled", true);
                     //$(this).closest('tr').find('.expression').hide();
                 } else {
                     //$(this).closest('tr').find('.expression').val('');
-                    $(this).closest('tr').find('.expression').prop("disabled", false);
+                    $(this).closest('tr').find('.unit').prop("disabled", false);
                     //$(this).closest('tr').find('.expression').show();
                 }
                 that.updateIsRevenue({index: index, isRevenue: isRevenue});
@@ -418,7 +422,8 @@ export class OpexDefinitionView extends View{
         var that = this;
         var newOpex = {};
         newOpex['modelId'] = 0;
-        /*newOpex['expressionId'] = 0;*/
+        newOpex['unitId'] = 0;
+        newOpex['unitType'] = 1;
         newOpex['inUse'] = true;
         newOpex['isRevenue'] = true;
         //newOpex['costData'] = {};
