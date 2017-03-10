@@ -5,6 +5,7 @@ import {ProcessJoinModel} from '../models/processJoinModel';
 import {PitModel} from '../models/pitModel';
 import {PitGroupModel} from '../models/pitGroupModel';
 import {ExpressionModel} from '../models/expressionModel';
+import {UnitModel} from '../models/unitModel';
 import {ProductModel} from '../models/productModel';
 import {ProductJoinModel} from '../models/productJoinModel';
 
@@ -23,6 +24,7 @@ export class ProcessConstraintView extends View{
         this.expressionModel = new ExpressionModel({projectId: this.projectId});
         this.productModel = new ProductModel({projectId: this.projectId});
         this.productJoinModel = new ProductJoinModel({projectId: this.projectId});
+        this.unitModel = new UnitModel({projectId: this.projectId});
     }
 
     getHtml() {
@@ -40,7 +42,20 @@ export class ProcessConstraintView extends View{
     }
 
     onDomLoaded() {
-        this.fetchExpressions();
+        this.fetchUnits();
+    }
+
+    fetchUnits() {
+        var that = this;
+        this.unitModel.fetch({
+            success: function (data) {
+                that.units = data;
+                that.fetchExpressions();
+            },
+            error: function (data) {
+                alert('Error fetching expression list: ' + data);
+            }
+        })
     }
 
     fetchExpressions() {
@@ -251,6 +266,9 @@ export class ProcessConstraintView extends View{
                     });
                     that.productJoins.forEach(function (productJoin) {
                         tableRow += '<option data-coefficient-name="' + productJoin.name + '" data-coefficient-type="3">' + productJoin.name + '</option>';
+                    });
+                    that.units.forEach(function (unit) {
+                        tableRow += '<option data-coefficient-name="' + unit.name + '" data-coefficient-type="5">' + unit.name + '</option>';
                     });
                     tableRow += '<option data-coefficient-name="Total_TH" data-coefficient-type="4">' + 'Total_TH' + '</option>';
                     tableRow += '</select>';
