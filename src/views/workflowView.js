@@ -6,6 +6,7 @@ import {ProcessJoinModel} from '../models/processJoinModel'
 import {ProductModel} from '../models/productModel'
 import {ProductJoinModel} from '../models/productJoinModel'
 import {ExpressionModel} from '../models/expressionModel'
+import {UnitModel} from '../models/unitModel'
 
 export class WorkflowView extends View{
 
@@ -18,7 +19,8 @@ export class WorkflowView extends View{
         this.processJoinModel = new ProcessJoinModel({projectId: options.projectId});
         this.productModel = new ProductModel({projectId: options.projectId});
         this.productJoinModel = new ProductJoinModel({projectId: options.projectId});
-        this.expressionModel = new ExpressionModel({projectId: options.projectId})
+        this.expressionModel = new ExpressionModel({projectId: options.projectId});
+        this.unitModel = new UnitModel({projectId: options.projectId})
     }
 
     getHtml() {
@@ -70,6 +72,17 @@ export class WorkflowView extends View{
         });
         tableRow += '</select>';
         that.$el.find('#expression-list').append(tableRow);
+
+        var fieldSet = (
+            '<fieldset class="group">' +
+            '<legend>' + 'Select expressions' + '</legend>' +
+            '<ul class="checkbox">'
+        );
+        that.nonGradeExpressions.forEach(function (expression) {
+            fieldSet += '<li><input type="checkbox" value="' + expression.name + '" /><label for="cb1">' + expression.name + '</label></li>'
+        });
+        fieldSet += '</ul> </fieldset>'
+        this.$el.find('#expression-group').append(fieldSet);
     }
 
     addProductJoinsToGraph(productJoins) {
@@ -176,6 +189,29 @@ export class WorkflowView extends View{
         });
     }
 
+    fetchUnits() {
+        var that = this;
+        this.unitModel.fetch({
+            success: function (data) {
+                that.units = data;
+                var fieldSet = (
+                    '<fieldset class="group">' +
+                    '<legend>' + 'Select units' + '</legend>' +
+                    '<ul class="checkbox">'
+                );
+                that.units.forEach(function (unit) {
+                    fieldSet += '<li><input type="checkbox" value="' + unit.name + '" /><label for="cb1">' + unit.name + '</label></li>'
+                });
+                fieldSet += '</ul> </fieldset>'
+                that.$el.find('#unit-group').append(fieldSet);
+                that.fetchExpressions();
+            },
+            error: function (data) {
+                alert('Error fetching product joins');
+            }
+        });
+    }
+
     fetchExpressions() {
         var that = this;
         this.expressionModel.fetch({
@@ -279,7 +315,7 @@ export class WorkflowView extends View{
     }
 
     onDomLoaded() {
-        this.fetchExpressions();
+        this.fetchUnits();
     }
 
     initializeGraph(nodeData) {
