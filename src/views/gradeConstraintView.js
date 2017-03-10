@@ -198,7 +198,7 @@ export class GradeConstraintView extends View{
                     );
                     /*tableRow += '<option data-grade-name="" data-grade-type="-1">' + 'NONE' + '</option>';*/
                     that.grades.forEach(function (grade) {
-                        tableRow += '<option data-grade-name="' + grade.mappedName + '" data-grade-type="0">' + grade.mappedName + '</option>';
+                        tableRow += '<option data-grade-name="' + grade.name + '" data-grade-type="0">' + grade.name + '</option>';
                     });
                     /*that.processes.forEach(function (process) {
                      tableRow += '<option data-grade-name="' + process.name + '" data-grade-type="1">' + process.name + '</option>';
