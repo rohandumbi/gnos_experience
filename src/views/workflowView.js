@@ -52,6 +52,26 @@ export class WorkflowView extends View{
         return object;
     }
 
+    getProductWithName(productName) {
+        var object = null;
+        this.products.forEach(function (product) {
+            if (product.name === productName) {
+                object = product;
+            }
+        });
+        return object;
+    }
+
+    getUnitWithName(unitName) {
+        var object = null;
+        this.units.forEach(function (unit) {
+            if (unit.name === unitName) {
+                object = unit;
+            }
+        });
+        return object;
+    }
+
     getNodeWithName(nodeName) {
         return this.system.getNode(nodeName);
     }
@@ -79,7 +99,7 @@ export class WorkflowView extends View{
             '<ul class="checkbox">'
         );
         that.nonGradeExpressions.forEach(function (expression) {
-            fieldSet += '<li><input type="checkbox" value="' + expression.name + '" /><label for="cb1">' + expression.name + '</label></li>'
+            fieldSet += '<li><input class="expression-checkbox" type="checkbox" value="' + expression.name + '" /><label for="cb1">' + expression.name + '</label></li>'
         });
         fieldSet += '</ul> </fieldset>'
         this.$el.find('#expression-group').append(fieldSet);
@@ -200,7 +220,7 @@ export class WorkflowView extends View{
                     '<ul class="checkbox">'
                 );
                 that.units.forEach(function (unit) {
-                    fieldSet += '<li><input type="checkbox" value="' + unit.name + '" /><label for="cb1">' + unit.name + '</label></li>'
+                    fieldSet += '<li><input class="unit-checkbox" type="checkbox" value="' + unit.name + '" /><label for="cb1">' + unit.name + '</label></li>'
                 });
                 fieldSet += '</ul> </fieldset>'
                 that.$el.find('#unit-group').append(fieldSet);
@@ -424,6 +444,7 @@ export class WorkflowView extends View{
 
 
     handleAddExpressionToProduct(event) {
+        var that = this;
         var pos = this.$el.find('#viewport').offset();
         var p = {x: event.pageX - pos.left, y: event.pageY - pos.top}
         var selected = this.system.nearest(p);
@@ -431,11 +452,34 @@ export class WorkflowView extends View{
             alert('options not available for category' + selected.node.data.category);
             return;
         } else {
+            this.$el.find('#addExpressions').click(function (event) {
+                $(this).off('click');
+                that.$el.find('.expression-checkbox:checked').each(
+                    function (checkbox) {
+                        // Insert code here
+                        console.log($(this).val());
+                        var updatedProduct = that.getProductWithName(selected.node.name);
+                        var expression = that.getExpressionByName($(this).val());
+                        updatedProduct['unitType'] = 2;
+                        updatedProduct['unitId'] = expression.id;
+                        that.productModel.add({
+                            dataObject: updatedProduct,
+                            success: function (data) {
+                                alert('Successfully added expression to product.');
+                            },
+                            error: function (data) {
+                                alert('Error adding product to join');
+                            }
+                        });
+                    }
+                );
+            });
             this.$el.find('#addExpressionToProductModal').modal();
         }
     }
 
     handleAddUnitToProduct(event) {
+        var that = this;
         var pos = this.$el.find('#viewport').offset();
         var p = {x: event.pageX - pos.left, y: event.pageY - pos.top}
         var selected = this.system.nearest(p);
@@ -443,6 +487,28 @@ export class WorkflowView extends View{
             alert('options not available for category' + selected.node.data.category);
             return;
         } else {
+            this.$el.find('#addUnits').click(function (event) {
+                $(this).off('click');
+                that.$el.find('.unit-checkbox:checked').each(
+                    function (checkbox) {
+                        // Insert code here
+                        console.log($(this).val());
+                        var updatedProduct = that.getProductWithName(selected.node.name);
+                        var unit = that.getUnitWithName($(this).val());
+                        updatedProduct['unitType'] = 1;
+                        updatedProduct['unitId'] = unit.id;
+                        that.productModel.add({
+                            dataObject: updatedProduct,
+                            success: function (data) {
+                                alert('Successfully added unit to product.');
+                            },
+                            error: function (data) {
+                                alert('Error adding product to join');
+                            }
+                        });
+                    }
+                );
+            });
             this.$el.find('#addUnitToProductModal').modal();
         }
     }
