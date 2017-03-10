@@ -383,36 +383,36 @@ export class WorkflowView extends View{
     }
 
     handleAddProductToProductJoin(event) {
-        /*var that = this;
-         var pos = this.$el.find('#viewport').offset();
-         var p = {x: event.pageX - pos.left, y: event.pageY - pos.top}
-         var selected = this.system.nearest(p);
-         if(selected.node.data.category !== 'model'){
-         alert('Option not available for category: ' + selected.node.data.category);
-         return;
-         }
-         if (selected.node) {
-         console.log('Adding to process: ' + selected.node.name);
-         this.$el.find('#add-to-join').click(function (event) {
-         $(this).off('click');
-         var processJoinName = that.$el.find('#target_join').val();
-         var processJoinNode = that.system.getNode(processJoinName.trim());
-         if (processJoinNode) {
-         var newProcessJoin = {}
-         newProcessJoin['name'] = processJoinName;
-         newProcessJoin['processId'] = selected.node.data.id;
-         that.processJoinModel.add({
-         dataObject: newProcessJoin,
-         success: function (data) {
-         alert('Successfully added to join.');
-         that.system.addEdge(processJoinNode, selected.node, {directed: true, weight: 2});
-         that.$el.find('#target_join').val('');
-         }
-         });
-         }
-         });
-         this.$el.find('#addProcessToJoinModal').modal();
-         }*/
+        var that = this;
+        var pos = this.$el.find('#viewport').offset();
+        var p = {x: event.pageX - pos.left, y: event.pageY - pos.top}
+        var selected = this.system.nearest(p);
+        if (selected.node) {
+            console.log('Adding product: ' + selected.node.name);
+            this.$el.find('#addProductToJoin').click(function (event) {
+                $(this).off('click');
+                var productJoinName = that.$el.find('#target_product_join').val();
+                var productJoinNode = that.system.getNode(productJoinName.trim());
+                if (productJoinNode) {
+                    var updatedProductJoin = {}
+                    updatedProductJoin['name'] = productJoinName;
+                    updatedProductJoin['childType'] = 1;
+                    updatedProductJoin['child'] = selected.node.name;
+                    that.productJoinModel.add({
+                        dataObject: updatedProductJoin,
+                        success: function (data) {
+                            alert('Successfully added to join.');
+                            that.system.addEdge(productJoinNode, selected.node, {directed: true, weight: 2});
+                            that.$el.find('#target_product_join').val('');
+                        },
+                        error: function (data) {
+                            alert('Error adding product to join');
+                        }
+                    });
+                }
+            });
+            this.$el.find('#addProductToJoinModal').modal();
+        }
     }
 
     handleAddProductJoinToProductJoin(event) {
