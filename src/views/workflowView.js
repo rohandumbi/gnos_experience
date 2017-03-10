@@ -94,7 +94,7 @@ export class WorkflowView extends View{
                         'color': '#B3B3B3',
                         'shape': 'rect',
                         'label': productJoinName,
-                        'category': 'productJoin'
+                        'category': 'superProductJoin'
                     });
                 }
                 that.system.addEdge(childProductJoinNode, productJoinNode, {directed: true, weight: 2});
@@ -311,11 +311,14 @@ export class WorkflowView extends View{
                     that.handleAddProcessToJoin(event);
                 } else if ((selectedAction.toString() === 'Add to product join')) {
                     that.handleAddToProductJoin(event);
+                } else if ((selectedAction.toString() === 'Add expression')) {
+                    that.handleAddExpressionToProduct(event);
+                } else if ((selectedAction.toString() === 'Add unit')) {
+                    that.handleAddUnitToProduct(event);
                 }
             }
         });
     }
-
     handleDelete(event) {
         var that = this;
         var pos = this.$el.find('#viewport').offset();
@@ -343,27 +346,83 @@ export class WorkflowView extends View{
                         that.system.pruneNode(selected.node);
                     },
                     error: function (data) {
-                        alert('Failed to delete model.');
+                        alert('Failed to delete process join.');
+                    }
+                });
+            } else if (category.toString() === 'product') {
+                this.productModel.delete({
+                    url: 'http://localhost:4567/project/' + that.projectId + '/products',
+                    id: selected.node.name,
+                    success: function () {
+                        that.system.pruneNode(selected.node);
+                    },
+                    error: function (data) {
+                        alert('Failed to delete product.');
+                    }
+                });
+            } else if (category.toString() === 'productJoin') {
+                this.productJoinModel.delete({
+                    url: 'http://localhost:4567/project/' + that.projectId + '/productjoins',
+                    id: selected.node.name,
+                    success: function (data) {
+                        that.system.pruneNode(selected.node);
+                    },
+                    error: function (data) {
+                        alert('Failed to delete product join.');
+                    }
+                });
+            } else if (category.toString() === 'superProductJoin') {
+                this.productJoinModel.delete({
+                    url: 'http://localhost:4567/project/' + that.projectId + '/productjoins',
+                    id: selected.node.name,
+                    success: function (data) {
+                        that.system.pruneNode(selected.node);
+                    },
+                    error: function (data) {
+                        alert('Failed to delete product join.');
                     }
                 });
             }
         }
     }
 
-    handleAddProduct(event) {
+
+    handleAddExpressionToProduct(event) {
         var pos = this.$el.find('#viewport').offset();
         var p = {x: event.pageX - pos.left, y: event.pageY - pos.top}
         var selected = this.system.nearest(p);
-        if (selected.node.data.category !== 'model') {
+        if (selected.node.data.category !== 'product') {
             alert('options not available for category' + selected.node.data.category);
             return;
         } else {
-            this.$el.find('#productModal').modal();
+            this.$el.find('#addExpressionToProductModal').modal();
         }
-        /*if (selected.node) {
-         console.log('Add product to: ' + selected.node.name);
-         }*/
     }
+
+    handleAddUnitToProduct(event) {
+        var pos = this.$el.find('#viewport').offset();
+        var p = {x: event.pageX - pos.left, y: event.pageY - pos.top}
+        var selected = this.system.nearest(p);
+        if (selected.node.data.category !== 'product') {
+            alert('options not available for category' + selected.node.data.category);
+            return;
+        } else {
+            this.$el.find('#addUnitToProductModal').modal();
+        }
+    }
+
+    /*handleAddProduct(event) {
+     var pos = this.$el.find('#viewport').offset();
+     var p = {x: event.pageX - pos.left, y: event.pageY - pos.top}
+     var selected = this.system.nearest(p);
+     if (selected.node.data.category !== 'model') {
+     alert('options not available for category' + selected.node.data.category);
+     return;
+     } else {
+     this.$el.find('#productModal').modal();
+     }
+
+     }*/
 
     handleAddToProductJoin(event) {
         var that = this;
