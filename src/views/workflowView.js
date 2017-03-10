@@ -5,6 +5,7 @@ import {ProcessTreeNodeModel} from '../models/processTreeNodeModel'
 import {ProcessJoinModel} from '../models/processJoinModel'
 import {ProductModel} from '../models/productModel'
 import {ProductJoinModel} from '../models/productJoinModel'
+import {ExpressionModel} from '../models/expressionModel'
 
 export class WorkflowView extends View{
 
@@ -17,6 +18,7 @@ export class WorkflowView extends View{
         this.processJoinModel = new ProcessJoinModel({projectId: options.projectId});
         this.productModel = new ProductModel({projectId: options.projectId});
         this.productJoinModel = new ProductJoinModel({projectId: options.projectId});
+        this.expressionModel = new ExpressionModel({projectId: options.projectId})
     }
 
     getHtml() {
@@ -38,8 +40,36 @@ export class WorkflowView extends View{
         return object;
     }
 
+    getExpressionByName(expressionName) {
+        var object = null;
+        this.expressions.forEach(function (expression) {
+            if (expression.name === expressionName) {
+                object = expression;
+            }
+        });
+        return object;
+    }
+
     getNodeWithName(nodeName) {
         return this.system.getNode(nodeName);
+    }
+
+    filterNonGradeExpressions() {
+        var that = this;
+        this.nonGradeExpressions = [];
+        this.expressions.forEach(function (expression) {
+            if (!expression.isGrade) {
+                that.nonGradeExpressions.push(expression);
+            }
+        });
+        var tableRow = (
+            '<select id="grade-expression" class="grade-expression form-control" value="test">'
+        );
+        that.nonGradeExpressions.forEach(function (expression) {
+            tableRow += '<option data-unit-name="' + expression.name + '">' + expression.name + '</option>';
+        });
+        tableRow += '</select>';
+        that.$el.find('#expression-list').append(tableRow);
     }
 
     addProductJoinsToGraph(productJoins) {
@@ -146,6 +176,20 @@ export class WorkflowView extends View{
         });
     }
 
+    fetchExpressions() {
+        var that = this;
+        this.expressionModel.fetch({
+            success: function (data) {
+                that.expressions = data;
+                that.filterNonGradeExpressions();
+                that.fetchProcesses();
+            },
+            error: function (data) {
+                alert('Error fetching product joins');
+            }
+        });
+    }
+
     fetchProductJoins() {
         var that = this;
         this.productJoinModel.fetch({
@@ -153,6 +197,9 @@ export class WorkflowView extends View{
                 that.productJoins = data;
                 that.initializeGraph(data);
                 that.bindDomEvents();
+            },
+            error: function (data) {
+                alert('Error fetching product joins');
             }
         });
     }
@@ -187,6 +234,28 @@ export class WorkflowView extends View{
         });
     }
 
+    fetchProcesses() {
+        var that = this;
+        this.processModel.fetch({
+            success: function (data) {
+                that.processes = data;
+                var tableRow = (
+                    '<select id="new_process" class="process-name form-control" value="test">'
+                );
+                that.processes.forEach(function (process) {
+                    tableRow += '<option data-process-name="' + process.name + '">' + process.name + '</option>';
+                });
+                tableRow += '</select>';
+                that.$el.find('#process-list').append(tableRow);
+                that.fetchModels();
+                //that.initializeGraph();
+            },
+            error: function (data) {
+                alert('Error fetching list of pits: ' + data);
+            }
+        });
+    }
+
     fetchModels() {
         var that = this;
         this.gnosModel.fetch({
@@ -210,7 +279,7 @@ export class WorkflowView extends View{
     }
 
     onDomLoaded() {
-        this.fetchModels();
+        this.fetchExpressions();
     }
 
     initializeGraph(nodeData) {
@@ -368,6 +437,9 @@ export class WorkflowView extends View{
         this.$el.find('#join_processes').click(function (event) {
             that.addProcessJoin();
         });
+        this.$el.find('#add-product').click(function (event) {
+            that.addProduct();
+        });
     }
 
     addProcessJoin() {
@@ -383,6 +455,32 @@ export class WorkflowView extends View{
                 that.$el.find('#join_name').val('');
             }
         });
+    }
+
+    addProduct() {
+        var that = this;
+        var newProduct = {}
+        var processName = this.$el.find('#new_process').find(':selected').data('process-name');
+        var unitName = this.$el.find('#grade-expression').find(':selected').data('unit-name');
+        var unit = this.getExpressionByName(unitName);
+        //newProduct[]
+        newProduct['name'] = processName + '_' + this.$el.find('#product_name').val();
+        var process = this.getModelWithName(processName);
+        newProduct['modelId'] = process.id;
+        newProduct['unitType'] = 2;
+        newProduct['unitId'] = unit.id;
+        this.productModel.add({
+            dataObject: newProduct,
+            success: function (data) {
+                alert('Successfully created product.');
+                that.addProductsToGraph([data]);
+                that.$el.find('#product_name').val('');
+            },
+            error: function (data) {
+                alert('Error creating product');
+            }
+        });
+        console.log(newProduct.name + ':' + newProduct.modelId + ':' + newProduct.unitType + ':' + newProduct.unitId);
     }
 
     bindDragEventsOnModels() {

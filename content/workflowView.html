@@ -28,7 +28,10 @@
             </div>
             <div style="display: inline-block; float:right" class="btn-group" role="group" aria-label="...">
                 <button data-toggle="modal" data-target="#processJoinModal" type="button" class="btn btn-primary">Create
-                    Join
+                    Process Join
+                </button>
+                <button data-toggle="modal" data-target="#productModal" type="button" class="btn btn-primary">Create
+                    Product
                 </button>
                 <!--<button type="button" class="btn btn-default">Zoom In</button>
                 <button type="button" class="btn btn-default">Zoom Out</button>-->
@@ -67,6 +70,39 @@
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     <button id="join_processes" type="button" class="btn btn-primary" data-dismiss="modal">Add join
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="productModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="productModalLabel">Product Definition</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-inline">
+                        <form class="form">
+                            <div class="form-group">
+                                <label for="product_name">Product Name:</label>
+                                <input type="text" class="form-control" id="product_name">
+                            </div>
+                            <br/>
+                            <div id="process-list" class="form-group">
+                                <label>Process:</label>
+                            </div>
+                            <br/>
+                            <div id="expression-list" class="form-group">
+                                <label>Expression:</label>
+                            </div>
+                        </form>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="add-product" type="button" class="btn btn-primary" data-dismiss="modal">Add</button>
                 </div>
             </div>
         </div>
