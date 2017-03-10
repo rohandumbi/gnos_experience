@@ -371,7 +371,7 @@ export class WorkflowView extends View{
         var p = {x: event.pageX - pos.left, y: event.pageY - pos.top}
         var selected = this.system.nearest(p);
         var category = selected.node.data.category;
-        if (category !== 'product' || category !== 'product') {
+        if (category !== 'product' && category !== 'productJoin') {
             alert('Option not available for category: ' + selected.node.data.category);
             return;
         }
@@ -416,7 +416,36 @@ export class WorkflowView extends View{
     }
 
     handleAddProductJoinToProductJoin(event) {
-
+        var that = this;
+        var pos = this.$el.find('#viewport').offset();
+        var p = {x: event.pageX - pos.left, y: event.pageY - pos.top}
+        var selected = this.system.nearest(p);
+        if (selected.node) {
+            console.log('Adding product join: ' + selected.node.name);
+            this.$el.find('#addProductJoinToJoin').click(function (event) {
+                $(this).off('click');
+                var productJoinName = that.$el.find('#parent_product_join').val();
+                var productJoinNode = that.system.getNode(productJoinName.trim());
+                if (productJoinNode) {
+                    var updatedProductJoin = {}
+                    updatedProductJoin['name'] = productJoinName;
+                    updatedProductJoin['childType'] = 2;
+                    updatedProductJoin['child'] = selected.node.name;
+                    that.productJoinModel.add({
+                        dataObject: updatedProductJoin,
+                        success: function (data) {
+                            alert('Successfully added to join.');
+                            that.system.addEdge(productJoinNode, selected.node, {directed: true, weight: 2});
+                            that.$el.find('#target_product_join').val('');
+                        },
+                        error: function (data) {
+                            alert('Error adding product to join');
+                        }
+                    });
+                }
+            });
+            this.$el.find('#addProductJoinToJoinModal').modal();
+        }
     }
 
 
