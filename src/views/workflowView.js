@@ -94,7 +94,7 @@ export class WorkflowView extends View{
                         'color': '#B3B3B3',
                         'shape': 'rect',
                         'label': productJoinName,
-                        'category': 'parentProductJoin'
+                        'category': 'productJoin'
                     });
                 }
                 that.system.addEdge(childProductJoinNode, productJoinNode, {directed: true, weight: 2});
@@ -307,8 +307,10 @@ export class WorkflowView extends View{
                     that.handleDelete(event);
                 } else if ((selectedAction.toString() === 'Add product')) {
                     that.handleAddProduct(event);
-                } else if ((selectedAction.toString() === 'Add to join')) {
+                } else if ((selectedAction.toString() === 'Add to process join')) {
                     that.handleAddProcessToJoin(event);
+                } else if ((selectedAction.toString() === 'Add to product join')) {
+                    that.handleAddToProductJoin(event);
                 }
             }
         });
@@ -352,16 +354,81 @@ export class WorkflowView extends View{
         var pos = this.$el.find('#viewport').offset();
         var p = {x: event.pageX - pos.left, y: event.pageY - pos.top}
         var selected = this.system.nearest(p);
-        if (selected.node) {
-            console.log('Add product to: ' + selected.node.name);
+        if (selected.node.data.category !== 'model') {
+            alert('options not available for category' + selected.node.data.category);
+            return;
+        } else {
+            this.$el.find('#productModal').modal();
+        }
+        /*if (selected.node) {
+         console.log('Add product to: ' + selected.node.name);
+         }*/
+    }
+
+    handleAddToProductJoin(event) {
+        var that = this;
+        var pos = this.$el.find('#viewport').offset();
+        var p = {x: event.pageX - pos.left, y: event.pageY - pos.top}
+        var selected = this.system.nearest(p);
+        var category = selected.node.data.category;
+        if (category !== 'product' || category !== 'product') {
+            alert('Option not available for category: ' + selected.node.data.category);
+            return;
+        }
+        if (category == 'product') {
+            this.handleAddProductToProductJoin(event);
+        } else if (category == 'productJoin') {
+            this.handleAddProductJoinToProductJoin(event);
         }
     }
+
+    handleAddProductToProductJoin(event) {
+        /*var that = this;
+         var pos = this.$el.find('#viewport').offset();
+         var p = {x: event.pageX - pos.left, y: event.pageY - pos.top}
+         var selected = this.system.nearest(p);
+         if(selected.node.data.category !== 'model'){
+         alert('Option not available for category: ' + selected.node.data.category);
+         return;
+         }
+         if (selected.node) {
+         console.log('Adding to process: ' + selected.node.name);
+         this.$el.find('#add-to-join').click(function (event) {
+         $(this).off('click');
+         var processJoinName = that.$el.find('#target_join').val();
+         var processJoinNode = that.system.getNode(processJoinName.trim());
+         if (processJoinNode) {
+         var newProcessJoin = {}
+         newProcessJoin['name'] = processJoinName;
+         newProcessJoin['processId'] = selected.node.data.id;
+         that.processJoinModel.add({
+         dataObject: newProcessJoin,
+         success: function (data) {
+         alert('Successfully added to join.');
+         that.system.addEdge(processJoinNode, selected.node, {directed: true, weight: 2});
+         that.$el.find('#target_join').val('');
+         }
+         });
+         }
+         });
+         this.$el.find('#addProcessToJoinModal').modal();
+         }*/
+    }
+
+    handleAddProductJoinToProductJoin(event) {
+
+    }
+
 
     handleAddProcessToJoin(event) {
         var that = this;
         var pos = this.$el.find('#viewport').offset();
         var p = {x: event.pageX - pos.left, y: event.pageY - pos.top}
         var selected = this.system.nearest(p);
+        if (selected.node.data.category !== 'model') {
+            alert('Option not available for category: ' + selected.node.data.category);
+            return;
+        }
         if (selected.node) {
             console.log('Adding to process: ' + selected.node.name);
             this.$el.find('#add-to-join').click(function (event) {
@@ -437,6 +504,9 @@ export class WorkflowView extends View{
         this.$el.find('#join_processes').click(function (event) {
             that.addProcessJoin();
         });
+        this.$el.find('#join_products').click(function (event) {
+            that.addProductJoin();
+        });
         this.$el.find('#add-product').click(function (event) {
             that.addProduct();
         });
@@ -453,6 +523,22 @@ export class WorkflowView extends View{
                 alert('Successfully created join.');
                 that.addProcessJoinsToGraph([data]);
                 that.$el.find('#join_name').val('');
+            }
+        });
+    }
+
+    addProductJoin() {
+        var that = this;
+        var newProductJoin = {}
+        newProductJoin['name'] = this.$el.find('#product_join_name').val();
+        newProductJoin['childType'] = 0;
+        newProductJoin['child'] = '';
+        this.productJoinModel.add({
+            dataObject: newProductJoin,
+            success: function (data) {
+                alert('Successfully created product join.');
+                that.addProductJoinsToGraph([data]);
+                that.$el.find('#product_join_name').val('');
             }
         });
     }

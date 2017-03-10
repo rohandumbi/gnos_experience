@@ -33,6 +33,9 @@
                 <button data-toggle="modal" data-target="#productModal" type="button" class="btn btn-primary">Create
                     Product
                 </button>
+                <button data-toggle="modal" data-target="#productJoinModal" type="button" class="btn btn-primary">Create
+                    Product Join
+                </button>
                 <!--<button type="button" class="btn btn-default">Zoom In</button>
                 <button type="button" class="btn btn-default">Zoom Out</button>-->
             </div>
@@ -42,10 +45,13 @@
     </div>
     <ul id="workflowContextMenu" class="dropdown-menu" role="menu" style="display:none">
         <li><a tabindex="-1" href="#">Delete</a></li>
-        <li><a tabindex="-1" href="#">Add product</a></li>
-        <li><a tabindex="-1" href="#">Add to join</a></li>
+        <!--<li><a tabindex="-1" href="#">Add product</a></li>-->
+        <li><a tabindex="-1" href="#">Add to process join</a></li>
+        <li><a tabindex="-1" href="#">Add to product join</a></li>
         <li class="divider"></li>
-        <li><a tabindex="-1" href="#">Future Separated link</a></li>
+        <li><a tabindex="-1" href="#">Add expression</a></li>
+        <li><a tabindex="-1" href="#">Add unit</a></li>
+        <li><a tabindex="-1" href="#">View grades</a></li>
     </ul>
     <div class="modal fade" id="processJoinModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
@@ -69,6 +75,33 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     <button id="join_processes" type="button" class="btn btn-primary" data-dismiss="modal">Add join
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="productJoinModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myProductLabel">Product Join Definition</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-inline">
+                        <form class="form">
+                            <div class="form-group">
+                                <label for="product_join_name">Product Join Name:</label>
+                                <input type="text" class="form-control" id="product_join_name">
+                            </div>
+                            <br/>
+                        </form>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="join_products" type="button" class="btn btn-primary" data-dismiss="modal">Add join
                     </button>
                 </div>
             </div>
@@ -133,4 +166,5 @@
             </div>
         </div>
     </div>
+
 </div>
