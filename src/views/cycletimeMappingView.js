@@ -5,6 +5,7 @@ import {TruckParamCycleTimeView} from './truckParamCycleTimeView';
 import {FixedTimeModel} from '../models/fixedTimeModel';
 
 import {CycletimeModel} from '../models/cycletimeModel';
+import {CycletimeFieldsModel} from '../models/cycletimeFieldsModel'
 import {CycletimeMappingModel} from '../models/cycletimeMappingModel';
 import {CycletimeDumpFieldMappingView} from './cycletimeDumpFieldMappingView';
 import {CycletimeFixedFieldMappingView} from './cycletimeFixedFieldMappingView';
@@ -20,6 +21,7 @@ export class CycletimeMappingView extends View {
         this.model = new ExpressionModel({projectId: this.projectId});
 
         this.cycletimeMappingModel = new CycletimeMappingModel({projectId: this.projectId});
+        this.cycletimeFieldsModel = new CycletimeFieldsModel({projectId: this.projectId});
     }
 
     getHtml() {
@@ -54,6 +56,21 @@ export class CycletimeMappingView extends View {
             }
         });
      }*/
+
+    fetchCycleFields() {
+        var that = this;
+        this.cycletimeFieldsModel.fetch({
+            success: function (data) {
+                that.cycletimeFields = data;
+                that.fetchCycleTimeMappings();
+                //that.filterDataIntoCategories();
+                //that.initializeSubViews();
+            },
+            error: function (data) {
+                alert('Error fetching fixed time');
+            }
+        });
+    }
 
     fetchCycleTimeMappings() {
         var that = this;
@@ -91,28 +108,32 @@ export class CycletimeMappingView extends View {
     initializeSubViews() {
         this.cycletimeFixedFieldMappingView = new CycletimeFixedFieldMappingView({
             projectId: this.projectId,
-            map: this.fixedFieldMappings
+            map: this.fixedFieldMappings,
+            fields: this.cycletimeFields
         });
         this.cycletimeFixedFieldMappingView.render();
         this.$el.find('#fixed-container').append(this.cycletimeFixedFieldMappingView.$el);
 
         this.cycletimeProcessFieldMappingView = new CycletimeProcessFieldMappingView({
             projectId: this.projectId,
-            map: this.processFieldMappings
+            map: this.processFieldMappings,
+            fields: this.cycletimeFields
         });
         this.cycletimeProcessFieldMappingView.render();
         this.$el.find('#process-container').append(this.cycletimeProcessFieldMappingView.$el);
 
         this.cycletimeDumpFieldMappingView = new CycletimeDumpFieldMappingView({
             projectId: this.projectId,
-            map: this.dumpFieldMappings
+            map: this.dumpFieldMappings,
+            fields: this.cycletimeFields
         });
         this.cycletimeDumpFieldMappingView.render();
         this.$el.find('#dump-container').append(this.cycletimeDumpFieldMappingView.$el);
 
         this.cycletimeStockpileFieldMappingView = new CycletimeStockpileFieldMappingView({
             projectId: this.projectId,
-            map: this.stockpileFieldMappings
+            map: this.stockpileFieldMappings,
+            fields: this.cycletimeFields
         });
         this.cycletimeStockpileFieldMappingView.render();
         this.$el.find('#stockpile-container').append(this.cycletimeStockpileFieldMappingView.$el);
@@ -120,7 +141,7 @@ export class CycletimeMappingView extends View {
 
     onDomLoaded() {
         //this.fetchFixedTime();
-        this.fetchCycleTimeMappings();
+        this.fetchCycleFields();
     }
 
     initializeGrid(modelData) {

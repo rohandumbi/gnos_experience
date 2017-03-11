@@ -1,6 +1,5 @@
 import {View} from '../core/view';
 import {RequiredFieldModel} from '../models/requiredFieldModel';
-import {FieldsModel} from '../models/fieldsModel';
 
 export class CycletimeFixedFieldMappingView extends View {
 
@@ -8,8 +7,8 @@ export class CycletimeFixedFieldMappingView extends View {
         super();
         this.projectId = options.projectId;
         this.requiredFieldModel = new RequiredFieldModel({projectId: this.projectId});
-        this.fieldsModel = new FieldsModel({projectId: this.projectId});
         this.mapping = options.map;
+        this.fields = options.fields;
     }
 
     getHtml() {
@@ -24,19 +23,6 @@ export class CycletimeFixedFieldMappingView extends View {
     onDomLoaded() {
         //this.fetchAllFields();
         this.initializeGrid(this.mapping);
-    }
-
-    fetchAllFields() {
-        var that = this;
-        this.fieldsModel.fetch({
-            success: function (data) {
-                that.fields = data;
-                that.fetchRequiredFields();
-            },
-            error: function (data) {
-                alert('Error fetching required fields');
-            }
-        });
     }
 
     fetchRequiredFields() {

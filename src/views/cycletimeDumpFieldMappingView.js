@@ -10,6 +10,7 @@ export class CycletimeDumpFieldMappingView extends View {
         this.requiredFieldModel = new RequiredFieldModel({projectId: this.projectId});
         this.fieldsModel = new FieldsModel({projectId: this.projectId});
         this.mapping = options.map;
+        this.fields = options.fields;
     }
 
     getHtml() {
@@ -22,21 +23,7 @@ export class CycletimeDumpFieldMappingView extends View {
     }
 
     onDomLoaded() {
-        //this.fetchAllFields();
         this.initializeGrid(this.mapping);
-    }
-
-    fetchAllFields() {
-        var that = this;
-        this.fieldsModel.fetch({
-            success: function (data) {
-                that.fields = data;
-                that.fetchRequiredFields();
-            },
-            error: function (data) {
-                alert('Error fetching required fields');
-            }
-        });
     }
 
     fetchRequiredFields() {

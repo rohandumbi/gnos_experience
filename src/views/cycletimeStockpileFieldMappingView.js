@@ -10,6 +10,7 @@ export class CycletimeStockpileFieldMappingView extends View {
         this.requiredFieldModel = new RequiredFieldModel({projectId: this.projectId});
         this.fieldsModel = new FieldsModel({projectId: this.projectId});
         this.mapping = options.map;
+        this.fields = options.fields;
     }
 
     getHtml() {
@@ -22,7 +23,6 @@ export class CycletimeStockpileFieldMappingView extends View {
     }
 
     onDomLoaded() {
-        //this.fetchAllFields();
         this.initializeGrid(this.mapping);
     }
 
@@ -53,7 +53,6 @@ export class CycletimeStockpileFieldMappingView extends View {
     }
 
     initializeGrid(dataObject) {
-        //var allFields = this.allFieldsModel.fetch();
         var that = this;
         var row = '';
         for (var i = 0; i < dataObject.length; i++) {
