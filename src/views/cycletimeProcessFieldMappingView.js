@@ -71,7 +71,7 @@ export class CycletimeProcessFieldMappingView extends View {
             )
         }
         this.$el.find("#tableBody").append($(row));
-        this.grid = this.$el.find("#requiredField-grid-basic").bootgrid({
+        this.grid = this.$el.find("#processField-grid-basic").bootgrid({
             rowCount: [15, 10, 20, 25],
             selection: true,
             multiSelect: true,
@@ -105,6 +105,10 @@ export class CycletimeProcessFieldMappingView extends View {
             that.grid.find(".mapped-field").change(function (event) {
                 that.updateMapping($(this));
             });
+            if (!that.missingRowsAdded) {
+                that.addMissingRows();
+                that.missingRowsAdded = true;
+            }
         });
     }
 
@@ -124,6 +128,37 @@ export class CycletimeProcessFieldMappingView extends View {
             },
             error: function () {
                 alert('Error updating process fields');
+            }
+        });
+    }
+
+    addMissingRows() {
+        var that = this;
+        this.missingProcesses.forEach(function (missingProcess) {
+            var object = {};
+            object['fieldName'] = missingProcess.name;
+            object['mappingType'] = 2;
+            object['mappedFieldName'] = that.fields[0].name;
+            var success = function (data) {
+                that.mapping.push(data);
+                that.$el.find("#processField-grid-basic").bootgrid("append", [data]);
+            }
+            that.addModel({object: object, success: success});
+        });
+    }
+
+    addModel(options) {
+        var that = this;
+        this.cycletimeMappingModel.add({
+            url: 'http://localhost:4567/project/' + that.projectId + '/cycletimemappings',
+            dataObject: options.object,
+            success: function (data) {
+                alert('Successfully updated process fields');
+                if (options.success) options.success(data);
+            },
+            error: function () {
+                alert('Error updating process fields');
+                if (options.error) options.error(data);
             }
         });
     }

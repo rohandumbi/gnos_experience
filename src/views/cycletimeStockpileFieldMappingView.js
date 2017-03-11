@@ -70,7 +70,7 @@ export class CycletimeStockpileFieldMappingView extends View {
             )
         }
         this.$el.find("#tableBody").append($(row));
-        this.grid = this.$el.find("#requiredField-grid-basic").bootgrid({
+        this.grid = this.$el.find("#stockpileField-grid-basic").bootgrid({
             rowCount: [15, 10, 20, 25],
             selection: true,
             multiSelect: true,
@@ -102,6 +102,10 @@ export class CycletimeStockpileFieldMappingView extends View {
             that.grid.find(".mapped-field").change(function (event) {
                 that.updateMapping($(this));
             });
+            if (!that.missingRowsAdded) {
+                that.addMissingRows();
+                that.missingRowsAdded = true;
+            }
         });
     }
 
@@ -121,6 +125,37 @@ export class CycletimeStockpileFieldMappingView extends View {
             },
             error: function () {
                 alert('Error updating process fields');
+            }
+        });
+    }
+
+    addMissingRows() {
+        var that = this;
+        this.missingStockpiles.forEach(function (missingStockpile) {
+            var object = {};
+            object['fieldName'] = missingStockpile.name;
+            object['mappingType'] = 4;
+            object['mappedFieldName'] = that.fields[0].name;
+            var success = function (data) {
+                that.mapping.push(data);
+                that.$el.find("#stockpileField-grid-basic").bootgrid("append", [data]);
+            }
+            that.addModel({object: object, success: success});
+        });
+    }
+
+    addModel(options) {
+        var that = this;
+        this.cycletimeMappingModel.add({
+            url: 'http://localhost:4567/project/' + that.projectId + '/cycletimemappings',
+            dataObject: options.object,
+            success: function (data) {
+                alert('Successfully updated stockpile fields');
+                if (options.success) options.success(data);
+            },
+            error: function () {
+                alert('Error updating stockpile fields');
+                if (options.error) options.error(data);
             }
         });
     }
