@@ -92,6 +92,25 @@ export class CycletimeFixedFieldMappingView extends View {
             that.grid.find(".mapped-field").change(function (event) {
                 that.updateMapping($(this));
             });
+            if (!that.missingRowsAdded) {
+                that.addMissingRows();
+                that.missingRowsAdded = true;
+            }
+        });
+    }
+
+    addMissingRows() {
+        var that = this;
+        this.missingFixedFields.forEach(function (missingFixedField) {
+            var object = {};
+            object['fieldName'] = missingFixedField.name;
+            object['mappingType'] = 1;
+            object['mappedFieldName'] = that.fields[0].name;
+            var success = function (data) {
+                that.mapping.push(data);
+                that.$el.find("#requiredField-grid-basic").bootgrid("append", [data]);
+            }
+            that.addModel({object: object, success: success});
         });
     }
 
@@ -103,18 +122,37 @@ export class CycletimeFixedFieldMappingView extends View {
         object['fieldName'] = fieldName;
         object['mappedFieldName'] = mappedField;
         object['mappingType'] = 1;
-        this.updateModel(object);
+        this.updateModel({object: object});
     }
 
-    updateModel(object) {
+    updateModel(options) {
+        var that = this;
         this.cycletimeMappingModel.update({
             url: 'http://localhost:4567/project/' + that.projectId + '/cycletimemappings',
-            dataObject: object,
+            dataObject: options.object,
             success: function (data) {
                 alert('Successfully updated fixed fields');
+                if (options.success) options.success(data);
             },
             error: function () {
                 alert('Error updating fixed fields');
+                if (options.error) options.error(data);
+            }
+        });
+    }
+
+    addModel(options) {
+        var that = this;
+        this.cycletimeMappingModel.add({
+            url: 'http://localhost:4567/project/' + that.projectId + '/cycletimemappings',
+            dataObject: options.object,
+            success: function (data) {
+                alert('Successfully updated fixed fields');
+                if (options.success) options.success(data);
+            },
+            error: function () {
+                alert('Error updating fixed fields');
+                if (options.error) options.error(data);
             }
         });
     }
