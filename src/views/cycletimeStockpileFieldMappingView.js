@@ -26,7 +26,7 @@ export class CycletimeStockpileFieldMappingView extends View {
         this.initializeGrid(this.mapping);
     }
 
-    filterMissingDumps() {
+    filterMissingStockpiles() {
         var that = this;
         this.missingStockpiles = [];
         this.stockpileModel.forEach(function (stockpile) {
@@ -47,7 +47,7 @@ export class CycletimeStockpileFieldMappingView extends View {
         this.dumpModel.fetch({
             success: function (data) {
                 that.dumps = data;
-                that.filterMissingDumps();
+                that.filterMissingStockpiles();
                 console.log(that.missingStockpiles);
                 that.initializeGrid(that.mapping);
             },
