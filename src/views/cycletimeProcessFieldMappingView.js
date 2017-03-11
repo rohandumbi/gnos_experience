@@ -22,7 +22,8 @@ export class CycletimeProcessFieldMappingView extends View {
     }
 
     onDomLoaded() {
-        this.fetchAllFields();
+        //this.fetchAllFields();
+        this.initializeGrid(this.mapping);
     }
 
     fetchAllFields() {
@@ -60,7 +61,7 @@ export class CycletimeProcessFieldMappingView extends View {
             row += (
                 '<tr>' +
                 '<td>' + requiredField.fieldName + '</td>' +
-                '<td>' + requiredField.mappedFieldname + '</td>' +
+                '<td>' + requiredField.mappedFieldName + '</td>' +
                 '</tr>'
             )
         }
@@ -75,7 +76,7 @@ export class CycletimeProcessFieldMappingView extends View {
                 "mapping": function (column, row) {
                     //var expression = that.getExpressionById(row.expressionId);
                     //var expressionName;
-                    var mappedFieldName = row.mappedFieldname;
+                    var mappedFieldName = row.mappedFieldName;
                     if (!mappedFieldName) {
                         mappedFieldName = '';
                     }

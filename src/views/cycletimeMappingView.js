@@ -31,7 +31,7 @@ export class CycletimeMappingView extends View {
         return promise;
     }
 
-    fetchFixedTime() {
+    /*fetchFixedTime() {
         var that = this;
         this.fixedTimeModel.fetch({
             success: function (data) {
@@ -53,7 +53,7 @@ export class CycletimeMappingView extends View {
                 alert('Error fetching fixed time');
             }
         });
-    }
+     }*/
 
     fetchCycleTimeMappings() {
         var that = this;
