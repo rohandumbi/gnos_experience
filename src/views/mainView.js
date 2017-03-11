@@ -19,6 +19,7 @@ import { OpexDefinitionView } from './opexDefinitionView';
 import { CapexCollectionView } from './capexCollectionView';
 import {TruckParamView} from './truckParamView'
 import {ControlScreenView} from './controlScreenView'
+import {CycletimeMappingView} from './cycletimeMappingView'
 
 export class MainView extends View{
 
@@ -88,8 +89,10 @@ export class MainView extends View{
         this.$el.find("#page-content-wrapper").html(this.truckParamView.$el);
     }
 
-    initializeMaterialPayload() {
-
+    initializeCycletimeMappingView() {
+        this.cycletimeMappingView = new CycletimeMappingView({projectId: this.projectId});
+        this.cycletimeMappingView.render();
+        this.$el.find("#page-content-wrapper").html(this.cycletimeMappingView.$el);
     }
 
     initializeScenarioDefinition() {
@@ -148,7 +151,7 @@ export class MainView extends View{
         this.controlScreenView.render();
         this.$el.find("#page-content-wrapper").html(this.controlScreenView.$el);
     }
-	
+
 
     initializeContentView($el) {
         console.log($el);
@@ -212,7 +215,7 @@ export class MainView extends View{
                 this.initializeTruckParamter();
                 break;
             case "cycle_time":
-                this.initializeTruckParamter();
+                this.initializeCycletimeMappingView();
                 break;
 			case "control":
                 this.initializeControlScreen();
