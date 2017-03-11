@@ -7,6 +7,7 @@ import {ProductModel} from '../models/productModel'
 import {ProductJoinModel} from '../models/productJoinModel'
 import {ExpressionModel} from '../models/expressionModel'
 import {UnitModel} from '../models/unitModel'
+import {ProductGradeModel} from '../models/productGradeModel'
 
 export class WorkflowView extends View{
 
@@ -20,7 +21,8 @@ export class WorkflowView extends View{
         this.productModel = new ProductModel({projectId: options.projectId});
         this.productJoinModel = new ProductJoinModel({projectId: options.projectId});
         this.expressionModel = new ExpressionModel({projectId: options.projectId});
-        this.unitModel = new UnitModel({projectId: options.projectId})
+        this.unitModel = new UnitModel({projectId: options.projectId});
+        //this.productGradeModel = new ProductGradeModel({})
     }
 
     getHtml() {
@@ -110,7 +112,7 @@ export class WorkflowView extends View{
         productJoins.forEach(function (productJoin) {
             var productJoinNode = that.system.addNode(productJoin.name, {
                 'color': '#B3B3B3',
-                'shape': 'grey',
+                'shape': 'rect',
                 'label': productJoin.name,
                 'category': 'productJoin'
             });
@@ -157,7 +159,7 @@ export class WorkflowView extends View{
         processJoins.forEach(function (processJoin) {
             var processNode = that.system.addNode(processJoin.name, {
                 'color': '#00ff52',
-                'shape': 'dot',
+                'shape': 'rect',
                 'label': processJoin.name,
                 'category': 'processJoin'
             });
@@ -183,7 +185,7 @@ export class WorkflowView extends View{
             if (!modelNode) {
                 modelNode = that.system.addNode(model.name, {
                     'color': '#95cde5',
-                    'shape': 'dot',
+                    'shape': 'rect',
                     'label': model.name,
                     'id': model.id,
                     'category': 'model'
@@ -195,7 +197,7 @@ export class WorkflowView extends View{
                 if (!parentNode) {
                     parentNode = that.system.addNode(parentModel.name, {
                         'color': '#95cde5',
-                        'shape': 'dot',
+                        'shape': 'rect',
                         'label': parentModel.name,
                         'id': parentModel.id,
                         'category': 'block'
@@ -371,10 +373,45 @@ export class WorkflowView extends View{
                     that.handleAddExpressionToProduct(event);
                 } else if ((selectedAction.toString() === 'Add unit')) {
                     that.handleAddUnitToProduct(event);
+                } else if ((selectedAction.toString() === 'View grades')) {
+                    that.handleViewGrades(event);
                 }
             }
         });
     }
+
+    handleViewGrades(event) {
+        var that = this;
+        var pos = this.$el.find('#viewport').offset();
+        var p = {x: event.pageX - pos.left, y: event.pageY - pos.top}
+        var selected = this.system.nearest(p);
+        if (selected.node) {
+            var category = selected.node.data.category;
+            if (category != 'product') {
+                alert('Not available for category: ' + category);
+            }
+            this.productGradeModel = new ProductGradeModel({
+                projectId: this.projectId,
+                productName: selected.node.name
+            });
+            this.productGradeModel.fetch({
+                success: function (data) {
+                    var associatedGrades = data;
+                    var listGroup = '<ul class="list-group">';
+                    associatedGrades.forEach(function (associatedGrade) {
+                        listGroup += '<li class="list-group-item">' + associatedGrade.name + '</li>'
+                    });
+                    listGroup += '</ul>';
+                    that.$el.find('#grade-list').append(listGroup);
+                    that.$el.find('#associatedGrades').modal();
+                },
+                error: function (data) {
+                    alert('Error fetching list of associated grades');
+                }
+            });
+        }
+    }
+
     handleDelete(event) {
         var that = this;
         var pos = this.$el.find('#viewport').offset();
