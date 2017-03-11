@@ -90,7 +90,14 @@ export class MainView extends View{
     }
 
     initializeCycletimeMappingView() {
+        var that = this;
+        if (this.cycletimeMappingView) {
+            this.cycletimeMappingView = null;
+        }
         this.cycletimeMappingView = new CycletimeMappingView({projectId: this.projectId});
+        this.cycletimeMappingView.on('reload', function () {
+            that.initializeCycletimeMappingView();
+        });
         this.cycletimeMappingView.render();
         this.$el.find("#page-content-wrapper").html(this.cycletimeMappingView.$el);
     }

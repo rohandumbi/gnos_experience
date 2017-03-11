@@ -22,6 +22,7 @@ export class CycletimeMappingView extends View {
 
         this.cycletimeMappingModel = new CycletimeMappingModel({projectId: this.projectId});
         this.cycletimeFieldsModel = new CycletimeFieldsModel({projectId: this.projectId});
+        this.cycletimeModel = new CycletimeModel({projectId: this.projectId});
     }
 
     getHtml() {
@@ -33,38 +34,12 @@ export class CycletimeMappingView extends View {
         return promise;
     }
 
-    /*fetchFixedTime() {
-        var that = this;
-        this.fixedTimeModel.fetch({
-            success: function (data) {
-                that.fixedTime = data;
-                that.$el.find('#fixed_time').val(data);
-                that.$el.find('#fixed_time').change(function (event) {
-                    that.fixedTimeModel.update({
-                        url: 'http://localhost:4567/project/' + that.projectId + '/fixedtime/' + $(this).val(),
-                        success: function (data) {
-                            alert('Successfully updated fixed time');
-                        },
-                        error: function (data) {
-                            alert('Error updating fixed time: ' + data);
-                        }
-                    });
-                });
-            },
-            error: function (data) {
-                alert('Error fetching fixed time');
-            }
-        });
-     }*/
-
     fetchCycleFields() {
         var that = this;
         this.cycletimeFieldsModel.fetch({
             success: function (data) {
                 that.cycletimeFields = data;
                 that.fetchCycleTimeMappings();
-                //that.filterDataIntoCategories();
-                //that.initializeSubViews();
             },
             error: function (data) {
                 alert('Error fetching fixed time');
@@ -140,8 +115,37 @@ export class CycletimeMappingView extends View {
     }
 
     onDomLoaded() {
-        //this.fetchFixedTime();
+        var that = this;
         this.fetchCycleFields();
+        this.$el.find('#uploadFile').click(function (event) {
+            event.preventDefault();
+            var fileInput = that.$el.find('#cycletimeInputFile').val();
+
+            if (!fileInput) {
+                alert('Cycle time imput file missing.');
+            } else {
+                var files = that.$el.find('#cycletimeInputFile').prop("files");
+                /*assuming first selection to be valid*/
+                var file = files[0];
+                var filePath = file.path;
+
+                var cycletimeObject = {};
+                cycletimeObject['fileName'] = filePath;
+                that.cycletimeModel.add({
+                    dataObject: cycletimeObject,
+                    success: function (data) {
+                        alert('Successfully uploaded data');
+                        that.trigger('reload');
+                        //that.trigger('reload');
+                    },
+                    error: function (data) {
+                        //alert("Error: " + data);
+                        //some unknown error, yet DB forming correctly. Hence suppressing error
+                        that.trigger('reload');
+                    }
+                });
+            }
+        });
     }
 
     initializeGrid(modelData) {

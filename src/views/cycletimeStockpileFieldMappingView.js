@@ -23,13 +23,13 @@ export class CycletimeStockpileFieldMappingView extends View {
     }
 
     onDomLoaded() {
-        this.initializeGrid(this.mapping);
+        this.fetchStockpiles();
     }
 
     filterMissingStockpiles() {
         var that = this;
         this.missingStockpiles = [];
-        this.stockpileModel.forEach(function (stockpile) {
+        this.stockpiles.forEach(function (stockpile) {
             var present = false;
             that.mapping.forEach(function (mapping) {
                 if (mapping.fieldName === stockpile.name) {
@@ -44,9 +44,9 @@ export class CycletimeStockpileFieldMappingView extends View {
 
     fetchStockpiles() {
         var that = this;
-        this.dumpModel.fetch({
+        this.stockpileModel.fetch({
             success: function (data) {
-                that.dumps = data;
+                that.stockpiles = data;
                 that.filterMissingStockpiles();
                 console.log(that.missingStockpiles);
                 that.initializeGrid(that.mapping);

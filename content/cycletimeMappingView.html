@@ -2,8 +2,14 @@
     <div>
         <form class="form-inline">
             <div class="form-group">
-                <label for="fixed_time">Import File:</label>
-                <input type="text" class="form-control" id="fixed_time">
+                <!--<label for="cycletimeInputFile">Import File:</label>-->
+                <div class="col-md-4">
+                    <input id="cycletimeInputFile" name="file" name="file" type="file" placeholder=""
+                           class="form-control input-md" required="">
+                    <!--<span class="help-block">Browse and select CSV.</span>-->
+                    <br/>
+                    <button id="uploadFile" class="btn btn-success">Upload</button>
+                </div>
             </div>
         </form>
     </div>
