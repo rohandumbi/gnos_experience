@@ -1,14 +1,12 @@
 import {View} from '../core/view';
-import {RequiredFieldModel} from '../models/requiredFieldModel';
-import {FieldsModel} from '../models/fieldsModel';
+import {CycletimeMappingModel} from '../models/cycletimeMappingModel';
 
 export class CycletimeDumpFieldMappingView extends View {
 
     constructor(options) {
         super();
         this.projectId = options.projectId;
-        this.requiredFieldModel = new RequiredFieldModel({projectId: this.projectId});
-        this.fieldsModel = new FieldsModel({projectId: this.projectId});
+        this.cycletimeMappingModel = new CycletimeMappingModel({projectId: this.projectId});
         this.mapping = options.map;
         this.fields = options.fields;
     }
@@ -96,16 +94,17 @@ export class CycletimeDumpFieldMappingView extends View {
         var mappedField = $cell.find(":selected").val();
         var object = {};
         object['fieldName'] = fieldName;
-        object['mappedFieldname'] = mappedField;
-        this.requiredFieldModel.update({
-            url: 'http://localhost:4567/project/' + that.projectId + '/requiredfields',
+        object['mappedFieldName'] = mappedField;
+        object['mappingType'] = 3;
+        this.cycletimeMappingModel.update({
+            url: 'http://localhost:4567/project/' + that.projectId + '/cycletimemappings',
             dataObject: object,
             success: function (data) {
-                //alert('Successfully updated required fields');
+                alert('Successfully updated dump fields');
             },
             error: function () {
-                //alert('Error updating required fields');
+                alert('Error updating fixed fields');
             }
-        })
+        });
     }
 }

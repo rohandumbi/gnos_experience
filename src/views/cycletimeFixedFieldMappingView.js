@@ -106,6 +106,6 @@ export class CycletimeFixedFieldMappingView extends View {
             error: function () {
                 alert('Error updating fixed fields');
             }
-        })
+        });
     }
 }
