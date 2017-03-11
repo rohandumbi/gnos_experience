@@ -9,6 +9,7 @@ export class CycletimeFixedFieldMappingView extends View {
         this.cycletimeMappingModel = new CycletimeMappingModel({projectId: this.projectId});
         this.mapping = options.map;
         this.fields = options.fields;
+        this.fixedFields = [{name: 'pit'}, {name: 'bench'}];
     }
 
     getHtml() {
@@ -22,18 +23,23 @@ export class CycletimeFixedFieldMappingView extends View {
 
     onDomLoaded() {
         //this.fetchAllFields();
+        this.filterMissingFixedFields();
+        console.log(this.missingFixedFields);
         this.initializeGrid(this.mapping);
     }
 
-    fetchRequiredFields() {
+    filterMissingFixedFields() {
         var that = this;
-        this.requiredFieldModel.fetch({
-            success: function (data) {
-                that.requiredFields = data;
-                that.initializeGrid(data);
-            },
-            error: function (data) {
-                alert('Error fetching required fields');
+        this.missingFixedFields = [];
+        this.fixedFields.forEach(function (field) {
+            var present = false;
+            that.mapping.forEach(function (mapping) {
+                if (mapping.fieldName === field.name) {
+                    present = true;
+                }
+            })
+            if (!present) {
+                that.missingFixedFields.push(field);
             }
         });
     }
@@ -97,6 +103,10 @@ export class CycletimeFixedFieldMappingView extends View {
         object['fieldName'] = fieldName;
         object['mappedFieldName'] = mappedField;
         object['mappingType'] = 1;
+        this.updateModel(object);
+    }
+
+    updateModel(object) {
         this.cycletimeMappingModel.update({
             url: 'http://localhost:4567/project/' + that.projectId + '/cycletimemappings',
             dataObject: object,
