@@ -1,5 +1,6 @@
 import {View} from '../core/view';
 import {CycletimeMappingModel} from '../models/cycletimeMappingModel';
+import {StockpileModel} from '../models/stockpileModel';
 
 export class CycletimeStockpileFieldMappingView extends View {
 
@@ -7,6 +8,7 @@ export class CycletimeStockpileFieldMappingView extends View {
         super();
         this.projectId = options.projectId;
         this.cycletimeMappingModel = new CycletimeMappingModel({projectId: this.projectId});
+        this.stockpileModel = new StockpileModel({projectId: this.projectId});
         this.mapping = options.map;
         this.fields = options.fields;
     }
@@ -24,25 +26,30 @@ export class CycletimeStockpileFieldMappingView extends View {
         this.initializeGrid(this.mapping);
     }
 
-    fetchAllFields() {
+    filterMissingDumps() {
         var that = this;
-        this.fieldsModel.fetch({
-            success: function (data) {
-                that.fields = data;
-                that.fetchRequiredFields();
-            },
-            error: function (data) {
-                alert('Error fetching required fields');
+        this.missingStockpiles = [];
+        this.stockpileModel.forEach(function (stockpile) {
+            var present = false;
+            that.mapping.forEach(function (mapping) {
+                if (mapping.fieldName === stockpile.name) {
+                    present = true;
+                }
+            })
+            if (!present) {
+                that.missingStockpiles.push(stockpile);
             }
         });
     }
 
-    fetchRequiredFields() {
+    fetchStockpiles() {
         var that = this;
-        this.requiredFieldModel.fetch({
+        this.dumpModel.fetch({
             success: function (data) {
-                that.requiredFields = data;
-                that.initializeGrid(data);
+                that.dumps = data;
+                that.filterMissingDumps();
+                console.log(that.missingStockpiles);
+                that.initializeGrid(that.mapping);
             },
             error: function (data) {
                 alert('Error fetching required fields');

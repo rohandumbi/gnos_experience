@@ -1,5 +1,6 @@
 import {View} from '../core/view';
 import {CycletimeMappingModel} from '../models/cycletimeMappingModel';
+import {ProcessModel} from '../models/processModel';
 
 export class CycletimeProcessFieldMappingView extends View {
 
@@ -7,6 +8,7 @@ export class CycletimeProcessFieldMappingView extends View {
         super();
         this.projectId = options.projectId;
         this.cycletimeMappingModel = new CycletimeMappingModel({projectId: this.projectId});
+        this.processModel = new ProcessModel({projectId: this.projectId});
         this.mapping = options.map;
         this.fields = options.fields;
     }
@@ -21,15 +23,33 @@ export class CycletimeProcessFieldMappingView extends View {
     }
 
     onDomLoaded() {
-        this.initializeGrid(this.mapping);
+        this.fetchProcesses();
     }
 
-    fetchRequiredFields() {
+    filterMissingProcesses() {
         var that = this;
-        this.requiredFieldModel.fetch({
+        this.missingProcesses = [];
+        this.processes.forEach(function (process) {
+            var present = false;
+            that.mapping.forEach(function (mapping) {
+                if (mapping.fieldName === process.name) {
+                    present = true;
+                }
+            })
+            if (!present) {
+                that.missingProcesses.push(process);
+            }
+        });
+    }
+
+    fetchProcesses() {
+        var that = this;
+        this.processModel.fetch({
             success: function (data) {
-                that.requiredFields = data;
-                that.initializeGrid(data);
+                that.processes = data;
+                that.filterMissingProcesses();
+                console.log(that.missingProcesses);
+                that.initializeGrid(that.mapping);
             },
             error: function (data) {
                 alert('Error fetching required fields');

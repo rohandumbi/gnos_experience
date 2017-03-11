@@ -1,5 +1,6 @@
 import {View} from '../core/view';
 import {CycletimeMappingModel} from '../models/cycletimeMappingModel';
+import {DumpModel} from '../models/dumpModel';
 
 export class CycletimeDumpFieldMappingView extends View {
 
@@ -7,6 +8,7 @@ export class CycletimeDumpFieldMappingView extends View {
         super();
         this.projectId = options.projectId;
         this.cycletimeMappingModel = new CycletimeMappingModel({projectId: this.projectId});
+        this.dumpModel = new DumpModel({projectId: this.projectId});
         this.mapping = options.map;
         this.fields = options.fields;
     }
@@ -21,15 +23,33 @@ export class CycletimeDumpFieldMappingView extends View {
     }
 
     onDomLoaded() {
-        this.initializeGrid(this.mapping);
+        this.fetchDumps();
     }
 
-    fetchRequiredFields() {
+    filterMissingDumps() {
         var that = this;
-        this.requiredFieldModel.fetch({
+        this.missingDumps = [];
+        this.dumps.forEach(function (dump) {
+            var present = false;
+            that.mapping.forEach(function (mapping) {
+                if (mapping.fieldName === dump.name) {
+                    present = true;
+                }
+            })
+            if (!present) {
+                that.missingDumps.push(dump);
+            }
+        });
+    }
+
+    fetchDumps() {
+        var that = this;
+        this.dumpModel.fetch({
             success: function (data) {
-                that.requiredFields = data;
-                that.initializeGrid(data);
+                that.dumps = data;
+                that.filterMissingDumps();
+                console.log(that.missingDumps);
+                that.initializeGrid(that.mapping);
             },
             error: function (data) {
                 alert('Error fetching required fields');
