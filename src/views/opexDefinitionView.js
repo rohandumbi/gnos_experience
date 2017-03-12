@@ -134,6 +134,9 @@ export class OpexDefinitionView extends View{
     }
 
     onDomLoaded() {
+        if (this.scenario.timePeriod > 4) {
+            this.$el.find("#datatype-grid-basic").addClass('long-grid');
+        }
         this.fetchUnits();
     }
 

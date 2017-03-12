@@ -39,6 +39,9 @@ export class GradeConstraintView extends View{
 
     onDomLoaded() {
         this.fetchProductJoins();
+        if (this.scenario.timePeriod > 4) {
+            this.$el.find("#datatype-grid-basic").addClass('long-grid');
+        }
     }
 
     fetchProductJoins() {

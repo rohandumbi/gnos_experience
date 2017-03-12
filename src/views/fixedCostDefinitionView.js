@@ -27,6 +27,9 @@ export class FixedCostDefinitionView extends View{
 
     onDomLoaded() {
         var that = this;
+        if (this.scenario.timePeriod > 4) {
+            this.$el.find("#datatype-grid-basic").addClass('long-grid');
+        }
         this.fixedCostModel.fetch({
             success: function (data) {
                 that.fixedCostData = data;

@@ -77,6 +77,9 @@ export class BenchConstraintView extends View{
     onDomLoaded() {
         //this.initializeGrid();
         this.fetchPitList();
+        if (this.scenario.timePeriod > 4) {
+            this.$el.find("#datatype-grid-basic").addClass('long-grid');
+        }
     }
 
     initializeGrid(benchConstraintData) {

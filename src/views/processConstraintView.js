@@ -43,6 +43,9 @@ export class ProcessConstraintView extends View{
 
     onDomLoaded() {
         this.fetchUnits();
+        if (this.scenario.timePeriod > 4) {
+            this.$el.find("#datatype-grid-basic").addClass('long-grid');
+        }
     }
 
     fetchUnits() {
