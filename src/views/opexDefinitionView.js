@@ -162,7 +162,8 @@ export class OpexDefinitionView extends View{
                 '<td>' + opex.isRevenue + '</td>' +
                 '<td>' + opex.inUse + '</td>' +
                 '<td>' + opex.modelId + '</td>' +
-                '<td>' + unitName + '</td>'
+                '<td>' + unitName + '</td>' +
+                '<td>' + true + '</td>'
             )
             var scenarioStartYear = this.scenario.startYear;
             var scenarioTimePeriod = this.scenario.timePeriod;
@@ -181,6 +182,9 @@ export class OpexDefinitionView extends View{
             rowSelect: true,
             keepSelection: false,
             formatters: {
+                "commands": function (column, row) {
+                    return "<button type=\"button\" class=\"btn btn-xs btn-default command-edit glyphicon glyphicon-edit copy-forward\" data-row-id=\"" + row.id + "\"><span class=\"fa fa-pencil\"></span></button> ";
+                },
                 "classification": function(column, row){
                     if (row.isRevenue.toString() === "true") {
                         return (
@@ -258,6 +262,14 @@ export class OpexDefinitionView extends View{
             /* Executes after data is loaded and rendered */
             that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
             that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
+
+            that.grid.find('.copy-forward').click(function (event) {
+                var $values = $(this).closest('tr').find('.cost');
+                var firstValue = $values.first().val();
+                console.log('First value: ' + $values[0]);
+                $values.val(firstValue);
+                $values.trigger('change');
+            });
 
             that.grid.find('.unit').change(function (e) {
                 //alert('update expression of opex index: ' + $(this).closest('tr').data('row-id') + ':' + $(this).data('expression-id'));
