@@ -338,7 +338,7 @@ export class WorkflowView extends View{
 
     onDomLoaded() {
         this.fetchUnits();
-        this.fitCanvasToContainer();
+        //this.fitCanvasToContainer();
     }
 
     fitCanvasToContainer() {

@@ -54,10 +54,6 @@ export class TruckParamCycleTimeView extends View {
         });
     }
 
-    fetchProcesses() {
-
-    }
-
     fetchStockpiles() {
         var that = this;
         this.stockpileModel.fetch({
@@ -126,12 +122,6 @@ export class TruckParamCycleTimeView extends View {
             }
         }).on("loaded.rs.jquery.bootgrid", function () {
             /*Adding stockpiles which have note yet been accounted for*/
-            /*that.stockpiles.forEach(function (stockPile) {
-                if (!that.isStockpilePresent(stockPile.name)) {
-                    that.addRowToGrid(stockPile);
-                }
-             });*/
-
             if (!that.missingRowsAdded) {
                 that.addMissingRows();
                 that.missingRowsAdded = true;
