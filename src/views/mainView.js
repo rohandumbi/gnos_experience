@@ -113,7 +113,7 @@ export class MainView extends View{
     }
     initializeOpexDefinition(){
         if (!this.scenario) {
-            alert('Select a scenario first');
+            alert('Select a scenario first from Scenario Definition');
             return;
         }
         this.opexDefinitionView = new OpexDefinitionView({projectId: this.projectId, scenario: this.scenario});
@@ -122,7 +122,7 @@ export class MainView extends View{
     }
     initializeFixedCostDefinition(){
         if (!this.scenario) {
-            alert('Select a scenario first');
+            alert('Select a scenario first from Scenario Definition');
             return;
         }
         this.fixedCostDefinitionView = new FixedCostDefinitionView({scenario: this.scenario});
@@ -131,7 +131,7 @@ export class MainView extends View{
     }
     initializeMaterialConstraint(){
         if (!this.scenario) {
-            alert('Select a scenario first');
+            alert('Select a scenario first from Scenario Definition');
             return;
         }
         this.processConstraintView = new ProcessConstraintView({projectId: this.projectId, scenario: this.scenario});
@@ -140,7 +140,7 @@ export class MainView extends View{
     }
     initializeGradeConstraint(){
         if (!this.scenario) {
-            alert('Select a scenario first');
+            alert('Select a scenario first from Scenario Definition');
             return;
         }
         this.gradeConstraintView = new GradeConstraintView({projectId: this.projectId, scenario: this.scenario});
@@ -149,7 +149,7 @@ export class MainView extends View{
     }
     initializeBenchConstraint(){
         if (!this.scenario) {
-            alert('Select a scenario first');
+            alert('Select a scenario first from Scenario Definition');
             return;
         }
         this.benchConstraintView = new BenchConstraintView({projectId: this.projectId, scenario: this.scenario});
@@ -159,7 +159,7 @@ export class MainView extends View{
 
     initializePitDependency() {
         if (!this.scenario) {
-            alert('Select a scenario first');
+            alert('Select a scenario first from Scenario Definition');
             return;
         }
         this.pitDependencyView = new PitDependencyView({projectId: this.projectId, scenario: this.scenario});
@@ -169,7 +169,7 @@ export class MainView extends View{
 
     initializeDumpDependency() {
         if (!this.scenario) {
-            alert('Select a scenario first');
+            alert('Select a scenario first from Scenario Definition');
             return;
         }
         this.dumpDependencyView = new DumpDependencyView({projectId: this.projectId, scenario: this.scenario});
@@ -178,7 +178,7 @@ export class MainView extends View{
     }
     initializeCapexConstraint(){
         if (!this.scenario) {
-            alert('Select a scenario first');
+            alert('Select a scenario first from Scenario Definition');
             return;
         }
         this.capexCollectionView = new CapexCollectionView({projectId: this.projectId, scenario: this.scenario});
@@ -187,7 +187,7 @@ export class MainView extends View{
     }
 	initializeControlScreen(){
         if (!this.scenario) {
-            alert('Select a scenario first');
+            alert('Select a scenario first from Scenario Definition');
             return;
         }
         this.controlScreenView = new ControlScreenView({projectId: this.projectId, scenario: this.scenario});

@@ -1,5 +1,6 @@
 import {View} from '../core/view';
 import {ExpressionModel} from '../models/expressionModel';
+import {UnitModel} from '../models/unitModel';
 import {TruckParamPayloadModel} from '../models/truckParamPayloadModel';
 
 export class TruckParamPayloadView extends View {
@@ -8,6 +9,7 @@ export class TruckParamPayloadView extends View {
         super();
         this.projectId = options.projectId;
         this.expressionModel = new ExpressionModel({projectId: this.projectId});
+        this.unitModel = new UnitModel({projectId: this.projectId});
         this.truckParamPayloadModel = new TruckParamPayloadModel({projectId: this.projectId});
     }
 
@@ -31,6 +33,9 @@ export class TruckParamPayloadView extends View {
                 that.expressions.forEach(function (expression) {
                     tableRow += '<option data-expression-name="' + expression.name + '" data-expression-id="' + expression.id + '">' + expression.name + '</option>';
                 });
+                that.units.forEach(function (unit) {
+                    tableRow += '<option data-expression-name="' + unit.name + '" data-expression-id="' + unit.id + '">' + unit.name + '</option>';
+                });
                 tableRow += '</select>';
                 that.$el.find('#expression-list').append(tableRow);
                 that.initializeGrid(data);
@@ -41,18 +46,34 @@ export class TruckParamPayloadView extends View {
         });
     }
 
+    fetchUnits() {
+        var that = this;
+        this.unitModel.fetch({
+            success: function (data) {
+                that.units = data;
+                that.fetchExpressions();
+            },
+            error: function (data) {
+                alert('Error fetching expressions');
+            }
+        });
+    }
+
     fetchExpressions() {
         var that = this;
         this.expressionModel.fetch({
             success: function (data) {
                 that.expressions = data;
                 that.fetchPayload();
+            },
+            error: function (data) {
+                alert('Error fetching expressions');
             }
         })
     }
 
     onDomLoaded() {
-        this.fetchExpressions();
+        this.fetchUnits();
     }
 
     initializeGrid(modelData) {

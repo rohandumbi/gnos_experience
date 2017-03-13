@@ -38,8 +38,12 @@ export class CycletimeMappingView extends View {
         var that = this;
         this.cycletimeFieldsModel.fetch({
             success: function (data) {
-                that.cycletimeFields = data;
-                that.fetchCycleTimeMappings();
+                if (data.length === 0) {
+                    alert('No cycle time fields found. Please upload your cycle time import file.');
+                } else {
+                    that.cycletimeFields = data;
+                    that.fetchCycleTimeMappings();
+                }
             },
             error: function (data) {
                 alert('Error fetching fixed time');

@@ -94,8 +94,12 @@ export class TruckParamCycleTimeView extends View {
             keepSelection: true,
             formatters: {
                 "value": function (column, row) {
+                    var value = row[column.id] || row.processData[column.id];
+                    if (!value) {
+                        value = 0;
+                    }
                     return (
-                        '<input data-process-name="' + column.id + '" class="process-data" type="text" value="' + row[column.id] + '"' + '>'
+                        '<input data-process-name="' + column.id + '" class="process-data" type="text" value="' + value + '"' + '>'
                     );
                 }
             }
