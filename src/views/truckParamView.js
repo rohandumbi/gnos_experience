@@ -27,7 +27,21 @@ export class TruckParamView extends View {
         this.fixedTimeModel.fetch({
             success: function (data) {
                 that.fixedTime = data;
-                that.$el.find('#fixed_time').val(data);
+                if (data < 0) {//no fixed time entered, so adding value 0 as default
+                    var defaultFixedTime = 0;
+                    that.fixedTimeModel.add({
+                        url: 'http://localhost:4567/project/' + that.projectId + '/fixedtime/' + defaultFixedTime,
+                        success: function (data) {
+                            alert('Successfully created default fixed time');
+                            that.$el.find('#fixed_time').val(defaultFixedTime);
+                        },
+                        error: function (data) {
+                            alert('Error updating fixed time: ' + data);
+                        }
+                    });
+                } else {
+                    that.$el.find('#fixed_time').val(data);
+                }
                 that.$el.find('#fixed_time').change(function (event) {
                     that.fixedTimeModel.update({
                         url: 'http://localhost:4567/project/' + that.projectId + '/fixedtime/' + $(this).val(),

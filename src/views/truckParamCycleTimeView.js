@@ -38,6 +38,26 @@ export class TruckParamCycleTimeView extends View {
         return this;
     }
 
+    filterMissingStockpiles() {
+        var that = this;
+        this.missingStockpiles = [];
+        this.stockpiles.forEach(function (stockpile) {
+            var present = false;
+            that.cycleTimes.forEach(function (cycleTime) {
+                if (cycleTime.stockPileName === stockpile.name) {
+                    present = true;
+                }
+            })
+            if (!present) {
+                that.missingStockpiles.push(stockpile);
+            }
+        });
+    }
+
+    fetchProcesses() {
+
+    }
+
     fetchStockpiles() {
         var that = this;
         this.stockpileModel.fetch({
@@ -56,6 +76,7 @@ export class TruckParamCycleTimeView extends View {
         this.cycleTimeModel.fetch({
             success: function (data) {
                 that.cycleTimes = data;
+                that.filterMissingStockpiles();
                 that.initializeGrid(data);
                 //that.renderToView({processes: data});
             },
@@ -105,11 +126,16 @@ export class TruckParamCycleTimeView extends View {
             }
         }).on("loaded.rs.jquery.bootgrid", function () {
             /*Adding stockpiles which have note yet been accounted for*/
-            that.stockpiles.forEach(function (stockPile) {
+            /*that.stockpiles.forEach(function (stockPile) {
                 if (!that.isStockpilePresent(stockPile.name)) {
                     that.addRowToGrid(stockPile);
                 }
-            });
+             });*/
+
+            if (!that.missingRowsAdded) {
+                that.addMissingRows();
+                that.missingRowsAdded = true;
+            }
             /* Executes after data is loaded and rendered */
             that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
             that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
@@ -147,6 +173,13 @@ export class TruckParamCycleTimeView extends View {
             }
         });
         return isPresent;
+    }
+
+    addMissingRows() {
+        var that = this;
+        this.missingStockpiles.forEach(function (missingStockpile) {
+            that.addRowToGrid(missingStockpile);
+        });
     }
 
     addRowToGrid(stockpile) {
