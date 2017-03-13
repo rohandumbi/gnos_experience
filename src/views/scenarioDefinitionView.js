@@ -121,6 +121,7 @@ export class ScenarioDefinitionView extends View{
             this.model.add({
                 dataObject: newScenario,
                 success: function (data) {
+                    that.data.push(data);
                     that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
                     alert('Successfully created new scenario');
                 },

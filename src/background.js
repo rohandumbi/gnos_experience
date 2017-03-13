@@ -15,10 +15,10 @@ import env from './env';
 var mainWindow;
 
 var setApplicationMenu = function () {
-    var menus = [editMenuTemplate];
-    if (env.name !== 'production') {
+    var menus = [editMenuTemplate, devMenuTemplate];
+    /*if (env.name !== 'production') {
         menus.push(devMenuTemplate);
-    }
+     }*/
     Menu.setApplicationMenu(Menu.buildFromTemplate(menus));
 };
 
