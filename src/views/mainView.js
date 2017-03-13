@@ -112,48 +112,84 @@ export class MainView extends View{
         });
     }
     initializeOpexDefinition(){
+        if (!this.scenario) {
+            alert('Select a scenario first');
+            return;
+        }
         this.opexDefinitionView = new OpexDefinitionView({projectId: this.projectId, scenario: this.scenario});
         this.opexDefinitionView.render();
         this.$el.find("#page-content-wrapper").html(this.opexDefinitionView.$el);
     }
     initializeFixedCostDefinition(){
+        if (!this.scenario) {
+            alert('Select a scenario first');
+            return;
+        }
         this.fixedCostDefinitionView = new FixedCostDefinitionView({scenario: this.scenario});
         this.fixedCostDefinitionView.render();
         this.$el.find("#page-content-wrapper").html(this.fixedCostDefinitionView.$el);
     }
     initializeMaterialConstraint(){
+        if (!this.scenario) {
+            alert('Select a scenario first');
+            return;
+        }
         this.processConstraintView = new ProcessConstraintView({projectId: this.projectId, scenario: this.scenario});
         this.processConstraintView.render();
         this.$el.find("#page-content-wrapper").html(this.processConstraintView.$el);
     }
     initializeGradeConstraint(){
+        if (!this.scenario) {
+            alert('Select a scenario first');
+            return;
+        }
         this.gradeConstraintView = new GradeConstraintView({projectId: this.projectId, scenario: this.scenario});
         this.gradeConstraintView.render();
         this.$el.find("#page-content-wrapper").html(this.gradeConstraintView.$el);
     }
     initializeBenchConstraint(){
+        if (!this.scenario) {
+            alert('Select a scenario first');
+            return;
+        }
         this.benchConstraintView = new BenchConstraintView({projectId: this.projectId, scenario: this.scenario});
         this.benchConstraintView.render();
         this.$el.find("#page-content-wrapper").html(this.benchConstraintView.$el);
     }
 
     initializePitDependency() {
+        if (!this.scenario) {
+            alert('Select a scenario first');
+            return;
+        }
         this.pitDependencyView = new PitDependencyView({projectId: this.projectId, scenario: this.scenario});
         this.pitDependencyView.render();
         this.$el.find("#page-content-wrapper").html(this.pitDependencyView.$el);
     }
 
     initializeDumpDependency() {
+        if (!this.scenario) {
+            alert('Select a scenario first');
+            return;
+        }
         this.dumpDependencyView = new DumpDependencyView({projectId: this.projectId, scenario: this.scenario});
         this.dumpDependencyView.render();
         this.$el.find("#page-content-wrapper").html(this.dumpDependencyView.$el);
     }
     initializeCapexConstraint(){
+        if (!this.scenario) {
+            alert('Select a scenario first');
+            return;
+        }
         this.capexCollectionView = new CapexCollectionView({projectId: this.projectId, scenario: this.scenario});
         this.capexCollectionView.render();
         this.$el.find("#page-content-wrapper").html(this.capexCollectionView.$el);
     }
 	initializeControlScreen(){
+        if (!this.scenario) {
+            alert('Select a scenario first');
+            return;
+        }
         this.controlScreenView = new ControlScreenView({projectId: this.projectId, scenario: this.scenario});
         this.controlScreenView.render();
         this.$el.find("#page-content-wrapper").html(this.controlScreenView.$el);

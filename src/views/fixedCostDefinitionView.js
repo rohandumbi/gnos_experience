@@ -6,9 +6,10 @@ export class FixedCostDefinitionView extends View{
     constructor(options) {
         super();
         this.scenario = options.scenario;
-        this.fixedCostModel = new FixedCostModel({scenarioId: this.scenario.id});
         if (!this.scenario) alert('select a scenario first');
+        this.fixedCostModel = new FixedCostModel({scenarioId: this.scenario.id});
         this.costHeadNames = ['Ore mining cost', 'Waste mining cost', 'Stockpile cost', 'Stockpile reclaiming cost', 'Truck hour cost'];
+        this.costHeads = [0, 1, 2, 3, 4];
     }
 
     getHtml() {
@@ -25,22 +26,42 @@ export class FixedCostDefinitionView extends View{
         return this;
     }
 
-    onDomLoaded() {
+    fetchFixedCosts() {
         var that = this;
-        if (this.scenario.timePeriod > 4) {
-            this.$el.find("#datatype-grid-basic").addClass('long-grid');
-        }
         this.fixedCostModel.fetch({
             success: function (data) {
                 that.fixedCostData = data;
+                that.filterMissingFixedCosts();
                 that.initializeGrid(data);
             },
             error: function (data) {
                 alert('Failed to get fixed costs.');
             }
         });
+    }
 
+    onDomLoaded() {
+        var that = this;
+        if (this.scenario.timePeriod > 4) {
+            this.$el.find("#datatype-grid-basic").addClass('long-grid');
+        }
+        this.fetchFixedCosts();
+    }
 
+    filterMissingFixedCosts() {
+        var that = this;
+        this.missingCostHeads = [];
+        this.costHeads.forEach(function (costHead) {
+            var present = false;
+            that.fixedCostData.forEach(function (fixedCost) {
+                if (fixedCost.costHead === costHead) {
+                    present = true;
+                }
+            })
+            if (!present) {
+                that.missingCostHeads.push(costHead);
+            }
+        });
     }
 
     initializeGrid(fixedCostData) {
@@ -86,6 +107,12 @@ export class FixedCostDefinitionView extends View{
             that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
             that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
 
+            if (!that.missingRowsAdded) {
+                console.log('missing cost heads: ' + that.missingCostHeads);
+                that.addMissingRows();
+                that.missingRowsAdded = true;
+            }
+
             that.grid.find('.copy-forward').click(function (event) {
                 var $values = $(this).closest('tr').find('.cost');
                 var firstValue = $values.first().val();
@@ -105,11 +132,43 @@ export class FixedCostDefinitionView extends View{
         });
     }
 
+    addMissingRows() {
+        var that = this;
+        this.missingCostHeads.forEach(function (missingCostHead) {
+            var object = {};
+            object['costHead'] = missingCostHead;
+            //object['mappingType'] = 1;
+            //object['mappedFieldName'] = that.fields[0].name;
+            var costData = {};
+            var startYear = that.scenario.startYear;
+            var presentYear = startYear + that.scenario.timePeriod;
+
+            for (var i = 0; i < that.scenario.timePeriod; i++) {
+                presentYear = startYear + i;
+                costData[presentYear.toString()] = 0;
+            }
+            object['costData'] = costData;
+            that.fixedCostModel.add({
+                dataObject: object,
+                success: function (data) {
+                    alert('Successfully added fixed cost.');
+                    data.name = that.costHeadNames[data.costHead];
+                    that.fixedCostData.push(data);
+                    that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
+                },
+                error: function () {
+                    alert('Error creating new fixed cost data.');
+                }
+            });
+        });
+    }
+
     loadScenario(scenarioName) {
         this.$el.find('#scenario_name').val(scenarioName);
     }
 
     updateCostData(options) {
+        var that = this;
         var fixedCostData = this.fixedCostData[options.index];
         fixedCostData.costData[options.year.toString()] = parseInt(options.value);
         console.log(fixedCostData);
@@ -117,6 +176,7 @@ export class FixedCostDefinitionView extends View{
             dataObject: fixedCostData,
             success: function (data) {
                 alert('Successfully updated.');
+                //that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
             },
             error: function (data) {
                 alert('failed update' + data);
