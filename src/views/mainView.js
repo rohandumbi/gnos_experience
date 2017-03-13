@@ -286,6 +286,11 @@ export class MainView extends View{
             e.preventDefault();
             that.$el.find("#wrapper").toggleClass("toggled");
         });
+        this.$el.find(".brand").click(function (e) {
+            e.preventDefault();
+            //that.$el.find("#wrapper").toggleClass("toggled");
+            that.trigger('open:dashboard');
+        });
         this.sideNavView.on('selected:category', (options)=>{
             this.initializeContentView(options.$category);
         }, this);

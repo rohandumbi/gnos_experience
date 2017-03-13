@@ -41,6 +41,7 @@ var loadProjectDashboard = () => {
     var dashboardView = new DashBoardView();
     dashboardView.render();
     $('#appWindow').html(dashboardView.$el);
+    dashboardView.off('open:project');
     dashboardView.on('open:project', function(options) {
         loadProject(options);
     });
@@ -52,6 +53,10 @@ var loadProjectDashboard = () => {
 var loadProject = (options) => {
     console.log('Opening project: ' + options.projectId)
     var mainView = new MainView({projectId: options.projectId});
+    mainView.off('open:dashboard');
+    mainView.on('open:dashboard', function (options) {
+        loadProjectDashboard(options);
+    })
     mainView.render();
     $('#appWindow').html(mainView.$el);
 }
