@@ -50,7 +50,8 @@ export class FixedCostDefinitionView extends View{
             var fixedCost = fixedCostData[i];
             row += (
                 '<tr>' +
-                '<td>' + this.costHeadNames[fixedCost.costHead] + '</td>'
+                '<td>' + this.costHeadNames[fixedCost.costHead] + '</td>' +
+                '<td>' + true + '</td>'
             )
             var scenarioStartYear = this.scenario.startYear;
             var scenarioTimePeriod = this.scenario.timePeriod;
@@ -69,6 +70,9 @@ export class FixedCostDefinitionView extends View{
             rowSelect: true,
             keepSelection: false,
             formatters: {
+                "commands": function (column, row) {
+                    return "<button type=\"button\" class=\"btn btn-xs btn-default command-edit glyphicon glyphicon-edit copy-forward\" data-row-id=\"" + row.id + "\"><span class=\"fa fa-pencil\"></span></button> ";
+                },
                 "value": function(column, row){
                     var yearlyValue = row[column.id] || row.costData[column.id];
                     return (
@@ -81,6 +85,14 @@ export class FixedCostDefinitionView extends View{
             /* Executes after data is loaded and rendered */
             that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
             that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
+
+            that.grid.find('.copy-forward').click(function (event) {
+                var $values = $(this).closest('tr').find('.cost');
+                var firstValue = $values.first().val();
+                console.log('First value: ' + $values[0]);
+                $values.val(firstValue);
+                $values.trigger('change');
+            });
 
             that.grid.find('.cost').change(function (e) {
                 //alert('update year of opex index: ' + $(this).data('year') + ':' + $(this).closest('tr').data('row-id') + ':' + $(this).val());

@@ -148,6 +148,7 @@ export class GradeConstraintView extends View{
             row += '<td>' + gradeConstraint.selectedGradeName + '</td>';
             row += '<td>' + gradeConstraint.selectorName + '</td>';
             row += '<td>' + gradeConstraint.isMax + '</td>';
+            row += '<td>' + true + '</td>'
             var constraintData = gradeConstraint.constraintData;
             var scenarioStartYear = this.scenario.startYear;
             var scenarioTimePeriod = this.scenario.timePeriod;
@@ -165,6 +166,9 @@ export class GradeConstraintView extends View{
             rowSelect: true,
             keepSelection: false,
             formatters: {
+                "commands": function (column, row) {
+                    return "<button type=\"button\" class=\"btn btn-xs btn-default command-edit glyphicon glyphicon-edit copy-forward\" data-row-id=\"" + row.id + "\"><span class=\"fa fa-pencil\"></span></button> ";
+                },
                 "grouping": function (column, row) {
                     var groupName = row.selectorName;
                     if (!groupName) {
@@ -265,6 +269,14 @@ export class GradeConstraintView extends View{
             /* Executes after data is loaded and rendered */
             that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
             that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
+
+            that.grid.find('.copy-forward').click(function (event) {
+                var $values = $(this).closest('tr').find('.value');
+                var firstValue = $values.first().val();
+                console.log('First value: ' + $values[0]);
+                $values.val(firstValue);
+                $values.trigger('change');
+            });
 
             that.grid.find('.value').change(function (e) {
                 that.updateValues($(this));

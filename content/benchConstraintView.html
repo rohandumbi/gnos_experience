@@ -11,6 +11,7 @@
     <tr>
         <th data-identifier="true" data-formatter="pit_name" data-column-id="pitName">Pit Name</th>
         <th data-column-id="inUse" data-formatter="inUse">In Use</th>
+        <th data-column-id="commands" data-formatter="commands" data-sortable="false">Commands</th>
         <% var counter = timePeriod %>
         <% for(var i=0; i< counter; i++) { %>
         <th data-formatter="value" data-column-id="<%= (startYear + i) %>"><%= (startYear + i) %></th>

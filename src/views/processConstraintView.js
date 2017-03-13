@@ -178,6 +178,7 @@ export class ProcessConstraintView extends View{
             row += '<td>' + processConstraint.inUse + '</td>';
             row += '<td>' + processConstraint.selector_name + '</td>';
             row += '<td>' + processConstraint.isMax + '</td>';
+            row += '<td>' + true + '</td>'
             var constraintData = processConstraint.constraintData;
             var scenarioStartYear = this.scenario.startYear;
             var scenarioTimePeriod = this.scenario.timePeriod;
@@ -195,6 +196,9 @@ export class ProcessConstraintView extends View{
             rowSelect: true,
             keepSelection: false,
             formatters: {
+                "commands": function (column, row) {
+                    return "<button type=\"button\" class=\"btn btn-xs btn-default command-edit glyphicon glyphicon-edit copy-forward\" data-row-id=\"" + row.id + "\"><span class=\"fa fa-pencil\"></span></button> ";
+                },
                 "grouping": function (column, row) {
                     var groupName = row.selector_name;
                     if (!groupName) {
@@ -283,6 +287,14 @@ export class ProcessConstraintView extends View{
             /* Executes after data is loaded and rendered */
             that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
             that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
+
+            that.grid.find('.copy-forward').click(function (event) {
+                var $values = $(this).closest('tr').find('.value');
+                var firstValue = $values.first().val();
+                console.log('First value: ' + $values[0]);
+                $values.val(firstValue);
+                $values.trigger('change');
+            });
 
             that.grid.find('.value').change(function (e) {
                 that.updateValues($(this));
