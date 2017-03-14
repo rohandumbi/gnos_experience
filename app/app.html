@@ -37,6 +37,13 @@
 
                     // Open context menu
                     $(this).on("contextmenu", function (e) {
+                        //find out the node on which right clicked
+                        var system = settings.arborSystem;
+                        var canvas = $('canvas').get(0);
+                        var pos = $(canvas).offset();
+                        var _mouseP = arbor.Point(e.pageX - pos.left, e.pageY - pos.top)
+                        var selected = system.nearest(_mouseP);
+
                         // return native menu if pressing control
                         if (e.ctrlKey) return;
 
@@ -56,7 +63,7 @@
                                 var $invokedOn = $menu.data("invokedOn");
                                 var $selectedMenu = $(e.target);
 
-                                settings.menuSelected.call(this, $invokedOn, $selectedMenu, e);
+                                settings.menuSelected.call(this, $invokedOn, $selectedMenu, e, selected);
                             });
 
                         return false;

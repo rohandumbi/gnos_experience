@@ -355,8 +355,8 @@ export class WorkflowView extends View{
         var that = this;
         var $canvas = this.$el.find("#viewport");
         //var $container = $canvas.parent();
-        $canvas.attr('width', '1300');
-        $canvas.attr('height', '700');
+        //$canvas.attr('width', '1300');
+        //$canvas.attr('height', '700');
 
         this.system = arbor.ParticleSystem(1000, 400,1);
         this.system.parameters({gravity:true});
@@ -369,65 +369,118 @@ export class WorkflowView extends View{
         this.addProductsToGraph(this.products);
         this.addProductJoinsToGraph(this.productJoins);
         $canvas.contextMenu({
+            arborSystem: this.system,
             menuSelector: "#workflowContextMenu",
-            menuSelected: function (invokedOn, selectedMenu, event) {
+            menuSelected: function (invokedOn, selectedMenu, event, selected) {
                 var selectedAction = selectedMenu.text();
+                //alert("Name:" + selected.node.name + " Category:" + selected.node.data.category)
                 if (selectedAction.toString() === 'Delete') {
-                    that.handleDelete(event);
-                } else if ((selectedAction.toString() === 'Add product')) {
-                    that.handleAddProduct(event);
-                } else if ((selectedAction.toString() === 'Add to process join')) {
-                    that.handleAddProcessToJoin(event);
+                    that.handleDelete(selected);
+                } /*else if ((selectedAction.toString() === 'Add product')) {
+                 that.handleAddProduct(selected);
+                 } */ else if ((selectedAction.toString() === 'Add to process join')) {
+                    that.handleAddProcessToJoin(selected);
                 } else if ((selectedAction.toString() === 'Add to product join')) {
-                    that.handleAddToProductJoin(event);
+                    that.handleAddToProductJoin(selected);
                 } else if ((selectedAction.toString() === 'Add expression')) {
-                    that.handleAddExpressionToProduct(event);
+                    that.handleAddExpressionToProduct(selected);
                 } else if ((selectedAction.toString() === 'Add unit')) {
-                    that.handleAddUnitToProduct(event);
+                    that.handleAddUnitToProduct(selected);
                 } else if ((selectedAction.toString() === 'View grades')) {
-                    that.handleViewGrades(event);
+                    that.handleViewGrades(selected);
                 }
             }
         });
     }
 
-    handleViewGrades(event) {
+    handleViewGrades(selected) {
         var that = this;
-        var pos = this.$el.find('#viewport').offset();
-        var p = {x: event.pageX - pos.left, y: event.pageY - pos.top}
-        var selected = this.system.nearest(p);
+        var selected = selected;
         if (selected.node) {
             var category = selected.node.data.category;
-            if (category != 'product') {
+
+            if (category === 'product') {
+                that.$el.find('#grade-list').html('');
+                that.showGradeListForProduct(selected.node.name);
+                that.$el.find('#associatedGrades').modal();
+            } else if (category === 'productJoin') {
+                that.$el.find('#grade-list').html('');
+                that.showGradeListForProductJoin(selected.node.name);
+                that.$el.find('#associatedGrades').modal();
+            } else {
                 alert('Not available for category: ' + category);
             }
-            this.productGradeModel = new ProductGradeModel({
-                projectId: this.projectId,
-                productName: selected.node.name
-            });
-            this.productGradeModel.fetch({
-                success: function (data) {
-                    var associatedGrades = data;
-                    var listGroup = '<ul class="list-group">';
-                    associatedGrades.forEach(function (associatedGrade) {
-                        listGroup += '<li class="list-group-item">' + associatedGrade.name + '</li>'
-                    });
-                    listGroup += '</ul>';
-                    that.$el.find('#grade-list').append(listGroup);
-                    that.$el.find('#associatedGrades').modal();
-                },
-                error: function (data) {
-                    alert('Error fetching list of associated grades');
-                }
-            });
         }
     }
 
-    handleDelete(event) {
+    showGradeListForProductJoin(productJoinName) {
         var that = this;
-        var pos = this.$el.find('#viewport').offset();
-        var p = {x: event.pageX - pos.left, y: event.pageY - pos.top}
-        var selected = this.system.nearest(p);
+        this.productJoinModel.fetch({
+            success: function (data) {
+                that.productJoins = data;
+                that.productJoins.forEach(function (productJoin) {
+                    if (productJoin.name === productJoinName) {
+                        productJoin.productList.forEach(function (associatedProductName) {
+                            that.showGradeListForProduct(associatedProductName);
+                        });
+                    }
+                });
+            },
+            error: function (data) {
+                alert('Error fetching product joins.');
+            }
+        });
+        /*var that = this;
+         this.productGradeModel = new ProductGradeModel({
+         projectId: this.projectId,
+         productName: productName
+         });
+         this.productGradeModel.fetch({
+         success: function (data) {
+         var associatedGrades = data;
+         var listGroup = '<ul class="list-group">';
+         associatedGrades.forEach(function (associatedGrade) {
+         listGroup += '<li class="list-group-item">' + associatedGrade.name + '</li>'
+         });
+         listGroup += '</ul>';
+         //that.$el.find('#grade-list').html();
+         that.$el.find('#grade-list').append(listGroup);
+         //that.$el.find('#associatedGrades').modal();
+         },
+         error: function (data) {
+         alert('Error fetching list of associated grades');
+         }
+         });*/
+    }
+
+    showGradeListForProduct(productName) {
+        var that = this;
+        this.productGradeModel = new ProductGradeModel({
+            projectId: this.projectId,
+            productName: productName
+        });
+        this.productGradeModel.fetch({
+            success: function (data) {
+                var associatedGrades = data;
+                var listGroup = '<ul class="list-group">';
+                associatedGrades.forEach(function (associatedGrade) {
+                    listGroup += '<li class="list-group-item">' + associatedGrade.name + '</li>'
+                });
+                listGroup += '</ul>';
+                //that.$el.find('#grade-list').html();
+                that.$el.find('#grade-list').append(listGroup);
+                //that.$el.find('#associatedGrades').modal();
+            },
+            error: function (data) {
+                alert('Error fetching list of associated grades');
+            }
+        });
+    }
+
+
+    handleDelete(selected) {
+        var that = this;
+        var selected = selected;
         if (selected.node) {
             console.log('Delete: ' + selected.node.name);
             var category = selected.node.data.category;
@@ -491,11 +544,9 @@ export class WorkflowView extends View{
     }
 
 
-    handleAddExpressionToProduct(event) {
+    handleAddExpressionToProduct(selected) {
         var that = this;
-        var pos = this.$el.find('#viewport').offset();
-        var p = {x: event.pageX - pos.left, y: event.pageY - pos.top}
-        var selected = this.system.nearest(p);
+        var selected = selected;
         if (selected.node.data.category !== 'product') {
             alert('options not available for category' + selected.node.data.category);
             return;
@@ -526,11 +577,9 @@ export class WorkflowView extends View{
         }
     }
 
-    handleAddUnitToProduct(event) {
+    handleAddUnitToProduct(selected) {
         var that = this;
-        var pos = this.$el.find('#viewport').offset();
-        var p = {x: event.pageX - pos.left, y: event.pageY - pos.top}
-        var selected = this.system.nearest(p);
+        var selected = selected;
         if (selected.node.data.category !== 'product') {
             alert('options not available for category' + selected.node.data.category);
             return;
@@ -574,28 +623,25 @@ export class WorkflowView extends View{
 
      }*/
 
-    handleAddToProductJoin(event) {
+    handleAddToProductJoin(selected) {
         var that = this;
-        var pos = this.$el.find('#viewport').offset();
-        var p = {x: event.pageX - pos.left, y: event.pageY - pos.top}
-        var selected = this.system.nearest(p);
+
+        var selected = selected;
         var category = selected.node.data.category;
         if (category !== 'product' && category !== 'productJoin') {
             alert('Option not available for category: ' + selected.node.data.category);
             return;
         }
         if (category == 'product') {
-            this.handleAddProductToProductJoin(event);
+            this.handleAddProductToProductJoin(selected);
         } else if (category == 'productJoin') {
-            this.handleAddProductJoinToProductJoin(event);
+            this.handleAddProductJoinToProductJoin(selected);
         }
     }
 
-    handleAddProductToProductJoin(event) {
+    handleAddProductToProductJoin(selected) {
         var that = this;
-        var pos = this.$el.find('#viewport').offset();
-        var p = {x: event.pageX - pos.left, y: event.pageY - pos.top}
-        var selected = this.system.nearest(p);
+        var selected = selected;
         if (selected.node) {
             console.log('Adding product: ' + selected.node.name);
             this.$el.find('#addProductToJoin').click(function (event) {
@@ -624,11 +670,9 @@ export class WorkflowView extends View{
         }
     }
 
-    handleAddProductJoinToProductJoin(event) {
+    handleAddProductJoinToProductJoin(selected) {
         var that = this;
-        var pos = this.$el.find('#viewport').offset();
-        var p = {x: event.pageX - pos.left, y: event.pageY - pos.top}
-        var selected = this.system.nearest(p);
+        var selected = selected;
         if (selected.node) {
             console.log('Adding product join: ' + selected.node.name);
             this.$el.find('#addProductJoinToJoin').click(function (event) {
@@ -658,11 +702,12 @@ export class WorkflowView extends View{
     }
 
 
-    handleAddProcessToJoin(event) {
-        var that = this;
+    handleAddProcessToJoin(selected) {
+        /*var that = this;
         var pos = this.$el.find('#viewport').offset();
-        var p = {x: event.pageX - pos.left, y: event.pageY - pos.top}
-        var selected = this.system.nearest(p);
+         var p = {x: event.pageX - pos.left, y: event.pageY - pos.top}*/
+        var that = this;
+        var selected = selected;
         if (selected.node.data.category !== 'model') {
             alert('Option not available for category: ' + selected.node.data.category);
             return;
@@ -759,6 +804,7 @@ export class WorkflowView extends View{
             dataObject: newProcessJoin,
             success: function (data) {
                 alert('Successfully created join.');
+                that.processJoins.push(data);
                 that.addProcessJoinsToGraph([data]);
                 that.$el.find('#join_name').val('');
             }
@@ -775,6 +821,7 @@ export class WorkflowView extends View{
             dataObject: newProductJoin,
             success: function (data) {
                 alert('Successfully created product join.');
+                that.productJoins.push(data);
                 that.addProductJoinsToGraph([data]);
                 that.$el.find('#product_join_name').val('');
             }
@@ -797,6 +844,7 @@ export class WorkflowView extends View{
             dataObject: newProduct,
             success: function (data) {
                 alert('Successfully created product.');
+                that.products.push(data);
                 that.addProductsToGraph([data]);
                 that.$el.find('#product_name').val('');
             },
