@@ -328,7 +328,7 @@ export class GradeConstraintView extends View{
         var year = $row.data('year');
         var value = $row.val();
         var gradeConstraint = this.gradeConstraints[index];
-        gradeConstraint.constraintData[year] = parseInt(value);
+        gradeConstraint.constraintData[year] = parseFloat(value);
         console.log(gradeConstraint);
         this.updateConstraint({gradeConstraint: gradeConstraint});
     }

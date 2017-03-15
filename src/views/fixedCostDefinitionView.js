@@ -170,7 +170,7 @@ export class FixedCostDefinitionView extends View{
     updateCostData(options) {
         var that = this;
         var fixedCostData = this.fixedCostData[options.index];
-        fixedCostData.costData[options.year.toString()] = parseInt(options.value);
+        fixedCostData.costData[options.year.toString()] = parseFloat(options.value);
         console.log(fixedCostData);
         this.fixedCostModel.update({
             dataObject: fixedCostData,

@@ -399,7 +399,7 @@ export class OpexDefinitionView extends View{
             opexData['unitId'] = opexData.expressionId;
         }
         opexData.costData = {};
-        opexData.costData[options.year.toString()] = parseInt(options.value);
+        opexData.costData[options.year.toString()] = parseFloat(options.value);
         console.log(opexData);
         this.updateOpex({opexData: opexData});
     }

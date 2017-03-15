@@ -241,7 +241,7 @@ export class BenchConstraintView extends View{
     updateConstraintData(options) {
         //var opexData = this.opexData[options.index];
         var benchData = this.getBenchByPitName(options.existingPitName);
-        benchData.constraintData[options.year.toString()] = parseInt(options.value);
+        benchData.constraintData[options.year.toString()] = parseFloat(options.value);
         console.log(benchData);
         this.updateBenchConstraint({benchData: benchData});
     }

@@ -342,7 +342,7 @@ export class ProcessConstraintView extends View{
         var year = $row.data('year');
         var value = $row.val();
         var processConstraint = this.processConstraints[index];
-        processConstraint.constraintData[year] = parseInt(value);
+        processConstraint.constraintData[year] = parseFloat(value);
         console.log(processConstraint);
         this.updateConstraint({processConstraint: processConstraint});
     }
