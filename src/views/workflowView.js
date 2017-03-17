@@ -430,27 +430,6 @@ export class WorkflowView extends View{
                 alert('Error fetching product joins.');
             }
         });
-        /*var that = this;
-         this.productGradeModel = new ProductGradeModel({
-         projectId: this.projectId,
-         productName: productName
-         });
-         this.productGradeModel.fetch({
-         success: function (data) {
-         var associatedGrades = data;
-         var listGroup = '<ul class="list-group">';
-         associatedGrades.forEach(function (associatedGrade) {
-         listGroup += '<li class="list-group-item">' + associatedGrade.name + '</li>'
-         });
-         listGroup += '</ul>';
-         //that.$el.find('#grade-list').html();
-         that.$el.find('#grade-list').append(listGroup);
-         //that.$el.find('#associatedGrades').modal();
-         },
-         error: function (data) {
-         alert('Error fetching list of associated grades');
-         }
-         });*/
     }
 
     showGradeListForProduct(productName) {

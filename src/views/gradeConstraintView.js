@@ -6,6 +6,7 @@ import {PitModel} from '../models/pitModel';
 import {PitGroupModel} from '../models/pitGroupModel';
 import {ProductJoinModel} from '../models/productJoinModel';
 import {GradeModel} from '../models/gradeModel';
+import {ProductGradeModel} from '../models/productGradeModel'
 
 export class GradeConstraintView extends View{
 
@@ -203,12 +204,9 @@ export class GradeConstraintView extends View{
                         '<select class="constraint_grade" value="test">' +
                         '<option selected disabled hidden>' + gradeName + '</option>'
                     );
-                    /*tableRow += '<option data-grade-name="" data-grade-type="-1">' + 'NONE' + '</option>';*/
-                    that.grades.forEach(function (grade) {
+                    //that.fetchGradeListForProductJoin(row.productJoinName, $(tableRow));
+                    /*that.grades.forEach(function (grade) {
                         tableRow += '<option data-grade-name="' + grade.name + '" data-grade-type="0">' + grade.name + '</option>';
-                    });
-                    /*that.processes.forEach(function (process) {
-                     tableRow += '<option data-grade-name="' + process.name + '" data-grade-type="1">' + process.name + '</option>';
                      });*/
                     tableRow += '</select>';
                     return tableRow;
@@ -222,13 +220,9 @@ export class GradeConstraintView extends View{
                         '<select class="product_join" value="test">' +
                         '<option selected disabled hidden>' + productJoinName + '</option>'
                     );
-                    /*tableRow += '<option data-grade-name="" data-grade-type="-1">' + 'NONE' + '</option>';*/
                     that.productJoins.forEach(function (productJoin) {
                         tableRow += '<option data-join-name="' + productJoin.name + '">' + productJoin.name + '</option>';
                     });
-                    /*that.processes.forEach(function (process) {
-                     tableRow += '<option data-grade-name="' + process.name + '" data-grade-type="1">' + process.name + '</option>';
-                     });*/
                     tableRow += '</select>';
                     return tableRow;
                 },
@@ -266,6 +260,14 @@ export class GradeConstraintView extends View{
             }
         }).on("loaded.rs.jquery.bootgrid", function()
         {
+            var _ = require('underscore');
+
+            that.$el.find("#tableBody tr").each(function (i, row) {
+                var productJoinName = $(row).find('.product_join').find('option:checked').val();
+                var $gradeSelect = $(row).find('.constraint_grade');
+                that.fetchGradeListForProductJoin(productJoinName, $gradeSelect);
+            });
+
             /* Executes after data is loaded and rendered */
             that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
             that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
@@ -291,8 +293,40 @@ export class GradeConstraintView extends View{
             });
 
             that.grid.find('.product_join').change(function () {
+                var self = this;
                 that.updateProductJoin($(this));
+                var $grade = $(this).closest('tr').find('.constraint_grade'); // as soon as a new product join is selected, grade shout be set to NONE
+                //$grade.val('NONE');
+                $grade.html('');
+                //that.updateGrade($grade);
+                var index = $grade.closest('tr').data('row-id');
+                var gradeConstraint = that.gradeConstraints[index];
+                gradeConstraint['selectedGradeName'] = '';
+                //gradeConstraint['selectorName'] = $grouping.find('option:checked').data('grouping-name');
+                console.log(gradeConstraint);
+                that.updateConstraint({
+                    gradeConstraint: gradeConstraint, success: function (data) {
+                        that.fetchGradeListForProductJoin($(self).find('option:checked').val(), $grade, true);
+                    }
+                });
             });
+
+
+            /*that.grid.find('.constraint_grade').data('open',false);
+             that.grid.find('.constraint_grade').click( function() {
+             if ( $(this).data('open') == false ) {
+             $(this).data('open', true);
+             $(document).mouseup( _.bind(that.waitForCloseClick, this) );
+             //alert('Opening');
+             var productJoinName = $(this).closest('tr').find('.product_join').find('option:checked').val();
+             that.fetchGradeListForProductJoin(productJoinName, $(this));
+             } else {
+             $(this).data('open', false );
+             }
+             });*/
+            /* that.grid.find('.constraint_grade').change(function () {
+             that.updateGrade($(this));
+             });*/
 
             that.grid.find('.constraint_grade').change(function () {
                 that.updateGrade($(this));
@@ -302,9 +336,6 @@ export class GradeConstraintView extends View{
                 that.updateIsMax($(this));
             });
 
-            /*that.grid.find(".command-upload").on("click", function(e){
-             that.loadScenario($(this).data("row-id"));
-             })*/
         });
         var $addButton = $('<button type="button" class="btn btn-default"></button>');
         $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
@@ -320,6 +351,54 @@ export class GradeConstraintView extends View{
         });
         $addButton.click(function () {
             that.addRowToGrid();
+        });
+    }
+
+    fetchGradeListForProductJoin(productJoinName, $select, isUpdate) {
+        var that = this;
+        //$select.html('');
+        this.productJoinModel.fetch({
+            success: function (data) {
+                that.productJoins = data;
+                that.productJoins.forEach(function (productJoin) {
+                    if (productJoin.name === productJoinName) {
+                        /*productJoin.productList.forEach(function (associatedProductName) {
+                         that.fetchGradeListForProduct(associatedProductName, $select);
+                         });*/
+                        var firstProduct = productJoin.productList[0];// since in a product join all products will have same grades
+                        that.fetchGradeListForProduct(firstProduct, $select, isUpdate);
+                    }
+                });
+            },
+            error: function (data) {
+                alert('Error fetching product joins.');
+            }
+        });
+    }
+
+    fetchGradeListForProduct(productName, $select, isUpdate) {
+        var that = this;
+        this.productGradeModel = new ProductGradeModel({
+            projectId: this.projectId,
+            productName: productName
+        });
+        this.productGradeModel.fetch({
+            success: function (data) {
+                var associatedGrades = data;
+                //var options = '<option selected disabled hidden>' + 'NONE' + '</option>';
+                var options = '';
+                if (isUpdate) {
+                    options = '<option selected disabled hidden>' + 'NONE' + '</option>';
+                }
+                associatedGrades.forEach(function (associatedGrade) {
+                    //listGroup += '<li class="list-group-item">' + associatedGrade.name + '</li>'
+                    options += '<option data-grade-name="' + associatedGrade.name + '">' + associatedGrade.name + '</option>'
+                });
+                $select.append(options);
+            },
+            error: function (data) {
+                alert('Error fetching list of associated grades');
+            }
         });
     }
 
@@ -354,7 +433,7 @@ export class GradeConstraintView extends View{
     updateGrade($grade) {
         var index = $grade.closest('tr').data('row-id');
         var gradeConstraint = this.gradeConstraints[index];
-        gradeConstraint['selectedGradeName'] = $grade.find('option:checked').val();
+        gradeConstraint['selectedGradeName'] = $grade.find('option:checked').val() || '';
         //gradeConstraint['selectorName'] = $grouping.find('option:checked').data('grouping-name');
         console.log(gradeConstraint);
         this.updateConstraint({gradeConstraint: gradeConstraint});
