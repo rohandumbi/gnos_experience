@@ -145,7 +145,7 @@ export class ExpressionDefinitionView extends View{
         updatedExpression['filter'] = options.filter;
         this.model.update({
             id: updatedExpression.id,
-            url: 'http://localhost:4567/expressions',
+            url: 'http://localhost:4567/project/'+this.projectId+'/expressions',
             dataObject: updatedExpression,
             success: function (data) {
                 alert('Successfully updated');
@@ -161,7 +161,7 @@ export class ExpressionDefinitionView extends View{
         updatedExpression['weightedField'] = options.weightedField;
         this.model.update({
             id: updatedExpression.id,
-            url: 'http://localhost:4567/expressions',
+            url: 'http://localhost:4567/project/'+this.projectId+'/expressions',
             dataObject: updatedExpression,
             success: function (data) {
                 alert('Successfully updated');
@@ -177,7 +177,7 @@ export class ExpressionDefinitionView extends View{
         updatedExpression['exprvalue'] = options.exprvalue;
         this.model.update({
             id: updatedExpression.id,
-            url: 'http://localhost:4567/expressions',
+            url: 'http://localhost:4567/project/'+this.projectId+'/expressions',
             dataObject: updatedExpression,
             success: function (data) {
                 alert('Successfully updated');
@@ -193,7 +193,7 @@ export class ExpressionDefinitionView extends View{
         updatedExpression['isGrade'] = options.isGrade;
         this.model.update({
             id: updatedExpression.id,
-            url: 'http://localhost:4567/expressions',
+            url: 'http://localhost:4567/project/'+this.projectId+'/expressions',
             dataObject: updatedExpression,
             success: function (data) {
                 alert('Successfully updated');
