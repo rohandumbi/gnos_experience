@@ -22,20 +22,23 @@ export class ControlScreenView extends View{
 
     bindEvents() {
         var that = this;
-		
+
 		this.$el.find('#controlScreenForm').submit(function(e) {
 			e.preventDefault();
 			var url = "http://localhost:4567/project/"+that.projectId+"/scenario/"+that.scenarioId+"/runscheduler";
 			var dataObj = {};
 			var mode = $('input:radio[name=modeoption]:checked').val();
-			var isReclaim = $('#reclaimoption').is(':checked'); 
+            var isReclaim = $('#reclaimoption').is(':checked');
 			dataObj.mode = mode;
 			dataObj.isReclaim = isReclaim;
 			dataObj.enableEquations = {};
 			$('#equations input:checkbox:checked').each(function(){
 				dataObj.enableEquations[$(this).val()] = true;
 			})
-			
+            dataObj.period = that.$el.find('#period').val();
+            dataObj.window = that.$el.find('#window').val();
+            dataObj.stepSize = that.$el.find('#step-size').val();
+
 			var data = JSON.stringify(dataObj);
 			$.ajax({
 				url: url,

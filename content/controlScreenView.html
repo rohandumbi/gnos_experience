@@ -2,18 +2,18 @@
     <form id="controlScreenForm">
 	  <div class="form-group" id="mode-option">
 		<label class="radio-inline">
-		  <input type="radio" name="modeoption" value="1" checked="checked">GLobal
+            <input id="globalBtn" type="radio" name="modeoption" value="1" checked="checked">GLobal
 		</label>
 		<label class="radio-inline">
-		  <input type="radio" name="modeoption" value="2">Sliding Window
+            <input id="slidingBtn" type="radio" name="modeoption" value="2">Sliding Window
 		</label>
 	  </div>
-	  
-	  
-	  <div class="checkbox">
+
+
+        <div class="checkbox">
 		<label><input id="reclaimoption" type="checkbox" checked="checked" value="isReclaim">Reclaim</label>
 	  </div>
-	  
+
 	  <div id="equations">
 		<div class="checkbox">
 			<label><input type="checkbox" checked="checked" value="PROCESS_CONSTRAINT">Process Constraint</label>
@@ -43,6 +43,17 @@
 			<label><input type="checkbox" checked="checked" value="BOUNDARY_VARIABLES">Boundary Variable</label>
 		</div>
 	  </div>
+        <div id="swOptions">
+            <div class="">
+                <label>PERIOD</label>&nbsp;<input id="period" type="text" checked="checked" value=""/>
+            </div>
+            <div class="">
+                <label>WINDOW</label>&nbsp;<input id="window" type="text" checked="checked" value=""/>
+            </div>
+            <div class="">
+                <label>STEP SIZE</label>&nbsp;<input id="step-size" type="text" checked="checked" value=""/>
+            </div>
+        </div>
 	  <button id="run" type="submit" class="btn btn-default">Run</button>
 	</form>
 </div>
