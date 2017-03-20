@@ -341,7 +341,7 @@ export class WorkflowView extends View{
         //this.fitCanvasToContainer();
     }
 
-    fitCanvasToContainer() {
+    /*fitCanvasToContainer() {
         var canvas = document.querySelector('canvas');
         // Make it visually fill the positioned parent
         canvas.style.width = '100%';
@@ -349,20 +349,31 @@ export class WorkflowView extends View{
         // ...then set the internal size to match
         canvas.width = canvas.offsetWidth;
         canvas.height = canvas.offsetHeight;
-    }
+     }*/
 
     initializeGraph(nodeData) {
         var that = this;
+        var parentWidth = this.$el.find('#canvas-container').width();
+        var parentHeight = this.$el.find('#canvas-container').height();
         var $canvas = this.$el.find("#viewport");
-        //var $container = $canvas.parent();
-        //$canvas.attr('width', '1300');
-        //$canvas.attr('height', '700');
+
+        var canvas = document.querySelector('canvas');
+        var rect = canvas.parentNode.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+
+        canvas.width = parentWidth;
+        canvas.height = parentHeight;
 
         this.system = arbor.ParticleSystem(1000, 400,1);
         this.system.parameters({gravity:true});
         this.system.renderer = Renderer($canvas);
-        this.system.screenPadding(20);
-
+        //this.system.screenPadding(20);
+        //this.system.screenSize(parentWidth, parentHeight);
+        /*this.$el.find('#canvas-container').resize(function(){
+         canvas.width = $(this).width();
+         canvas.height = $(this).height();
+         });*/
         var block = this.system.addNode('Block', {'color': 'red', 'shape': 'dot', 'label': 'Block'});
         this.addProcessesToGraph(this.treeNodes);
         this.addProcessJoinsToGraph(this.processJoins);

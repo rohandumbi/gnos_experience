@@ -1,12 +1,12 @@
-<div id="workflowView" class="container-fluid">
-    <div class="row content">
+<div id="workflowView" class="container-fluid" style="height:100%">
+    <div class="row content" style="height:100%">
         <div class="col-sm-1 sidenav">
             <h4><small>MODELS</small></h4>
             <hr>
             <ul class="list-group">
             </ul>
         </div>
-        <div id="canvas-container" class="col-sm-10">
+        <div class="col-sm-11" style="height:100%">
             <h4 style="display: inline-block"><small>WORKFLOW DIAGRAM</small></h4>
             <div style="display: inline-block" id="color-code">
                 <h4 style="padding:2px; display: inline-block; background-color: red">
@@ -41,7 +41,9 @@
             </div>
             <hr>
             <!--<canvas class="col-sm-12" id="viewport"></canvas>-->
-            <canvas width="1400" height="800" id="viewport"></canvas>
+            <div id="canvas-container" style="height:90%; width:100%">
+                <canvas id="viewport"></canvas>
+            </div>
         </div>
     </div>
     <ul id="workflowContextMenu" class="dropdown-menu" role="menu" style="display:none">
