@@ -455,8 +455,9 @@ export class OpexDefinitionView extends View{
             dataObject: newOpex,
             success: function (data) {
                 alert('added new data');
-                that.opexData.push(data);
-                that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
+                that.trigger('reload');
+                //that.opexData.push(data);
+                //that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
             },
             error: function (data) {
                 alert('Error creating opex data');

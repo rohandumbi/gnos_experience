@@ -112,11 +112,15 @@ export class MainView extends View{
         });
     }
     initializeOpexDefinition(){
+        var that = this;
         if (!this.scenario) {
             alert('Select a scenario first from Scenario Definition');
             return;
         }
         this.opexDefinitionView = new OpexDefinitionView({projectId: this.projectId, scenario: this.scenario});
+        this.opexDefinitionView.on('reload', function () {
+            that.initializeOpexDefinition();
+        });
         this.opexDefinitionView.render();
         this.$el.find("#page-content-wrapper").html(this.opexDefinitionView.$el);
     }
