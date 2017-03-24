@@ -365,20 +365,22 @@ export class WorkflowView extends View{
         canvas.width = parentWidth;
         canvas.height = parentHeight;
 
-        this.system = arbor.ParticleSystem(1000, 400,1);
-        this.system.parameters({gravity:true});
+        //this.system = arbor.ParticleSystem(1000, 400,1);
+        this.system = arbor.ParticleSystem({
+            friction: .5,
+            stiffness: 200,
+            repulsion: 0,
+            gravity: false
+        });
         this.system.renderer = Renderer($canvas);
-        //this.system.screenPadding(20);
-        //this.system.screenSize(parentWidth, parentHeight);
-        /*this.$el.find('#canvas-container').resize(function(){
-         canvas.width = $(this).width();
-         canvas.height = $(this).height();
-         });*/
         var block = this.system.addNode('Block', {'color': 'red', 'shape': 'dot', 'label': 'Block'});
         this.addProcessesToGraph(this.treeNodes);
         this.addProcessJoinsToGraph(this.processJoins);
         this.addProductsToGraph(this.products);
         this.addProductJoinsToGraph(this.productJoins);
+        if (this.treeNodes.length > 0) {//existing processes
+            this.system.parameters({repulsion: 1000})
+        }
         $canvas.contextMenu({
             arborSystem: this.system,
             menuSelector: "#workflowContextMenu",
@@ -480,6 +482,10 @@ export class WorkflowView extends View{
                     id: selected.node.data.id,
                     success: function () {
                         that.system.pruneNode(selected.node);
+                        var listOfBlockChildren = that.system.getEdgesFrom('Block');
+                        if (listOfBlockChildren.length === 0) {// no more processes in graph
+                            that.system.parameters({repulsion: 0});
+                        }
                     },
                     error: function (data) {
                         alert('Failed to delete model.');
