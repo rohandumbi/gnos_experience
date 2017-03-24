@@ -82,10 +82,14 @@ export class PitGroupView extends View {
         $canvas.attr('width', '1300');
         $canvas.attr('height', '700');
 
-        this.system = arbor.ParticleSystem(1000, 400, 1);
-        this.system.parameters({gravity: true});
+        this.system = arbor.ParticleSystem({
+            friction: .5,
+            stiffness: 200,
+            repulsion: 0,
+            gravity: false
+        });
         this.system.renderer = Renderer($canvas);
-        this.system.screenPadding(20);
+        //this.system.screenPadding(20);
 
         //var block = this.system.addNode('Block',{'color':'red','shape':'dot','label':'BLOCK'});
         //var pitGroups = data.pitGroups;
