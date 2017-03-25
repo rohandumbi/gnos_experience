@@ -227,11 +227,17 @@ export class OpexDefinitionView extends View{
                     var unitName = '';
                     var tableRow = '';
                     unitName = row.unitName || '';
-                    tableRow = (
-                        '<select class="unit">' +
-                        '<option selected disabled hidden>' + unitName + '</option>'
-                    );
-
+                    if (row.isRevenue.toString() === "true") {
+                        tableRow = (
+                            '<select class="unit">' +
+                            '<option selected disabled hidden>' + unitName + '</option>'
+                        );
+                    } else {
+                        tableRow = (
+                            '<select disabled class="unit">' +
+                            '<option selected disabled hidden></option>'
+                        );
+                    }
                     that.expressions.forEach(function (expression) {
                         tableRow += '<option data-unit-type="2" data-unit-name="' + expression.name + '">' + expression.name + '</option>';
                     });
