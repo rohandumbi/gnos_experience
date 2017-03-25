@@ -180,7 +180,7 @@ export class ModelDefinitionView extends View{
                 "condition": function (column, row) {
                     var condition = row.condition || '';
                     return (
-                        '<input data-model-name="' + row.name + '" class="model_condition" style="width:200px" type="text" value="' + condition + '"' + '>'
+                        '<input data-model-name="' + row.name + '" class="model_condition" style="min-width:350px" type="text" value="' + condition + '"' + '>'
                     );
                 }
             }
