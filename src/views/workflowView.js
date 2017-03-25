@@ -368,7 +368,7 @@ export class WorkflowView extends View{
         //this.system = arbor.ParticleSystem(1000, 400,1);
         this.system = arbor.ParticleSystem({
             friction: .5,
-            stiffness: 200,
+            stiffness: 50,
             repulsion: 0,
             gravity: false
         });
@@ -379,7 +379,7 @@ export class WorkflowView extends View{
         this.addProductsToGraph(this.products);
         this.addProductJoinsToGraph(this.productJoins);
         if (this.treeNodes.length > 0) {//existing processes
-            this.system.parameters({repulsion: 1000})
+            this.system.parameters({repulsion: 200})
         }
         $canvas.contextMenu({
             arborSystem: this.system,
