@@ -251,7 +251,7 @@ export class OpexDefinitionView extends View{
                 "value": function(column, row){
                     var yearlyValue = row[column.id] || row.costData[column.id]
                     return (
-                        '<input class="cost" data-year="' + column.id + '" type="text" value="' + yearlyValue + '"' + '>'
+                        '<input style="width:80px" class="cost" data-year="' + column.id + '" type="text" value="' + yearlyValue + '"' + '>'
                     );
                 },
                 "inUse": function (column, row) {

@@ -17,7 +17,9 @@
         <th data-column-id="commands" data-formatter="commands" data-sortable="false">Commands</th>
         <% var counter = timePeriod %>
         <% for(var i=0; i< counter; i++) { %>
-        <th data-formatter="values" data-column-id="<%= (startYear + i) %>"><%= (startYear + i) %></th>
+        <th data-header-css-class="yearlyValueColumn" data-formatter="values" data-column-id="<%= (startYear + i) %>">
+            <%= (startYear + i) %>
+        </th>
         <% } %>
     </tr>
     </thead>

@@ -129,7 +129,7 @@ export class BenchConstraintView extends View{
                 "value": function(column, row){
                     var yearlyValue = row[column.id] || row.constraintData[column.id]
                     return (
-                        '<input class="constraint" data-year="' + column.id + '" type="text" value="' + yearlyValue + '"' + '>'
+                        '<input style="width:80px" class="constraint" data-year="' + column.id + '" type="text" value="' + yearlyValue + '"' + '>'
                     );
                 },
                 "inUse": function (column, row) {
