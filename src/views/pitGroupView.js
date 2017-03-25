@@ -95,6 +95,9 @@ export class PitGroupView extends View {
         //var pitGroups = data.pitGroups;
 
         //adding child pits
+        if (this.pitGroups.length > 0) {
+            this.system.parameters({repulsion: 1000});
+        }
         this.pitGroups.forEach(function (pitGroup) {
             var pitGroupNode = that.system.addNode(pitGroup.name, {
                 'color': 'red',

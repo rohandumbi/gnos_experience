@@ -58,7 +58,7 @@ export class ExpressionDefinitionView extends View{
             formatters: {
                 "definition": function(column, row){
                     return (
-                        '<input data-expression-name="' + row.name + '" class="expression_definition" type="text" value="' + row.exprvalue + '"' + '>'
+                        '<input data-expression-name="' + row.name + '" class="expression_definition" style="min-width:250px" type="text" value="' + row.exprvalue + '"' + '>'
                     ) ;
                 },
                 "filter": function(column, row){
@@ -67,7 +67,7 @@ export class ExpressionDefinitionView extends View{
                         filter = '';
                     }
                     return (
-                        '<input data-expression-name="' + row.name + '" class="expression_filter" style="width:200px" type="text" value="' + filter + '"' + '>'
+                        '<input data-expression-name="' + row.name + '" class="expression_filter" style="min-width:300px" type="text" value="' + filter + '"' + '>'
                     );
                 },
                 "unit": function (column, row) {
@@ -76,7 +76,7 @@ export class ExpressionDefinitionView extends View{
                         unit = '';
                     }
                     return (
-                        '<input data-expression-name="' + row.name + '" class="expression_unit" style="width:200px" type="text" value="' + unit + '"' + '>'
+                        '<input data-expression-name="' + row.name + '" class="expression_unit" type="text" value="' + unit + '"' + '>'
                     );
                 },
                 "grade": function(column, row) {
