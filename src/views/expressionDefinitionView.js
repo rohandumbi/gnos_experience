@@ -67,7 +67,7 @@ export class ExpressionDefinitionView extends View{
                         filter = '';
                     }
                     return (
-                        '<input data-expression-name="' + row.name + '" class="expression_filter" style="min-width:300px" type="text" value="' + filter + '"' + '>'
+                        '<input data-expression-name="' + row.name + '" class="expression_filter" style="min-width:350px" type="text" value="' + filter + '"' + '>'
                     );
                 },
                 "unit": function (column, row) {
