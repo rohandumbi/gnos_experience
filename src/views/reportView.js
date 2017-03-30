@@ -171,7 +171,7 @@ export class ReportView extends View {
 
     loadMixedGraph() {
         var barChartData = {
-            labels: ["January", "February", "March", "April", "May", "June", "July"],
+            labels: ["January", "February", "March", "April", "May", "June"],
             datasets: [{
                 label: '# of Majority Votes',
                 type: 'bar',
@@ -197,7 +197,7 @@ export class ReportView extends View {
             }, {
                 label: "Sales",
                 type: 'line',
-                data: [51, 65, 40, 49, 60, 37, 40],
+                data: [51, 65, 40, 49, 60, 37],
                 fill: false,
                 borderColor: '#EC932F',
                 backgroundColor: '#EC932F',
