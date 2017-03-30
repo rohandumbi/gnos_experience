@@ -3,8 +3,8 @@
     "appId": "com.example.electron-boilerplate",
     "app-category-type": "your.app.category.type",
     "extraResources": [
-        "content/**/*",
-        "resources/**/*"
+      "content/**/*",
+      "resources/**/*"
     ],
     "win": {
       "target": [
@@ -59,6 +59,10 @@
     "spectron": "^3.3.0",
     "yargs": "^4.2.0",
     "underscore": "^1.8.3",
-    "requirejs-text": "^2"
+    "requirejs-text": "^2",
+    "chart.js": "^2.5.0"
+  },
+  "dependencies": {
+    "chart.js": "^2.5.0"
   }
 }
