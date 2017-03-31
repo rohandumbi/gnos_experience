@@ -20,7 +20,7 @@ import { CapexCollectionView } from './capexCollectionView';
 import {TruckParamView} from './truckParamView'
 import {ControlScreenView} from './controlScreenView'
 import {CycletimeMappingView} from './cycletimeMappingView'
-import {ReportView} from './reportView'
+import {ReportContainerView} from './reportContainerView'
 
 export class MainView extends View{
 
@@ -200,14 +200,14 @@ export class MainView extends View{
         this.$el.find("#page-content-wrapper").html(this.controlScreenView.$el);
     }
 
-    initializeReportView() {
+    initializeReportContainerView() {
         if (!this.scenario) {
             alert('Select a scenario first from Scenario Definition');
             return;
         }
-        this.reportView = new ReportView({projectId: this.projectId, scenario: this.scenario});
-        this.reportView.render();
-        this.$el.find("#page-content-wrapper").html(this.reportView.$el);
+        this.reportContainerView = new ReportContainerView({projectId: this.projectId, scenario: this.scenario});
+        this.reportContainerView.render();
+        this.$el.find("#page-content-wrapper").html(this.reportContainerView.$el);
     }
 
 
@@ -278,8 +278,8 @@ export class MainView extends View{
 			case "control":
                 this.initializeControlScreen();
                 break;
-            case "stack-bar":
-                this.initializeReportView();
+            case "reports":
+                this.initializeReportContainerView();
                 break;
         }
     }
