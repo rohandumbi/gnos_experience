@@ -1,11 +1,13 @@
 import {View} from '../core/view';
 import {Chart} from 'chart.js';
+import {ExpitReportModel} from '../models/expitReportModel'
 export class ReportView extends View {
 
     constructor(options) {
         super();
         this.projectId = options.projectId;
         this.scenarioId = options.scenario.id;
+        this.scenarioName = options.scenario.name;
     }
 
     getHtml() {
@@ -17,10 +19,7 @@ export class ReportView extends View {
         return promise;
     }
 
-    loadStackBar() {
-        if (this.myChart) {
-            this.myChart.destroy();
-        }
+    createStackBar() {
         this.ctx = this.$el.find('#myChart');
         this.myChart = new Chart(this.ctx, {
             type: 'bar',
@@ -87,35 +86,72 @@ export class ReportView extends View {
         });
     }
 
-    loadSimpleBar() {
+    fetchExpitReport(options) {
+        this.expitReportModel = new ExpitReportModel({projectId: this.projectId});
+        this.expitReportModel.add({
+            dataObject: options.formData,
+            success: function (data) {
+                options.success(data);
+            },
+            error: function (data) {
+                alert("Error fetching report data:" + data);
+                if (options.error) options.error(data);
+            }
+        });
+    }
+
+    loadStackBar() {
+        var that = this;
         if (this.myChart) {
             this.myChart.destroy();
         }
+        var formData = {
+            scenario_name: this.scenarioName
+        }
+        this.fetchExpitReport({
+            formData: formData,
+            success: function (data) {
+                that.createStackBar(data);
+            }
+        });
+    }
+
+    createSimpleBar(reportData) {
         this.ctx = this.$el.find('#myChart');
+        var labels = [];
+        var data = [];
+        for (let key of Object.keys(reportData)) {
+            labels.push(key);
+            data.push(reportData[key])
+        }
         this.myChart = new Chart(this.ctx, {
             type: 'bar',
             data: {
-                labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+                labels: labels,
                 datasets: [{
-                    label: '# of Majority Votes',
-                    data: [12, 19, 3, 5, 2, 3],
+                    label: 'Total',
+                    data: data,
                     stack: 'Stack 0',
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255,99,132,1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
+                    /*backgroundColor: [
+                     'rgba(153, 102, 255, 0.2)'
+                     /!*'rgba(255, 99, 132, 0.2)',
+                     'rgba(54, 162, 235, 0.2)',
+                     'rgba(255, 206, 86, 0.2)',
+                     'rgba(75, 192, 192, 0.2)',
+                     'rgba(153, 102, 255, 0.2)',
+                     'rgba(255, 159, 64, 0.2)'*!/
+                     ],*/
+                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                    /*borderColor: [
+                     'rgba(153, 102, 255, 1)'
+                     /!*'rgba(255,99,132,1)',
+                     'rgba(54, 162, 235, 1)',
+                     'rgba(255, 206, 86, 1)',
+                     'rgba(75, 192, 192, 1)',
+                     'rgba(153, 102, 255, 1)',
+                     'rgba(255, 159, 64, 1)'*!/
+                     ],*/
+                    borderColor: 'rgba(153, 102, 255, 1)',
                     borderWidth: 1
                 }]
             },
@@ -127,6 +163,22 @@ export class ReportView extends View {
                         }
                     }]
                 }
+            }
+        });
+    }
+
+    loadSimpleBar() {
+        var that = this;
+        if (this.myChart) {
+            this.myChart.destroy();
+        }
+        var formData = {
+            scenario_name: this.scenarioName
+        }
+        this.fetchExpitReport({
+            formData: formData,
+            success: function (data) {
+                that.createSimpleBar(data);
             }
         });
     }

@@ -1,11 +1,32 @@
 <div id="reportView" style="height: 100%">
-    <div class="col-xs-3 selectContainer">
-        <select id="report-selector" class="form-control">
-            <option data-type="1">Bar Diagram</option>
-            <option data-type="2">Stack Bar Diagram</option>
-            <option data-type="3">Graph</option>
-            <option data-type="4">Combined Diagram</option>
-        </select>
-    </div>
+    <form class="form-inline">
+        <div class="col-xs-3 selectContainer form-group">
+            <label for="report-selector">Chart Type:</label>
+            <select id="report-selector" class="form-control">
+                <option data-type="1">Total Expit</option>
+                <option data-type="2">Total Expit Group By Pit</option>
+                <option data-type="3">Graph</option>
+                <option data-type="4">Combined Diagram</option>
+            </select>
+        </div>
+        <div class="col-xs-3 selectContainer form-group">
+            <label for="filter-selector">Filter:</label>
+            <select id="filter-selector" class="form-control">
+                <option data-type="1">Bar Diagram</option>
+                <option data-type="2">Stack Bar Diagram</option>
+                <option data-type="3">Graph</option>
+                <option data-type="4">Combined Diagram</option>
+            </select>
+        </div>
+        <div class="col-xs-3 selectContainer form-group">
+            <label for="unit-selector">Unit:</label>
+            <select id="unit-selector" class="form-control">
+                <option data-type="1">Bar Diagram</option>
+                <option data-type="2">Stack Bar Diagram</option>
+                <option data-type="3">Graph</option>
+                <option data-type="4">Combined Diagram</option>
+            </select>
+        </div>
+    </form>
     <canvas id="myChart"></canvas>
 </div>
