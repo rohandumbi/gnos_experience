@@ -19,56 +19,64 @@ export class ReportView extends View {
         return promise;
     }
 
-    createStackBar() {
+    createStackBar(reportData) {
         this.ctx = this.$el.find('#myChart');
+        var labels = [];
+        //var valueMap = new Map();
+        var valueMap = {};
+        for (let key of Object.keys(reportData)) {
+            labels.push(key);
+            var yearlyDataArray = reportData[key];
+            yearlyDataArray.forEach(function (yearlyData) {
+                var name = yearlyData.name;
+                var mapEntry = valueMap[name];
+                if (!mapEntry) {//field is not present in map yet
+                    valueMap[name] = {};
+                }
+                valueMap[name][key] = yearlyData.quantity;
+            });
+        }
+        console.log(valueMap);
+        //next extra steps are required to populate atleast a 0 value
+        //for the periods in which the group(PIT/DESTINATION) is absent
+        for (let key of Object.keys(valueMap)) {
+            var groupName = key;
+            var yearlyValuesObject = valueMap[groupName]
+            labels.forEach(function (year) {
+                if (!yearlyValuesObject[year]) {
+                    valueMap[groupName][year] = 0;
+                }
+            });
+        }
+        console.log(valueMap);
+        var dataSets = [];
+        for (let key of Object.keys(valueMap)) {
+            var groupName = key;
+            var yearlyValuesObject = valueMap[groupName];
+            //var hue = 'rgb(' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ')';
+            var colorCode = (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256));
+            var background = 'rgba(' + colorCode + ', 0.2)';
+            var border = 'rgba(' + colorCode + ', 1)';
+            var dataSetEntry = {
+                label: groupName,
+                stack: 'Stack 0',
+                backgroundColor: background,
+                borderColor: border,
+                borderWidth: 1
+            };
+            var data = [];
+            for (let key of Object.keys(yearlyValuesObject)) {
+                data.push(yearlyValuesObject[key]);
+            }
+            dataSetEntry['data'] = data;
+            dataSets.push(dataSetEntry);
+        }
+
         this.myChart = new Chart(this.ctx, {
             type: 'bar',
             data: {
-                labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-                datasets: [{
-                    label: '# of Majority Votes',
-                    data: [12, 19, 3, 5, 2, 3],
-                    stack: 'Stack 0',
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255,99,132,1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-                },
-                    {
-                        label: '# of Minority Votes',
-                        data: [4, 6, 1, 2, 2, 1],
-                        stack: 'Stack 0',
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.5)',
-                            'rgba(54, 162, 235, 0.5)',
-                            'rgba(255, 206, 86, 0.5)',
-                            'rgba(75, 192, 192, 0.5)',
-                            'rgba(153, 102, 255, 0.5)',
-                            'rgba(255, 159, 64, 0.5)'
-                        ],
-                        borderColor: [
-                            'rgba(255,99,132,1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 206, 86, 1)',
-                            'rgba(75, 192, 192, 1)',
-                            'rgba(153, 102, 255, 1)',
-                            'rgba(255, 159, 64, 1)'
-                        ],
-                        borderWidth: 1
-                    }]
+                labels: labels,
+                datasets: dataSets
             },
             options: {
                 scales: {
@@ -100,13 +108,31 @@ export class ReportView extends View {
         });
     }
 
-    loadStackBar() {
+    loadExpitGroupByPit() {
         var that = this;
         if (this.myChart) {
             this.myChart.destroy();
         }
         var formData = {
-            scenario_name: this.scenarioName
+            scenario_name: this.scenarioName,
+            group_by: "PIT"
+        }
+        this.fetchExpitReport({
+            formData: formData,
+            success: function (data) {
+                that.createStackBar(data);
+            }
+        });
+    }
+
+    loadExpitGroupByDestination() {
+        var that = this;
+        if (this.myChart) {
+            this.myChart.destroy();
+        }
+        var formData = {
+            scenario_name: this.scenarioName,
+            group_by: "DESTINATION_TYPE"
         }
         this.fetchExpitReport({
             formData: formData,
@@ -167,7 +193,7 @@ export class ReportView extends View {
         });
     }
 
-    loadSimpleBar() {
+    loadSimpleExpit() {
         var that = this;
         if (this.myChart) {
             this.myChart.destroy();
@@ -319,7 +345,7 @@ export class ReportView extends View {
 
     onDomLoaded() {
         this.bindEvents();
-        this.loadSimpleBar();
+        this.loadSimpleExpit();
     }
 
     bindEvents() {
@@ -328,19 +354,22 @@ export class ReportView extends View {
             var graphType = $(this).find(':selected').data('type');
             switch (graphType) {
                 case 1:
-                    that.loadSimpleBar();
+                    that.loadSimpleExpit();
                     break;
                 case 2:
-                    that.loadStackBar();
+                    that.loadExpitGroupByPit();
                     break;
                 case 3:
-                    that.loadGraph();
+                    that.loadExpitGroupByDestination();
                     break;
                 case 4:
+                    that.loadGraph();
+                    break;
+                case 5:
                     that.loadMixedGraph();
                     break;
                 default:
-                    that.loadSimpleBar();
+                    that.loadSimpleExpit();
             }
 
         });
