@@ -9,18 +9,17 @@ import {DumpDefinitionView} from './dumpDefinitionView';
 import {StockpileDefinitionView} from './stockpileDefinitionView';
 import { ModelDefinitionView } from './modelDefinitionView';
 import { ScenarioDefinitionView } from './scenarioDefinitionView';
-import { FixedCostDefinitionView } from './fixedCostDefinitionView';
 import { ProcessConstraintView } from './processConstraintView';
 import { GradeConstraintView } from './gradeConstraintView';
 import { BenchConstraintView } from './benchConstraintView';
 import {PitDependencyView} from './pitDependencyView';
 import {DumpDependencyView} from './dumpDependencyView';
-import { OpexDefinitionView } from './opexDefinitionView';
 import { CapexCollectionView } from './capexCollectionView';
 import {TruckParamView} from './truckParamView'
 import {ControlScreenView} from './controlScreenView'
 import {CycletimeMappingView} from './cycletimeMappingView'
 import {ReportContainerView} from './reportContainerView'
+import {FinancialsView} from './financialsView'
 
 export class MainView extends View{
 
@@ -112,28 +111,18 @@ export class MainView extends View{
             that.scenario = scenario;
         });
     }
-    initializeOpexDefinition(){
+
+    initializeFinancials() {
         var that = this;
         if (!this.scenario) {
             alert('Select a scenario first from Scenario Definition');
             return;
         }
-        this.opexDefinitionView = new OpexDefinitionView({projectId: this.projectId, scenario: this.scenario});
-        this.opexDefinitionView.on('reload', function () {
-            that.initializeOpexDefinition();
-        });
-        this.opexDefinitionView.render();
-        this.$el.find("#page-content-wrapper").html(this.opexDefinitionView.$el);
+        this.financialsView = new FinancialsView({projectId: this.projectId, scenario: this.scenario});
+        this.financialsView.render();
+        this.$el.find("#page-content-wrapper").html(this.financialsView.$el);
     }
-    initializeFixedCostDefinition(){
-        if (!this.scenario) {
-            alert('Select a scenario first from Scenario Definition');
-            return;
-        }
-        this.fixedCostDefinitionView = new FixedCostDefinitionView({scenario: this.scenario});
-        this.fixedCostDefinitionView.render();
-        this.$el.find("#page-content-wrapper").html(this.fixedCostDefinitionView.$el);
-    }
+
     initializeMaterialConstraint(){
         if (!this.scenario) {
             alert('Select a scenario first from Scenario Definition');
@@ -245,11 +234,8 @@ export class MainView extends View{
             case "scenario_definition":
                 this.initializeScenarioDefinition();
                 break;
-            case "opex":
-                this.initializeOpexDefinition();
-                break;
-            case "fixed_cost":
-                this.initializeFixedCostDefinition();
+            case "financials":
+                this.initializeFinancials();
                 break;
             case "material":
                 this.initializeMaterialConstraint();
