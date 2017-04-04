@@ -9,9 +9,8 @@ import {DumpDefinitionView} from './dumpDefinitionView';
 import {StockpileDefinitionView} from './stockpileDefinitionView';
 import { ModelDefinitionView } from './modelDefinitionView';
 import { ScenarioDefinitionView } from './scenarioDefinitionView';
-import { ProcessConstraintView } from './processConstraintView';
-import { GradeConstraintView } from './gradeConstraintView';
-import { BenchConstraintView } from './benchConstraintView';
+import {FinancialsView} from './financialsView'
+import {ConstraintsView} from  './constraintsView';
 import {PitDependencyView} from './pitDependencyView';
 import {DumpDependencyView} from './dumpDependencyView';
 import { CapexCollectionView } from './capexCollectionView';
@@ -19,7 +18,6 @@ import {TruckParamView} from './truckParamView'
 import {ControlScreenView} from './controlScreenView'
 import {CycletimeMappingView} from './cycletimeMappingView'
 import {ReportContainerView} from './reportContainerView'
-import {FinancialsView} from './financialsView'
 
 export class MainView extends View{
 
@@ -123,32 +121,14 @@ export class MainView extends View{
         this.$el.find("#page-content-wrapper").html(this.financialsView.$el);
     }
 
-    initializeMaterialConstraint(){
+    initializeConstraints() {
         if (!this.scenario) {
             alert('Select a scenario first from Scenario Definition');
             return;
         }
-        this.processConstraintView = new ProcessConstraintView({projectId: this.projectId, scenario: this.scenario});
-        this.processConstraintView.render();
-        this.$el.find("#page-content-wrapper").html(this.processConstraintView.$el);
-    }
-    initializeGradeConstraint(){
-        if (!this.scenario) {
-            alert('Select a scenario first from Scenario Definition');
-            return;
-        }
-        this.gradeConstraintView = new GradeConstraintView({projectId: this.projectId, scenario: this.scenario});
-        this.gradeConstraintView.render();
-        this.$el.find("#page-content-wrapper").html(this.gradeConstraintView.$el);
-    }
-    initializeBenchConstraint(){
-        if (!this.scenario) {
-            alert('Select a scenario first from Scenario Definition');
-            return;
-        }
-        this.benchConstraintView = new BenchConstraintView({projectId: this.projectId, scenario: this.scenario});
-        this.benchConstraintView.render();
-        this.$el.find("#page-content-wrapper").html(this.benchConstraintView.$el);
+        this.constraintsView = new ConstraintsView({projectId: this.projectId, scenario: this.scenario});
+        this.constraintsView.render();
+        this.$el.find("#page-content-wrapper").html(this.constraintsView.$el);
     }
 
     initializePitDependency() {
@@ -237,14 +217,8 @@ export class MainView extends View{
             case "financials":
                 this.initializeFinancials();
                 break;
-            case "material":
-                this.initializeMaterialConstraint();
-                break;
-            case "grade":
-                this.initializeGradeConstraint();
-                break;
-            case "bench":
-                this.initializeBenchConstraint();
+            case "constraints":
+                this.initializeConstraints();
                 break;
             case "pit-dependency":
                 this.initializePitDependency();
