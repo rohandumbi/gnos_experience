@@ -89,11 +89,16 @@ export class WorkflowView extends View{
         var tableRow = (
             '<select id="grade-expression" class="grade-expression form-control" value="test">'
         );
+        //add non-grade expressions
         that.nonGradeExpressions.forEach(function (expression) {
-            tableRow += '<option data-unit-name="' + expression.name + '">' + expression.name + '</option>';
+            tableRow += '<option data-unit-id="' + expression.id + '" data-unit-type="2" data-unit-name="' + expression.name + '">' + expression.name + '</option>';
+        });
+        //add units
+        that.units.forEach(function (unit) {
+            tableRow += '<option data-unit-id="' + unit.id + '" data-unit-type="1" data-unit-name="' + unit.name + '">' + unit.name + '</option>';
         });
         tableRow += '</select>';
-        that.$el.find('#expression-list').append(tableRow);
+        that.$el.find('#unit-list').append(tableRow);
 
         var fieldSet = (
             '<fieldset class="group">' +
@@ -503,6 +508,7 @@ export class WorkflowView extends View{
                     }
                 });
             } else if (category.toString() === 'product') {
+                //var product = that.getProductWithName(selected.node.name);
                 this.productModel.delete({
                     url: 'http://localhost:4567/project/' + that.projectId + '/products',
                     id: selected.node.name,
@@ -829,13 +835,15 @@ export class WorkflowView extends View{
         var newProduct = {}
         var processName = this.$el.find('#new_process').find(':selected').data('process-name');
         var unitName = this.$el.find('#grade-expression').find(':selected').data('unit-name');
-        var unit = this.getExpressionByName(unitName);
+        var unitId = this.$el.find('#grade-expression').find(':selected').data('unit-id');
+        var unitType = this.$el.find('#grade-expression').find(':selected').data('unit-type');
+        //var unit = this.getExpressionByName(unitName);
         //newProduct[]
         newProduct['name'] = processName + '_' + this.$el.find('#product_name').val();
         var process = this.getModelWithName(processName);
         newProduct['modelId'] = process.id;
-        newProduct['unitType'] = 2;
-        newProduct['unitId'] = unit.id;
+        newProduct['unitType'] = unitType;
+        newProduct['unitId'] = unitId;
         this.productModel.add({
             dataObject: newProduct,
             success: function (data) {
