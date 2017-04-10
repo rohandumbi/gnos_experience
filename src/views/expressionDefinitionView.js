@@ -1,5 +1,6 @@
 import { View } from '../core/view';
 import { ExpressionModel } from '../models/expressionModel';
+import {UnitModel} from '../models/unitModel'
 
 export class ExpressionDefinitionView extends View{
 
@@ -7,6 +8,7 @@ export class ExpressionDefinitionView extends View{
         super();
         this.projectId = options.projectId;
         this.model = new ExpressionModel({projectId: this.projectId});
+        this.unitModel = new UnitModel({projectId: options.projectId});
     }
 
     getHtml() {
@@ -18,7 +20,20 @@ export class ExpressionDefinitionView extends View{
         return promise;
     }
 
-    onDomLoaded() {
+    fetchUnits() {
+        var that = this;
+        this.unitModel.fetch({
+            success: function (data) {
+                that.units = data;
+                that.fetchExpressions();
+            },
+            error: function (data) {
+                alert('Error fetching product joins');
+            }
+        });
+    }
+
+    fetchExpressions() {
         var that = this;
         this.model.fetch({
             success: function (data) {
@@ -29,6 +44,10 @@ export class ExpressionDefinitionView extends View{
                 alert('Error fetching expressions ' + data);
             }
         });
+    }
+
+    onDomLoaded() {
+        this.fetchUnits();
     }
 
     initializeGrid(modelData) {
@@ -71,13 +90,38 @@ export class ExpressionDefinitionView extends View{
                     );
                 },
                 "unit": function (column, row) {
+                    var expressionIsGrade = (row.isGrade.toString()) === 'true';
                     var unit = row.weightedField;
                     if (!unit) {
                         unit = '';
                     }
-                    return (
-                        '<input data-expression-name="' + row.name + '" class="expression_unit" type="text" value="' + unit + '"' + '>'
-                    );
+                    that.nonGradeExpressions = [];
+                    that.data.forEach(function (expression) {
+                        if (!expression.isGrade) {
+                            that.nonGradeExpressions.push(expression);
+                        }
+                    });
+                    var tableRow = '';
+                    if (!expressionIsGrade) {
+                        tableRow += (
+                            '<select disabled data-expression-name="' + row.name + '" id="grade-expression" class="expression_unit form-control" value="test">'
+                        );
+                    } else {
+                        tableRow += (
+                            '<select data-expression-name="' + row.name + '" id="grade-expression" class="expression_unit form-control" value="test">'
+                        );
+                    }
+                    tableRow += '<option selected disabled>' + unit + '</option>'
+                    //add non-grade expressions
+                    that.nonGradeExpressions.forEach(function (expression) {
+                        tableRow += '<option data-unit-id="' + expression.id + '" data-unit-type="2" data-unit-name="' + expression.name + '">' + expression.name + '</option>';
+                    });
+                    //add units
+                    that.units.forEach(function (unit) {
+                        tableRow += '<option data-unit-id="' + unit.id + '" data-unit-type="1" data-unit-name="' + unit.name + '">' + unit.name + '</option>';
+                    });
+                    tableRow += '</select>';
+                    return tableRow;
                 },
                 "grade": function(column, row) {
                     if (row.isGrade.toString().toLowerCase() === "true") {
@@ -97,7 +141,6 @@ export class ExpressionDefinitionView extends View{
             that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
             that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
             that.grid.find(".expression_definition").change(function (event) {
-                //alert($(this).data('expression-name'));
                 var expressionName = $(this).data('expression-name');
                 var exprValue = $(this).val();
                 that.updateExpressionDefinition({name: expressionName, exprvalue: exprValue});
@@ -110,8 +153,13 @@ export class ExpressionDefinitionView extends View{
 
             that.grid.find(".expression_unit").change(function (event) {
                 var expressionName = $(this).data('expression-name');
-                var weightedField = $(this).val();
-                that.updateWeightedUnit({name: expressionName, weightedField: weightedField});
+                var weightedField = $(this).find(':selected').data('unit-name');
+                var weightedFieldType = $(this).find(':selected').data('unit-type');
+                that.updateWeightedUnit({
+                    name: expressionName,
+                    weightedField: weightedField,
+                    weightedFieldType: weightedFieldType
+                });
             });
 
             that.grid.find(".expression_isgrade").change(function (event) {
@@ -159,6 +207,7 @@ export class ExpressionDefinitionView extends View{
     updateWeightedUnit(options) {
         var updatedExpression = this.getExpressionByName(options.name);
         updatedExpression['weightedField'] = options.weightedField;
+        updatedExpression['weightedFieldType'] = options.weightedFieldType;
         this.model.update({
             id: updatedExpression.id,
             url: 'http://localhost:4567/project/'+this.projectId+'/expressions',
@@ -189,14 +238,19 @@ export class ExpressionDefinitionView extends View{
     }
 
     upgradeExpressionGrade(options) {
+        var that = this;
         var updatedExpression = this.getExpressionByName(options.name);
         updatedExpression['isGrade'] = options.isGrade;
+        if (!options.isGrade) {// if no longer grade, associated unit should be removed
+            delete updatedExpression.weightedField;
+        }
         this.model.update({
             id: updatedExpression.id,
             url: 'http://localhost:4567/project/'+this.projectId+'/expressions',
             dataObject: updatedExpression,
             success: function (data) {
                 alert('Successfully updated');
+                that.trigger('reload');
             },
             error: function (data) {
                 alert('Failed to update: ' + data);
@@ -223,8 +277,10 @@ export class ExpressionDefinitionView extends View{
                 dataObject: newExpression,
                 success: function (data) {
                     alert('Successfully added expression');
-                    that.data.push(data);
-                    that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
+                    //that.data.push(data);
+                    //that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
+                    that.trigger('reload');
+
                 },
                 error: function (data) {
                     alert('Failed to add expression ' + data);

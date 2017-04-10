@@ -47,6 +47,9 @@ export class MainView extends View{
     initializeExpressionDefinition(){
         var that = this;
         this.expressionDefinitionView = new ExpressionDefinitionView({projectId: this.projectId});
+        this.expressionDefinitionView.on('reload', function () {
+            that.initializeExpressionDefinition();
+        });
         this.expressionDefinitionView.render();
         this.$el.find("#page-content-wrapper").html(this.expressionDefinitionView.$el);
     }

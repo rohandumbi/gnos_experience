@@ -508,7 +508,6 @@ export class WorkflowView extends View{
                     }
                 });
             } else if (category.toString() === 'product') {
-                //var product = that.getProductWithName(selected.node.name);
                 this.productModel.delete({
                     url: 'http://localhost:4567/project/' + that.projectId + '/products',
                     id: selected.node.name,
