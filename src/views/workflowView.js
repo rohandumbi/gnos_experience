@@ -333,7 +333,6 @@ export class WorkflowView extends View{
                     $liGroup.append($li);
                 });
                 that.fetchProcessTreeNodes();
-                //that.initializeGraph();
             },
             error: function (data) {
                 alert('Error fetching list of pits: ' + data);
@@ -355,9 +354,23 @@ export class WorkflowView extends View{
         canvas.width = canvas.offsetWidth;
         canvas.height = canvas.offsetHeight;
      }*/
+    getStoredNodePosition(nodeName) {
+        var position = {};
+        this.storedCoordinates.forEach(function (storedNode) {
+            if (storedNode.name === nodeName) {
+                position['x'] = storedNode.x;
+                position['y'] = storedNode.y;
+                position['screenPosition'] = storedNode.screenPosition;
+            }
+        });
+        return position;
+    }
 
     initializeGraph(nodeData) {
         var that = this;
+        var storedGraphNodes = localStorage.getItem('Coordinates-' + this.projectId);
+        this.storedCoordinates = JSON.parse(storedGraphNodes);
+        console.log(this.storedCoordinates);
         var parentWidth = this.$el.find('#canvas-container').width();
         var parentHeight = this.$el.find('#canvas-container').height();
         var $canvas = this.$el.find("#viewport");
@@ -369,11 +382,9 @@ export class WorkflowView extends View{
 
         canvas.width = parentWidth;
         canvas.height = parentHeight;
-
-        //this.system = arbor.ParticleSystem(1000, 400,1);
         this.system = arbor.ParticleSystem({
-            friction: .5,
-            stiffness: 50,
+            friction: 100,
+            stiffness: -512,
             repulsion: 0,
             gravity: false
         });
@@ -383,9 +394,22 @@ export class WorkflowView extends View{
         this.addProcessJoinsToGraph(this.processJoins);
         this.addProductsToGraph(this.products);
         this.addProductJoinsToGraph(this.productJoins);
-        if (this.treeNodes.length > 0) {//existing processes
-            this.system.parameters({repulsion: 200})
-        }
+        /*if (this.treeNodes.length === 0) {//existing processes
+         this.system.parameters({repulsion: 0})
+         }*/
+        setTimeout(function () {
+            that.system.eachNode(function (node, point) {
+                console.log('Node: ' + node.name + ' X:' + point.x + ' Y:' + point.y);
+                var position = that.getStoredNodePosition(node.name);
+                var node = that.system.getNode(node.name);
+                var pos = $(canvas).offset();
+                var s = arbor.Point(position.x - pos.left, position.x - pos.top);
+                //var s = arbor.Point(position.x, position.x);
+                var p = that.system.fromScreen(s);
+                //node.p = p
+                node.p = position.screenPosition;
+            });
+        }, 50);
         $canvas.contextMenu({
             arborSystem: this.system,
             menuSelector: "#workflowContextMenu",
@@ -704,9 +728,6 @@ export class WorkflowView extends View{
 
 
     handleAddProcessToJoin(selected) {
-        /*var that = this;
-        var pos = this.$el.find('#viewport').offset();
-         var p = {x: event.pageX - pos.left, y: event.pageY - pos.top}*/
         var that = this;
         var selected = selected;
         if (selected.node.data.category !== 'model') {
@@ -744,6 +765,7 @@ export class WorkflowView extends View{
 
     handleDragEnd(e) {
         console.log('Dragged model: ' + e.target.innerHTML);
+        this.system.parameters({repulsion: 0})
         var draggedModel = this.getModelWithName(e.target.innerHTML);
         e.target.style.opacity = '1';
         var pos = this.$el.find('#viewport').offset();
@@ -793,6 +815,31 @@ export class WorkflowView extends View{
         });
         this.$el.find('#add-product').click(function (event) {
             that.addProduct();
+        });
+        this.$el.find('#save-graph').click(function (event) {
+            var coordinateSystem = [];
+            that.system.eachNode(function (node, point) {
+                console.log('Node: ' + node.name + ' X:' + point.x + ' Y:' + point.y);
+                var object = {'name': node.name, 'x': point.x, 'y': point.y, screenPosition: node._p};
+                coordinateSystem.push(object);
+            });
+            if (typeof(Storage) !== "undefined") {
+                // Code for localStorage/sessionStorage.
+                console.log('storage present');
+                localStorage.setItem('Coordinates-' + that.projectId, JSON.stringify(coordinateSystem));
+            } else {
+                // Sorry! No Web Storage support..
+                console.log('storage absent');
+            }
+        });
+        this.$el.find('#switch').change(function (event) {
+            //that.addProduct();
+            var isEditMode = $(this).is(':checked');
+            if (isEditMode) {
+                that.system.parameters({friction: 1})
+            } else {
+                that.system.parameters({friction: 0.5})
+            }
         });
     }
 
