@@ -7,6 +7,9 @@ import {ProductJoinModel} from '../models/productJoinModel';
 import {ExpressionModel} from '../models/expressionModel';
 import {GradeModel} from '../models/gradeModel';
 import {ReportModel} from '../models/reportModel';
+import {TextFieldModel} from '../models/textFieldModel';
+import {ProcessJoinModel} from '../models/processJoinModel';
+import {PitGroupModel} from '../models/pitGroupModel';
 
 export class ReportView extends View {
 
@@ -21,6 +24,9 @@ export class ReportView extends View {
         this.expressionModel = new ExpressionModel({projectId: options.projectId});
         this.gradeModel = new GradeModel({projectId: options.projectId});
         this.reportModel = new ReportModel({projectId: options.projectId});
+        this.textFieldModel = new TextFieldModel({projectId: options.projectId});
+        this.processJoinModel = new ProcessJoinModel({projectId: options.projectId});
+        this.pitGroupModel = new PitGroupModel({projectId: options.projectId});
     }
 
     getHtml() {
@@ -33,9 +39,11 @@ export class ReportView extends View {
     }
 
     createStackBar(reportData) {
+        if (this.myChart) {
+            this.myChart.destroy();
+        }
         this.ctx = this.$el.find('#myChart');
         var labels = [];
-        //var valueMap = new Map();
         var valueMap = {};
         for (let key of Object.keys(reportData)) {
             labels.push(key);
@@ -46,7 +54,7 @@ export class ReportView extends View {
                 if (!mapEntry) {//field is not present in map yet
                     valueMap[name] = {};
                 }
-                valueMap[name][key] = yearlyData.quantity;
+                valueMap[name][key] = yearlyData.value;
             });
         }
         console.log(valueMap);
@@ -361,8 +369,84 @@ export class ReportView extends View {
 
     onDomLoaded() {
         this.fetchExpressions();
+        this.fetchTextFields();
         //this.bindEvents();
         //this.loadSimpleExpit();
+    }
+
+    fetchTextFields() {
+        var that = this;
+        this.textFieldModel.fetch({
+            success: function (data) {
+                that.textFields = data;
+                that.fetchProcessJoins();
+            },
+            error: function () {
+                alert('Error fetching text fields');
+            }
+        });
+    }
+
+    fetchProcessJoins() {
+        var that = this;
+        this.processJoinModel.fetch({
+            success: function (data) {
+                that.processJoins = data;
+                that.fetchPitGroups();
+            },
+            error: function () {
+                alert('Error fetching process joins');
+            }
+        });
+    }
+
+    fetchPitGroups() {
+        var that = this;
+        this.pitGroupModel.fetch({
+            success: function (data) {
+                that.pitGroups = data;
+                that.populateGroupByOptions();
+            },
+            error: function () {
+                alert('Error fetching pit groups');
+            }
+        });
+    }
+
+    populateGroupByOptions() {
+        var options = '';
+        var fieldOptGroup = '<optgroup label="Input Fields">';
+        var processJoinOptGroup = '<optgroup label="Process Joins">';
+        var destinationOptGroup = '<optgroup label="Destinations">';
+        var pitGroupOptGroup = '<optgroup label="Pit Groups">';
+        var endTag = '</optgroup>';
+
+        this.textFields.forEach(function (textField) {
+            fieldOptGroup += '<option data-value="' + textField.name + '" data-grouptype="2">' + textField.name + '</option>';
+        });
+
+        this.processJoins.forEach(function (processJoin) {
+            processJoinOptGroup += '<option data-value="' + processJoin.name + '" data-grouptype="3">' + processJoin.name + '</option>';
+        });
+
+        destinationOptGroup += '<option data-value="destination_type" data-grouptype="4">Destination Type</option>';
+        destinationOptGroup += '<option data-value="destination" data-grouptype="5">Destination</option>';
+
+        this.pitGroups.forEach(function (pitGroup) {
+            pitGroupOptGroup += '<option data-value="' + pitGroup.name + '" data-grouptype="6">' + pitGroup.name + '</option>';
+        });
+
+        fieldOptGroup += endTag;
+        processJoinOptGroup += endTag;
+        destinationOptGroup += endTag;
+        pitGroupOptGroup += endTag;
+
+        options += fieldOptGroup;
+        options += processJoinOptGroup;
+        options += destinationOptGroup;
+        options += pitGroupOptGroup;
+
+        this.$el.find('#group-selector').append(options);
     }
 
     fetchExpressions() {
@@ -407,8 +491,9 @@ export class ReportView extends View {
                 case 6:
                     that.loadGrade();
                     break;
-                    deafult:
-                        that.loadUnits();
+
+                default:
+                    that.loadUnits();
             }
 
         });
@@ -422,8 +507,9 @@ export class ReportView extends View {
         var dataName = this.$el.find('#data-selector').find(':selected').data('dataname');
         var gradeType = this.$el.find('#data-selector').find(':selected').data('gradetype');
         var groupType = this.$el.find('#group-selector').find(':selected').data('grouptype');
+        var groupName = this.$el.find('#group-selector').find(':selected').data('value');
 
-        if (!scenarioName || !reportType || !dataType || !dataName || !groupType) {
+        if (!scenarioName || !reportType || !dataType || !dataName) {
             alert('An input field is missing');
         } else {
             var dataObject = {};
@@ -434,13 +520,20 @@ export class ReportView extends View {
             if (gradeType) {
                 dataObject['grade_type'] = gradeType;
             }
+            if (parseInt(groupType) > 1) {
+                dataObject['group_by'] = groupName;
+            }
             //dataObject['group_by'] = groupType;
             console.log(dataObject);
             this.reportModel.add({
                 dataObject: dataObject,
                 success: function (data) {
                     //console.log(data);
-                    that.createSimpleBar(data);
+                    if (parseInt(groupType) > 1) {
+                        that.createStackBar(data);
+                    } else {
+                        that.createSimpleBar(data);
+                    }
                 },
                 error: function (data) {
                     alert('Error fetching report data');
