@@ -1,32 +1,48 @@
 <div id="reportView" style="height: 100%">
     <form class="form-inline">
-        <div class="col-xs-3 selectContainer form-group">
-            <label for="report-selector">Chart Type:</label>
+        <div style="width:20%" class="selectContainer form-group">
+            <label for="report-selector">Type:</label>
             <select id="report-selector" class="form-control">
-                <option data-type="1">Total Expit</option>
-                <option data-type="2">Total Expit Group By Pit</option>
-                <option data-type="3">Total Expit Group By Destination</option>
-                <option data-type="4">Sample Graph</option>
-                <option data-type="5">Sample Combined Diagram</option>
+                <option disabled selected value>--select--</option>
+                <option data-reporttype="1">Expit</option>
+                <option data-reporttype="2">Reclaim</option>
+                <option data-reporttype="3">Process</option>
+                <option data-reporttype="4">Total Movement</option>
             </select>
         </div>
-        <div class="col-xs-3 selectContainer form-group">
-            <label for="filter-selector">Filter:</label>
-            <select id="filter-selector" class="form-control">
-                <option data-type="1">Bar Diagram</option>
-                <option data-type="2">Stack Bar Diagram</option>
-                <option data-type="3">Graph</option>
-                <option data-type="4">Combined Diagram</option>
+        <div style="width:20%" class="selectContainer form-group">
+            <label for="datatype-selector">Datatype:</label>
+            <select id="datatype-selector" class="form-control">
+                <option disabled selected value>--select--</option>
+                <option data-datatype="1">Unit</option>
+                <option data-datatype="2">Expression</option>
+                <option data-datatype="3">Product</option>
+                <option data-datatype="4">Product Join</option>
+                <option data-datatype="5">Truck Hour</option>
+                <option data-datatype="6">Grade</option>
             </select>
         </div>
-        <div class="col-xs-3 selectContainer form-group">
-            <label for="unit-selector">Unit:</label>
-            <select id="unit-selector" class="form-control">
-                <option data-type="1">Bar Diagram</option>
-                <option data-type="2">Stack Bar Diagram</option>
-                <option data-type="3">Graph</option>
-                <option data-type="4">Combined Diagram</option>
+        <div style="width:30%" class="selectContainer form-group">
+            <label for="data-selector">Data:</label>
+            <select id="data-selector" class="form-control">
+                <option disabled selected value>--select datatype--</option>
             </select>
+        </div>
+        <div style="width:20%" class="selectContainer form-group">
+            <label for="group-selector">Group By:</label>
+            <select id="group-selector" class="form-control">
+                <option disabled selected value>--select--</option>
+                <option data-grouptype="1">None</option>
+                <option data-grouptype="2">Input Field</option>
+                <option data-grouptype="3">Process Join</option>
+                <option data-grouptype="4">Destination Type</option>
+                <option data-grouptype="5">Destination</option>
+                <option data-grouptype="6">Pit Group</option>
+                <option data-grouptype="7">Custom</option>
+            </select>
+        </div>
+        <div style="width:5%" class="selectContainer form-group">
+            <button id="show-report" data-toggle="modal" type="button" class="btn btn-primary">Show Report</button>
         </div>
     </form>
     <canvas id="myChart"></canvas>

@@ -1,6 +1,13 @@
 import {View} from '../core/view';
 import {Chart} from 'chart.js';
-import {ExpitReportModel} from '../models/expitReportModel'
+import {ExpitReportModel} from '../models/expitReportModel';
+import {UnitModel} from '../models/unitModel';
+import {ProductModel} from '../models/productModel';
+import {ProductJoinModel} from '../models/productJoinModel';
+import {ExpressionModel} from '../models/expressionModel';
+import {GradeModel} from '../models/gradeModel';
+import {ReportModel} from '../models/reportModel';
+
 export class ReportView extends View {
 
     constructor(options) {
@@ -8,6 +15,12 @@ export class ReportView extends View {
         this.projectId = options.projectId;
         this.scenarioId = options.scenario.id;
         this.scenarioName = options.scenario.name;
+        this.unitModel = new UnitModel({projectId: options.projectId});
+        this.productModel = new ProductModel({projectId: options.projectId});
+        this.productJoinModel = new ProductJoinModel({projectId: options.projectId});
+        this.expressionModel = new ExpressionModel({projectId: options.projectId});
+        this.gradeModel = new GradeModel({projectId: options.projectId});
+        this.reportModel = new ReportModel({projectId: options.projectId});
     }
 
     getHtml() {
@@ -143,6 +156,9 @@ export class ReportView extends View {
     }
 
     createSimpleBar(reportData) {
+        if (this.myChart) {
+            this.myChart.destroy();
+        }
         this.ctx = this.$el.find('#myChart');
         var labels = [];
         var data = [];
@@ -344,34 +360,180 @@ export class ReportView extends View {
     }
 
     onDomLoaded() {
-        this.bindEvents();
-        this.loadSimpleExpit();
+        this.fetchExpressions();
+        //this.bindEvents();
+        //this.loadSimpleExpit();
+    }
+
+    fetchExpressions() {
+        var that = this;
+        this.expressionModel.fetch({
+            success: function (data) {
+                that.expressions = data;
+                that.bindEvents();
+            },
+            error: function (data) {
+                alert('Error fetching expressions');
+            }
+        });
     }
 
     bindEvents() {
         var that = this;
-        this.$el.find('#report-selector').change(function (event) {
-            var graphType = $(this).find(':selected').data('type');
-            switch (graphType) {
+        this.$el.find('#show-report').click(function (event) {
+            that.loadReportGraph();
+        });
+        this.$el.find('#datatype-selector').change(function (event) {
+            var dataType = $(this).find(':selected').data('datatype');
+            switch (dataType) {
                 case 1:
-                    that.loadSimpleExpit();
+                    //that.loadSimpleExpit();
+                    that.loadUnits();
                     break;
                 case 2:
-                    that.loadExpitGroupByPit();
+                    //that.loadExpitGroupByPit();
+                    that.loadExpressions();
                     break;
                 case 3:
-                    that.loadExpitGroupByDestination();
+                    //that.loadExpitGroupByDestination();
+                    that.loadProducts();
                     break;
                 case 4:
-                    that.loadGraph();
+                    that.loadProductJoins();
                     break;
                 case 5:
-                    that.loadMixedGraph();
+                    that.loadTruckHours();
                     break;
-                default:
-                    that.loadSimpleExpit();
+                case 6:
+                    that.loadGrade();
+                    break;
+                    deafult:
+                        that.loadUnits();
             }
 
+        });
+    }
+
+    loadReportGraph() {
+        var that = this;
+        var scenarioName = this.scenarioName;
+        var reportType = this.$el.find('#report-selector').find(':selected').data('reporttype');
+        var dataType = this.$el.find('#datatype-selector').find(':selected').data('datatype');
+        var dataName = this.$el.find('#data-selector').find(':selected').data('dataname');
+        var gradeType = this.$el.find('#data-selector').find(':selected').data('gradetype');
+        var groupType = this.$el.find('#group-selector').find(':selected').data('grouptype');
+
+        if (!scenarioName || !reportType || !dataType || !dataName || !groupType) {
+            alert('An input field is missing');
+        } else {
+            var dataObject = {};
+            dataObject['scenario_name'] = scenarioName;
+            dataObject['report_type'] = reportType;
+            dataObject['data_type'] = dataType;
+            dataObject['data_name'] = dataName;
+            if (gradeType) {
+                dataObject['grade_type'] = gradeType;
+            }
+            //dataObject['group_by'] = groupType;
+            console.log(dataObject);
+            this.reportModel.add({
+                dataObject: dataObject,
+                success: function (data) {
+                    //console.log(data);
+                    that.createSimpleBar(data);
+                },
+                error: function (data) {
+                    alert('Error fetching report data');
+                }
+            })
+        }
+    }
+
+    loadUnits() {
+        var that = this;
+        this.unitModel.fetch({
+            success: function (data) {
+                that.units = data;
+                var options = '';
+                that.units.forEach(function (unit) {
+                    options += '<option data-dataname="' + unit.name + '">' + unit.name + '</option>';
+                });
+                that.$el.find('#data-selector').html(options);
+            },
+            error: function (data) {
+                alert('Error fetching units');
+            }
+        });
+    }
+
+    loadExpressions() {
+        var options = '';
+        this.expressions.forEach(function (expression) {
+            if (!expression.isGrade) {
+                options += '<option data-dataname="' + expression.name + '">' + expression.name + '</option>';
+            }
+        });
+        this.$el.find('#data-selector').html(options);
+    }
+
+    loadProducts() {
+        var that = this;
+        this.productModel.fetch({
+            success: function (data) {
+                that.products = data;
+                var options = '';
+                that.products.forEach(function (product) {
+                    options += '<option data-dataname="' + product.name + '">' + product.name + '</option>';
+                });
+                that.$el.find('#data-selector').html(options);
+            },
+            error: function (data) {
+                alert('Error fetching products');
+            }
+        });
+    }
+
+    loadProductJoins() {
+        var that = this;
+        this.productJoinModel.fetch({
+            success: function (data) {
+                that.productJoins = data;
+                var options = '';
+                that.productJoins.forEach(function (productJoin) {
+                    options += '<option data-dataname="' + productJoin.name + '">' + productJoin.name + '</option>';
+                });
+                that.$el.find('#data-selector').html(options);
+            },
+            error: function (data) {
+                alert('Error fetching product joins');
+            }
+        });
+    }
+
+    loadTruckHours() {
+        var options = '<option data-dataname="TOTAL_TH">TOTAL_TH</option>';
+        this.$el.find('#data-selector').html(options);
+    }
+
+    loadGrade() {
+        var that = this;
+        this.gradeModel.fetch({
+            success: function (data) {
+                that.grades = data;
+                var options = '';
+                that.grades.forEach(function (grade) {
+                    options += '<option data-gradetype="1" data-dataname="' + grade.name + '">' + grade.name + '</option>';
+                });
+                that.expressions.forEach(function (expression) {
+                    if (expression.isGrade) {
+                        options += '<option data-gradetype="2" data-dataname="' + expression.name + '">' + expression.name + '</option>';
+                    }
+                });
+                that.$el.find('#data-selector').html(options);
+            },
+            error: function (data) {
+                alert('Error fetching grades');
+            }
         });
     }
 }
