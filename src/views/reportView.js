@@ -163,6 +163,123 @@ export class ReportView extends View {
         });
     }
 
+    createLineGraph(reportData) {
+        if (this.myChart) {
+            this.myChart.destroy();
+        }
+        this.ctx = this.$el.find('#myChart');
+        var labels = [];
+        var data = [];
+        for (let key of Object.keys(reportData)) {
+            labels.push(key);
+            data.push(reportData[key])
+        }
+        /*this.myChart = new Chart(this.ctx, {
+         data: {
+         labels: labels,
+         datasets: [{
+         type: 'line',
+         label: 'Total',
+         data: data,
+         stack: 'Stack 0',
+         backgroundColor: 'rgba(153, 102, 255, 0.2)',
+         borderColor: 'rgba(153, 102, 255, 1)',
+         borderWidth: 1
+         }]
+         },
+         options: {
+         scales: {
+         yAxes: [{
+         ticks: {
+         beginAtZero: true
+         }
+         }]
+         }
+         }
+         });*/
+
+
+        var barChartData = {
+            labels: labels,
+            datasets: [{
+                label: 'Aggregate',
+                type: 'bar',
+                data: data,
+                stack: 'Stack 0',
+                backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                borderColor: 'rgba(153, 102, 255, 1)',
+                borderWidth: 1
+            }, {
+                label: "Grades",
+                type: 'line',
+                data: data,
+                fill: false,
+                borderColor: '#EC932F',
+                backgroundColor: '#EC932F',
+                pointBorderColor: '#EC932F',
+                pointBackgroundColor: '#EC932F',
+                pointHoverBackgroundColor: '#EC932F',
+                pointHoverBorderColor: '#EC932F',
+                yAxisID: 'y-axis-2'
+            }]
+        };
+        if (this.myChart) {
+            this.myChart.destroy();
+        }
+        this.ctx = this.$el.find('#myChart');
+        this.myChart = new Chart(this.ctx, {
+            type: 'bar',
+            data: barChartData,
+            options: {
+                responsive: true,
+                tooltips: {
+                    mode: 'label'
+                },
+                elements: {
+                    line: {
+                        fill: false
+                    }
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        gridLines: {
+                            display: true
+                        },
+                        labels: {
+                            show: true,
+                        }
+                    }],
+                    yAxes: [{
+                        type: "linear",
+                        display: true,
+                        position: "left",
+                        id: "y-axis-1",
+                        gridLines: {
+                            display: false
+                        },
+                        labels: {
+                            show: true,
+
+                        }
+                    }, {
+                        type: "linear",
+                        display: true,
+                        position: "right",
+                        id: "y-axis-2",
+                        gridLines: {
+                            display: false
+                        },
+                        labels: {
+                            show: true,
+
+                        }
+                    }]
+                }
+            }
+        });
+    }
+
     createSimpleBar(reportData) {
         if (this.myChart) {
             this.myChart.destroy();
@@ -182,25 +299,7 @@ export class ReportView extends View {
                     label: 'Total',
                     data: data,
                     stack: 'Stack 0',
-                    /*backgroundColor: [
-                     'rgba(153, 102, 255, 0.2)'
-                     /!*'rgba(255, 99, 132, 0.2)',
-                     'rgba(54, 162, 235, 0.2)',
-                     'rgba(255, 206, 86, 0.2)',
-                     'rgba(75, 192, 192, 0.2)',
-                     'rgba(153, 102, 255, 0.2)',
-                     'rgba(255, 159, 64, 0.2)'*!/
-                     ],*/
                     backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                    /*borderColor: [
-                     'rgba(153, 102, 255, 1)'
-                     /!*'rgba(255,99,132,1)',
-                     'rgba(54, 162, 235, 1)',
-                     'rgba(255, 206, 86, 1)',
-                     'rgba(75, 192, 192, 1)',
-                     'rgba(153, 102, 255, 1)',
-                     'rgba(255, 159, 64, 1)'*!/
-                     ],*/
                     borderColor: 'rgba(153, 102, 255, 1)',
                     borderWidth: 1
                 }]
@@ -545,7 +644,9 @@ export class ReportView extends View {
             success: function (data) {
                 //console.log(data);
                 localStorage.setItem('Report-' + that.projectId, JSON.stringify(dataObject));
-                if (dataObject['group_type'] > 1) {
+                if (dataObject['data_type'] === 6) {
+                    that.createLineGraph(data);
+                } else if (dataObject['group_type'] > 1) {
                     that.createStackBar(data);
                 } else {
                     that.createSimpleBar(data);
