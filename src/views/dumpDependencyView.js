@@ -3,6 +3,7 @@ import {DumpDependencyModel} from '../models/dumpDependencyModel';
 import {PitModel} from '../models/pitModel';
 import {DumpModel} from '../models/dumpModel';
 import {BenchModel} from '../models/benchModel';
+import {PitGroupModel} from '../models/pitGroupModel'
 
 export class DumpDependencyView extends View {
 
@@ -12,6 +13,7 @@ export class DumpDependencyView extends View {
         this.projectId = options.projectId;
         this.scenario = options.scenario;
         this.pitModel = new PitModel({projectId: this.projectId});
+        this.pitGroupModel = new PitGroupModel({projectId: this.projectId});
         this.dumpModel = new DumpModel({projectId: this.projectId});
         //this.pitDependencyModel = new PitDependencyModel({projectId: this.projectId, scenario: this.scenario});
         this.dumpDependencyModel = new DumpDependencyModel({projectId: this.projectId, scenario: this.scenario});
@@ -31,7 +33,7 @@ export class DumpDependencyView extends View {
         this.dumpModel.fetch({
             success: function (data) {
                 that.dumps = data;
-                that.fetchPitList();
+                that.fetchPitGroupList();
                 var firstDumpOptions = (
                     '<select id="first_dump" class="dump-name form-control" value="test">' + '<option selected disabled hidden>' + '' + '</option>'
                 );
@@ -46,6 +48,33 @@ export class DumpDependencyView extends View {
                 dependentDumpOptions += '</select>';
                 that.$el.find('#first_dump_list').append(firstDumpOptions);
                 that.$el.find('#dependent_dump_list').append(dependentDumpOptions);
+            },
+            error: function (data) {
+                alert('Error fetching list of dumps');
+            }
+        })
+    }
+
+    fetchPitGroupList() {
+        var that = this;
+        this.pitGroupModel.fetch({
+            success: function (data) {
+                that.pitGroups = data;
+                that.fetchPitList();
+                var firstPitGroupOptions = (
+                    '<select id="first_pit_group" class="pit_group-name form-control" value="test">' + '<option selected disabled hidden>' + '' + '</option>'
+                );
+                /*var dependentDumpOptions = (
+                 '<select id="dependent_dump" class="dump-name form-control" value="test">' + '<option selected disabled hidden>' + '' + '</option>'
+                 );*/
+                that.pitGroups.forEach(function (pitGroup) {
+                    firstPitGroupOptions += '<option data-pit-group-name="' + pitGroup.name + '" data-pit-group-no="' + pitGroup.number + '">' + pitGroup.name + '</option>';
+                    //dependentDumpOptions += '<option data-dump-name="' + dump.name + '" data-dump-no="' + dump.dumpNumber + '">' + dump.name + '</option>';
+                });
+                firstPitGroupOptions += '</select>';
+                //dependentDumpOptions += '</select>';
+                that.$el.find('#first_pit_group_list').append(firstPitGroupOptions);
+                //that.$el.find('#dependent_dump_list').append(dependentDumpOptions);
             },
             error: function (data) {
                 alert('Error fetching list of dumps');
@@ -71,12 +100,12 @@ export class DumpDependencyView extends View {
                 );
                 that.pits.forEach(function (pit) {
                     firstPitOptions += '<option data-pit-name="' + pit.pitName + '" data-pit-no="' + pit.pitNo + '">' + pit.pitName + '</option>';
-                    dependentPitOptions += '<option data-pit-name="' + pit.pitName + '" data-pit-no="' + pit.pitNo + '">' + pit.pitName + '</option>';
+                    //dependentPitOptions += '<option data-pit-name="' + pit.pitName + '" data-pit-no="' + pit.pitNo + '">' + pit.pitName + '</option>';
                 });
                 firstPitOptions += '</select>';
-                dependentPitOptions += '</select>';
+                //dependentPitOptions += '</select>';
                 that.$el.find('#first_pit_list').append(firstPitOptions);
-                that.$el.find('#dependent_pit_list').append(dependentPitOptions);
+                //that.$el.find('#dependent_pit_list').append(dependentPitOptions);
             },
             error: function (data) {
                 alert('Error fetching pit list.');
@@ -139,6 +168,7 @@ export class DumpDependencyView extends View {
             row += (
                 '<tr>' +
                 '<td>' + dumpDependency.firstPitName + '</td>' +
+                '<td>' + dumpDependency.firstPitGroupName + '</td>' +
                 '<td>' + dumpDependency.firstDumpName + '</td>' +
                 '<td>' + dumpDependency.dependentDumpName + '</td>' +
                 '<td>' + dumpDependency.inUse + '</td>' +
@@ -170,6 +200,22 @@ export class DumpDependencyView extends View {
                     );
                     that.pits.forEach(function (pit) {
                         tableRow += '<option data-pit-no="' + pit.pitNo + '">' + pit.pitName + '</option>';
+                    });
+                    tableRow += '</select>';
+                    return tableRow;
+                },
+                "first_pit_group": function (column, row) {
+                    var firstPitGroupName = row.firstPitGroupName;
+                    if (!firstPitGroupName || firstPitGroupName.toString() === 'undefined') {
+                        firstPitGroupName = '';
+                    }
+                    var tableRow = '';
+                    tableRow = (
+                        '<select class="first_pit_group" value="test">' +
+                        '<option selected disabled hidden>' + firstPitGroupName + '</option>'
+                    );
+                    that.pitGroups.forEach(function (pitGroup) {
+                        tableRow += '<option>' + pitGroup.name + '</option>';
                     });
                     tableRow += '</select>';
                     return tableRow;
@@ -231,22 +277,40 @@ export class DumpDependencyView extends View {
             that.$el.find('#first_pit').change(function () {
                 that.$el.find('#first_dump').val('');
             });
-            that.$el.find('#first_dump').change(function () {
+            /*that.$el.find('#first_dump').change(function () {
                 that.$el.find('#first_pit').val('');
-            });
+             that.$el.find('#first_pit_group').val('');
+             });*/
 
             that.grid.find(".first_pit").change(function (event) {
                 var index = $(this).closest('tr').data('row-id');
                 var firstPitName = $(this).find(":selected").val();
                 var $firstDump = $(this).closest('tr').find('.first_dump');
+                var $firstPitGroup = $(this).closest('tr').find('.first_pit_group');
+
                 $firstDump.val('');
+                $firstPitGroup.val('');
                 that.updateFirstPit({index: index, firstPitName: firstPitName});
+            });
+
+            that.grid.find(".first_pit_group").change(function (event) {
+                var index = $(this).closest('tr').data('row-id');
+                var firstPitGroupName = $(this).find(":selected").val();
+                var $firstDump = $(this).closest('tr').find('.first_dump');
+                var $firstPit = $(this).closest('tr').find('.first_pit');
+
+                $firstDump.val('');
+                $firstPit.val('');
+                that.updateFirstPitGroup({index: index, firstPitGroupName: firstPitGroupName});
             });
             that.grid.find(".first_dump").change(function (event) {
                 var index = $(this).closest('tr').data('row-id');
                 var firstDumpName = $(this).find(":selected").val();
                 var $firstPit = $(this).closest('tr').find('.first_pit');
+                var $firstPitGroup = $(this).closest('tr').find('.first_pit_group');
+
                 $firstPit.val('');
+                $firstPitGroup.val('');
                 that.updateFirstDump({index: index, firstDumpName: firstDumpName});
             });
 
@@ -300,6 +364,16 @@ export class DumpDependencyView extends View {
         var dumpDependency = this.dumpDependency[options.index];
         dumpDependency['firstPitName'] = options.firstPitName;
         delete dumpDependency.firstDumpName;
+        delete dumpDependency.firstPitGroupName;
+        console.log(dumpDependency);
+        this.updateDumpDependency({dumpDependency: dumpDependency});
+    }
+
+    updateFirstPitGroup(options) {
+        var dumpDependency = this.dumpDependency[options.index];
+        dumpDependency['firstPitGroupName'] = options.firstPitGroupName;
+        delete dumpDependency.firstDumpName;
+        delete dumpDependency.firstPitName;
         console.log(dumpDependency);
         this.updateDumpDependency({dumpDependency: dumpDependency});
     }
@@ -308,6 +382,7 @@ export class DumpDependencyView extends View {
         var dumpDependency = this.dumpDependency[options.index];
         dumpDependency['firstDumpName'] = options.firstDumpName;
         delete dumpDependency.firstPitName;
+        delete dumpDependency.firstPitGroupName;
         console.log(dumpDependency);
         this.updateDumpDependency({dumpDependency: dumpDependency});
     }
