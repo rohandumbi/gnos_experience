@@ -1,11 +1,11 @@
 {
-  "name": "electron-boilerplate",
-  "productName": "Electron Boilerplate",
-  "description": "Starter for your Electron application",
-  "version": "0.0.0",
-  "author": "Mr. Gumby <mr.gumby@example.com>",
-  "copyright": "© 2016, Gumby inc.",
-  "homepage": "http://example.com",
+  "name": "GNOS",
+  "productName": "GNOS - Generation Next Optimising System",
+  "description": "Generation Next Optimising System",
+  "version": "0.8.0-12",
+  "author": "GSG Tech",
+  "copyright": "© 2017, GNOS",
+  "homepage": "http://gnos.com.au",
   "license": "MIT",
   "main": "background.js",
   "dependencies": {
