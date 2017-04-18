@@ -377,7 +377,9 @@ export class ReportView extends View {
 
     loadSavedReport() {
         var savedReportData = JSON.parse(localStorage.getItem('Report-' + this.projectId));
-        this.fetchReportData(savedReportData);
+        if (savedReportData) {
+            this.fetchReportData(savedReportData);
+        }
     }
 
     fetchTextFields() {
