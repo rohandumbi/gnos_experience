@@ -341,19 +341,21 @@ export class DumpDependencyView extends View {
         });
         this.$el.find('#addDumpDependency').click(function () {
             var firstPitName = that.$el.find('select#first_pit option:checked').val();
+			var firstPitGroupName = that.$el.find('select#first_pit_group option:checked').val();
             var firstDumpName = that.$el.find('select#first_dump option:checked').val();
             var dependentDumpName = that.$el.find('select#dependent_dump option:checked').val();
-            if (!firstPitName && !firstDumpName) {
-                alert('Select first pit/dump.');
+            if (!firstPitName && !firstDumpName && !firstPitGroupName) {
+                alert('Select Pit/Pit Group/Dump.');
                 return;
             }
             if (!dependentDumpName) {
-                alert('Select dependent dump name.');
+                alert('Select dependent Dump.');
                 return;
             }
             that.addRowToGrid({
                 firstPitName: firstPitName,
                 firstDumpName: firstDumpName,
+				firstPitGroupName: firstPitGroupName,
                 dependentDumpName: dependentDumpName
             });
         });
@@ -426,6 +428,8 @@ export class DumpDependencyView extends View {
         var newDumpDependency = {};
         if (options.firstPitName) {
             newDumpDependency['firstPitName'] = options.firstPitName;
+        } if (options.firstPitGroupName) {
+            newDumpDependency['firstPitGroupName'] = options.firstPitGroupName;
         } else {
             newDumpDependency['firstDumpName'] = options.firstDumpName;
         }
