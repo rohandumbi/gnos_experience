@@ -370,8 +370,14 @@ export class ReportView extends View {
     onDomLoaded() {
         this.fetchExpressions();
         this.fetchTextFields();
+        this.loadSavedReport();
         //this.bindEvents();
         //this.loadSimpleExpit();
+    }
+
+    loadSavedReport() {
+        var savedReportData = JSON.parse(localStorage.getItem('Report-' + this.projectId));
+        this.fetchReportData(savedReportData);
     }
 
     fetchTextFields() {
@@ -517,29 +523,36 @@ export class ReportView extends View {
             dataObject['report_type'] = reportType;
             dataObject['data_type'] = dataType;
             dataObject['data_name'] = dataName;
+            dataObject['group_type'] = parseInt(groupType)
             if (gradeType) {
                 dataObject['grade_type'] = gradeType;
             }
-            if (parseInt(groupType) > 1) {
+            if (dataObject['group_type'] > 1) {
                 dataObject['group_by'] = groupName;
             }
             //dataObject['group_by'] = groupType;
             console.log(dataObject);
-            this.reportModel.add({
-                dataObject: dataObject,
-                success: function (data) {
-                    //console.log(data);
-                    if (parseInt(groupType) > 1) {
-                        that.createStackBar(data);
-                    } else {
-                        that.createSimpleBar(data);
-                    }
-                },
-                error: function (data) {
-                    alert('Error fetching report data');
-                }
-            })
+            this.fetchReportData(dataObject);
         }
+    }
+
+    fetchReportData(dataObject) {
+        var that = this;
+        this.reportModel.add({
+            dataObject: dataObject,
+            success: function (data) {
+                //console.log(data);
+                localStorage.setItem('Report-' + that.projectId, JSON.stringify(dataObject));
+                if (dataObject['group_type'] > 1) {
+                    that.createStackBar(data);
+                } else {
+                    that.createSimpleBar(data);
+                }
+            },
+            error: function (data) {
+                alert('Error fetching report data');
+            }
+        })
     }
 
     loadUnits() {
