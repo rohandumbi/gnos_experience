@@ -9,15 +9,16 @@ import {DumpDefinitionView} from './dumpDefinitionView';
 import {StockpileDefinitionView} from './stockpileDefinitionView';
 import { ModelDefinitionView } from './modelDefinitionView';
 import { ScenarioDefinitionView } from './scenarioDefinitionView';
-import {FinancialsView} from './financialsView'
+import {FinancialsView} from './financialsView';
 import {ConstraintsView} from  './constraintsView';
 import {PitDependencyView} from './pitDependencyView';
 import {DumpDependencyView} from './dumpDependencyView';
 import { CapexCollectionView } from './capexCollectionView';
-import {TruckParamView} from './truckParamView'
-import {ControlScreenView} from './controlScreenView'
-import {CycletimeMappingView} from './cycletimeMappingView'
-import {ReportContainerView} from './reportContainerView'
+import {TruckParamView} from './truckParamView';
+import {ControlScreenView} from './controlScreenView';
+import {CycletimeMappingView} from './cycletimeMappingView';
+import {ReportContainerView} from './reportContainerView';
+import {PitGroupConceptView} from './pitGroupConceptView';
 
 export class MainView extends View{
 
@@ -70,6 +71,12 @@ export class MainView extends View{
         this.pitGroupView = new PitGroupView({projectId: this.projectId});
         this.pitGroupView.render();
         this.$el.find("#page-content-wrapper").html(this.pitGroupView.$el);
+    }
+
+    initializeConceptGroupingDefinition() {
+        this.pitGroupConceptView = new PitGroupConceptView({projectId: this.projectId});
+        this.pitGroupConceptView.render();
+        this.$el.find("#page-content-wrapper").html(this.pitGroupConceptView.$el);
     }
 
     initializeDumpDefinition() {
@@ -207,6 +214,9 @@ export class MainView extends View{
                 break;
             case "pit_grouping":
                 this.initializeGroupingDefinition();
+                break;
+            case "pit_grouping_concept":
+                this.initializeConceptGroupingDefinition();
                 break;
             case "dump_definition":
                 this.initializeDumpDefinition();
