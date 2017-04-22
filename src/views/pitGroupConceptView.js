@@ -153,7 +153,36 @@ export class PitGroupConceptView extends View {
 
     loadPitGroupDetails(options) {
         this.loadedPitGroup = options.name;
-        //alert('To Load: ' + this.loadedPitGroup);
+        var pitGroup = this.getPitGroupWithName(this.loadedPitGroup);
+        var childPits = pitGroup.listChildPits;
+        var childPitList = '';
+        childPits.forEach(function (childPit) {
+            childPitList += '<li class="list-group-item">' + childPit + '</li>';
+        });
+        this.$el.find('.child-pits').html(childPitList);
+
+        var allPitList = '';
+        var availablePits = this.getAvailablePits(childPits);
+        availablePits.forEach(function (availablePit) {
+            allPitList += '<li class="list-group-item">' + availablePit.pitName + '</li>';
+        });
+        this.$el.find('.all-pits').html(allPitList);
+    }
+
+    getAvailablePits(includedPits) {
+        var availablePits = [];
+        this.pits.forEach(function (pit) {
+            var pitPresentInPitGroup = false;
+            includedPits.forEach(function (includedPit) {
+                if (includedPit === pit.pitName) {
+                    pitPresentInPitGroup = true;
+                }
+            });
+            if (!pitPresentInPitGroup) {
+                availablePits.push(pit);
+            }
+        });
+        return availablePits;
     }
 
     addPitGroup(groupName) {
