@@ -6,6 +6,7 @@ export class PitGroupConceptView extends View {
 
     constructor(options) {
         super();
+        this.projectId = options.projectId;
         this.pitGroupModel = new PitGroupModel({projectId: options.projectId});
         this.pitModel = new PitModel({projectId: options.projectId});
     }
@@ -68,25 +69,40 @@ export class PitGroupConceptView extends View {
 
     addPitToGroup(options) {
         var that = this;
-        var pitGroup = options.pitGroup;
-        var childPit = options.pit;
-        console.log('pit group to be updated: ' + pitGroup);
-        var updatedPitGroup = {}
-        updatedPitGroup['name'] = pitGroup.name;
+        var updatedPitGroup = {};
+        updatedPitGroup['name'] = options.pitGroupName;
         updatedPitGroup['childType'] = 1;// 1 mean child is a pit
-        updatedPitGroup['child'] = childPit.pitName;
+        updatedPitGroup['child'] = options.pitName;
+
         this.pitGroupModel.add({
             dataObject: updatedPitGroup,
             success: function (data) {
-                alert('Added pit to group');
-                pitGroup.listChildPits.push(childPit.pitName);
+                var pitGroup = that.getPitGroupWithName(options.pitGroupName)
+                pitGroup.listChildPits.push(options.pitName);
+            },
+            error: function (data) {
+                alert('Error adding pit to group.');
+            }
+        });
+    }
 
-                var pitNode = that.system.addNode(childPit.pitName, {
-                    'color': '#95cde5',
-                    'shape': 'dot',
-                    'label': childPit.pitName
-                });
-                that.system.addEdge(pitNode, options.selectedNode, {directed: true, weight: 2});
+    removePitFromGroup(options) {
+        var that = this;
+        var updatedPitGroup = {};
+        updatedPitGroup['name'] = options.pitGroupName;
+        updatedPitGroup['childType'] = 1;// 1 mean child is a pit
+        updatedPitGroup['child'] = options.pitName;
+
+        var url = 'http://localhost:4567/project/' + this.projectId + '/pitgroup/' + options.pitGroupName + '/pit/';
+        var id = options.pitName;
+
+        this.pitGroupModel.delete({
+            url: url,
+            id: id,
+            success: function (data) {
+                var pitGroup = that.getPitGroupWithName(options.pitGroupName)
+                var index = pitGroup.listChildPits.indexOf(options.pitName);
+                pitGroup.listChildPits.splice(index, 1);
             },
             error: function (data) {
                 alert('Error adding pit to group.');
@@ -97,7 +113,6 @@ export class PitGroupConceptView extends View {
     bindDomEvents() {
         var that = this;
         this.$el.find('#add-pitgroup').click(function () {
-            //alert("To display pit group definition form");
             var newGroupName = that.$el.find('#new_group_name').val();
             that.addPitGroup(newGroupName);
         });
@@ -109,7 +124,24 @@ export class PitGroupConceptView extends View {
         this.bindPitGroupEvents();
     }
 
+    addPitsToPitGroup($pits) {
+        var that = this;
+        $pits.each(function (index) {
+            var pitName = $(this).html();
+            that.addPitToGroup({pitName: pitName, pitGroupName: that.loadedPitGroup});
+        });
+    }
+
+    removePitsFromPitGroup($pits) {
+        var that = this;
+        $pits.each(function (index) {
+            var pitName = $(this).html();
+            that.removePitFromGroup({pitName: pitName, pitGroupName: that.loadedPitGroup});
+        });
+    }
+
     bindPitGroupEvents() {
+        var that = this;
         this.$el.on('click', '.child-pits .list-group-item', function () {
             $(this).toggleClass('active');
         });
@@ -120,10 +152,12 @@ export class PitGroupConceptView extends View {
             var $button = $(this), actives = '';
             if ($button.hasClass('move-left')) {
                 actives = $('.list-right ul li.active');
+                that.removePitsFromPitGroup(actives);
                 actives.clone().appendTo('.list-left ul');
                 actives.remove();
             } else if ($button.hasClass('move-right')) {
                 actives = $('.list-left ul li.active');
+                that.addPitsToPitGroup(actives);
                 actives.clone().appendTo('.list-right ul');
                 actives.remove();
             }
