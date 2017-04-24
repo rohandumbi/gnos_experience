@@ -32,7 +32,8 @@ export class PitGroupConceptView extends View {
                 var $liPitGroups = that.$el.find('#pit-group-list');
                 var $li;
                 data.forEach(function (pitGroup) {
-                    $li = $('<a href="#" data-pitgroupname="' + pitGroup.name + '" draggable="false">' + pitGroup.name + '</a>');
+                    $li = $('<a href="#" data-pitgroupname="' + pitGroup.name + '" draggable="false">' + pitGroup.name + '<span class="pull-right">'
+                        + '<button class="delete-pit btn btn-xs btn-warning"> <span class="glyphicon glyphicon-trash"></span> </button> </span></a>');
                     $li.attr('title', pitGroup.name);
                     $li.addClass('list-group-item list-group-item-success pit-group');
                     $liPitGroups.append($li);
@@ -116,10 +117,16 @@ export class PitGroupConceptView extends View {
             var newGroupName = that.$el.find('#new_group_name').val();
             that.addPitGroup(newGroupName);
         });
-        this.$el.find('.pit-group').click(function (event) {
+        this.$el.on('click', '.pit-group', function (event) {
             that.loadPitGroupDetails({name: $(this).data('pitgroupname')});
             that.$el.find('.pit-group').removeClass('active');
             $(this).addClass('active');
+        });
+        this.$el.on('click', '.delete-pit', function (event) {
+            event.stopPropagation();
+            var $pitGroup = $(this).closest('.pit-group');
+            var pitGroupName = $pitGroup.data('pitgroupname');
+            that.removePitGroup({pitGroupName: pitGroupName, $pitGroup: $pitGroup})
         });
         this.bindPitGroupEvents();
     }
@@ -129,6 +136,25 @@ export class PitGroupConceptView extends View {
         $pits.each(function (index) {
             var pitName = $(this).html();
             that.addPitToGroup({pitName: pitName, pitGroupName: that.loadedPitGroup});
+        });
+    }
+
+    removePitGroup(options) {
+        var that = this;
+        var url = 'http://localhost:4567/project/' + this.projectId + '/pitgroup/';
+        var id = options.pitGroupName;
+
+        this.pitGroupModel.delete({
+            url: url,
+            id: id,
+            success: function (data) {
+                var index = that.pitGroups.indexOf(id);
+                that.pitGroups.splice(index, 1);
+                options.$pitGroup.remove();
+            },
+            error: function (data) {
+                alert('Error deleting pit group');
+            }
         });
     }
 
@@ -232,7 +258,8 @@ export class PitGroupConceptView extends View {
                 alert('Added pit group');
                 that.pitGroups.push(newPitGroup);
                 var $liPitGroups = that.$el.find('#pit-group-list');
-                var $li = $('<a href="#" data-pitgroupname="' + data.name + '" draggable="false">' + data.name + '</a>');
+                var $li = $('<a href="#" data-pitgroupname="' + data.name + '" draggable="false">' + data.name + '<span class="pull-right">'
+                    + '<button class="delete-pit btn btn-xs btn-warning"> <span class="glyphicon glyphicon-trash"></span> </button> </span></a>');
                 $li.attr('title', data.name);
                 $li.addClass('list-group-item list-group-item-success pit-group');
                 $liPitGroups.prepend($li);
