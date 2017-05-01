@@ -22,6 +22,7 @@ export class WorkflowView extends View{
         this.productJoinModel = new ProductJoinModel({projectId: options.projectId});
         this.expressionModel = new ExpressionModel({projectId: options.projectId});
         this.unitModel = new UnitModel({projectId: options.projectId});
+        this.scaleFactor = 1;
         //this.productGradeModel = new ProductGradeModel({})
     }
 
@@ -124,7 +125,11 @@ export class WorkflowView extends View{
             productJoin.productList.forEach(function (productName) {
                 if (productName) {
                     var childProductNode = that.system.getNode(productName);
-                    that.system.addEdge(productJoinNode, childProductNode, {directed: true, weight: 2});
+                    that.system.addEdge(productJoinNode, childProductNode, {
+                        directed: true,
+                        weight: 1,
+                        color: '#000000'
+                    });
                 }
             });
             productJoin.productJoinList.forEach(function (productJoinName) {
@@ -137,7 +142,11 @@ export class WorkflowView extends View{
                         'category': 'superProductJoin'
                     });
                 }
-                that.system.addEdge(childProductJoinNode, productJoinNode, {directed: true, weight: 2});
+                that.system.addEdge(childProductJoinNode, productJoinNode, {
+                    directed: true,
+                    weight: 1,
+                    color: '#000000'
+                });
             });
         });
     }
@@ -155,7 +164,7 @@ export class WorkflowView extends View{
             var modelId = product.modelId;
             var associatedModel = that.getModelWithId(modelId);
             var modelNode = that.system.getNode(associatedModel.name);
-            that.system.addEdge(modelNode, productNode, {directed: false, weight: 2});
+            that.system.addEdge(modelNode, productNode, {directed: false, weight: 1, color: '#000000'});
         });
     }
 
@@ -172,7 +181,7 @@ export class WorkflowView extends View{
                 if (childProcessId > 0) {
                     var childModel = that.getModelWithId(childProcessId);
                     var childModelNode = that.system.getNode(childModel.name);
-                    that.system.addEdge(processNode, childModelNode, {directed: true, weight: 2});
+                    that.system.addEdge(processNode, childModelNode, {directed: true, weight: 1, color: '#000000'});
                 }
             });
         });
@@ -212,7 +221,7 @@ export class WorkflowView extends View{
                 parentNode = that.getNodeWithName('Block');
             }
 
-            that.system.addEdge(parentNode, modelNode, {directed: true, weight: 2});
+            that.system.addEdge(parentNode, modelNode, {directed: true, weight: 1, color: '#000000'});
         });
     }
 
@@ -345,6 +354,27 @@ export class WorkflowView extends View{
         //this.fitCanvasToContainer();
     }
 
+    handleZoomIn() {
+        //alert("Implement zoom in");
+        this.scaleFactor += 0.25;
+        var $canvas = this.$el.find("#viewport");
+        var existingWidth = $canvas.attr('width');
+        var existingHeight = $canvas.attr('height');
+
+        var newWidth = existingWidth * 1.25;
+        var newHeight = existingHeight * 1.25;
+        $canvas.attr('width', newWidth);
+        $canvas.attr('height', newHeight);
+        this.system.screenSize(newWidth, newHeight);
+        //this.system.renderer.redraw(this.scaleFactor);
+        this.system.renderer.setScaleFactor(this.scaleFactor);
+    }
+
+    handleZoomOut() {
+        this.scaleFactor -= 0.5;
+        alert("Implement zoom out");
+    }
+
     /*fitCanvasToContainer() {
         var canvas = document.querySelector('canvas');
         // Make it visually fill the positioned parent
@@ -376,10 +406,12 @@ export class WorkflowView extends View{
         var $canvas = this.$el.find("#viewport");
 
         var canvas = document.querySelector('canvas');
-        var rect = canvas.parentNode.getBoundingClientRect();
+        /* var rect = canvas.parentNode.getBoundingClientRect();
         canvas.width = rect.width;
         canvas.height = rect.height;
 
+         canvas.width = parentWidth;
+         canvas.height = parentHeight;*/
         canvas.width = parentWidth;
         canvas.height = parentHeight;
         this.system = arbor.ParticleSystem({
@@ -682,7 +714,11 @@ export class WorkflowView extends View{
                         dataObject: updatedProductJoin,
                         success: function (data) {
                             alert('Successfully added to join.');
-                            that.system.addEdge(productJoinNode, selected.node, {directed: true, weight: 2});
+                            that.system.addEdge(productJoinNode, selected.node, {
+                                directed: true,
+                                weight: 1,
+                                color: '#000000'
+                            });
                             that.$el.find('#target_product_join').val('');
                         },
                         error: function (data) {
@@ -713,7 +749,11 @@ export class WorkflowView extends View{
                         dataObject: updatedProductJoin,
                         success: function (data) {
                             alert('Successfully added to join.');
-                            that.system.addEdge(productJoinNode, selected.node, {directed: true, weight: 2});
+                            that.system.addEdge(productJoinNode, selected.node, {
+                                directed: true,
+                                weight: 1,
+                                color: '#000000'
+                            });
                             that.$el.find('#target_product_join').val('');
                         },
                         error: function (data) {
@@ -748,7 +788,11 @@ export class WorkflowView extends View{
                         dataObject: newProcessJoin,
                         success: function (data) {
                             alert('Successfully added to join.');
-                            that.system.addEdge(processJoinNode, selected.node, {directed: true, weight: 2});
+                            that.system.addEdge(processJoinNode, selected.node, {
+                                directed: true,
+                                weight: 1,
+                                color: '#000000'
+                            });
                             that.$el.find('#target_join').val('');
                         }
                     });
@@ -806,6 +850,8 @@ export class WorkflowView extends View{
 
     bindDomEvents() {
         var that = this;
+        this.$el.on('click', '#btn-zoomin', this.handleZoomIn.bind(this));
+        this.$el.on('click', '#btn-zoomout', this.handleZoomOut.bind(this));
         this.bindDragEventsOnModels();
         this.$el.find('#join_processes').click(function (event) {
             that.addProcessJoin();

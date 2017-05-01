@@ -22,20 +22,11 @@ var appDir = jetpack.cwd(app.getAppPath());
 document.addEventListener('DOMContentLoaded', function () {
     var loginView = new LoginView();
     loginView.render({message: 'Welcome to GNOS'});
-    loginView.on('login:successful', function(options){
-        loginComplete();
+    loginView.on('loginView:enter-app', function (options) {
+        loadProjectDashboard();
     });
     $('#appWindow').html(loginView.$el);
-    setTimeout(function(){
-        loginComplete();
-    }, 2000);
-
 });
-
-var loginComplete = () => {
-    console.log("Login successful");
-    loadProjectDashboard();
-}
 
 var loadProjectDashboard = () => {
     var dashboardView = new DashBoardView();

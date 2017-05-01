@@ -24,15 +24,7 @@
                 <h4 style="padding:2px; display: inline-block; background-color: #B3B3B3">
                     <small style="color:white;">PRODUCT JOIN</small>
                 </h4>
-                <!--<h4 style="display: inline-block; background-color: red"><small>PRODUCT JOIN JOIN</small></h4>-->
             </div>
-            <!--<h4 style="display: inline-block"><small>Enable Editing Mode</small></h4>
-            <div style="display: inline-block;" class="btn-group" role="group" aria-label="...">
-                <label class="switch">
-                    <input id="switch" type="checkbox">
-                    <div class="slider round"></div>
-                </label>
-            </div>-->
             <div style="display: inline-block; float:right" class="btn-group" role="group" aria-label="...">
                 <button id="save-graph" data-toggle="modal" type="button" class="btn btn-primary">Save State
                 </button>
@@ -45,12 +37,12 @@
                 <button data-toggle="modal" data-target="#productJoinModal" type="button" class="btn btn-primary">Create
                     Product Join
                 </button>
-                <!--<button type="button" class="btn btn-default">Zoom In</button>
-                <button type="button" class="btn btn-default">Zoom Out</button>-->
+                <button id="btn-zoomin" type="button" class="btn btn-warning">Zoom In</button>
+                <button id="btn-zoomout" type="button" class="btn btn-warning">Zoom Out</button>
             </div>
             <hr>
             <!--<canvas class="col-sm-12" id="viewport"></canvas>-->
-            <div id="canvas-container" style="height:90%; width:100%">
+            <div id="canvas-container" style="height:90%; width:100%; overflow: scroll">
                 <canvas id="viewport"></canvas>
             </div>
         </div>
