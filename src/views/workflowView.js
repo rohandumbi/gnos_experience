@@ -356,23 +356,34 @@ export class WorkflowView extends View{
 
     handleZoomIn() {
         //alert("Implement zoom in");
-        this.scaleFactor += 0.25;
+        this.scaleFactor += 0.5;
         var $canvas = this.$el.find("#viewport");
         var existingWidth = $canvas.attr('width');
         var existingHeight = $canvas.attr('height');
 
-        var newWidth = existingWidth * 1.25;
-        var newHeight = existingHeight * 1.25;
-        $canvas.attr('width', newWidth);
-        $canvas.attr('height', newHeight);
-        this.system.screenSize(newWidth, newHeight);
-        //this.system.renderer.redraw(this.scaleFactor);
+        var newWidth = existingWidth * 1.5;
+        var newHeight = existingHeight * 1.5;
         this.system.renderer.setScaleFactor(this.scaleFactor);
+        this.resizeCanvas({newWidth: newWidth, newHeight: newHeight});
     }
 
     handleZoomOut() {
         this.scaleFactor -= 0.5;
-        alert("Implement zoom out");
+        var $canvas = this.$el.find("#viewport");
+        var existingWidth = $canvas.attr('width');
+        var existingHeight = $canvas.attr('height');
+
+        var newWidth = existingWidth / 1.5;
+        var newHeight = existingHeight / 1.5;
+        this.system.renderer.setScaleFactor(this.scaleFactor);
+        this.resizeCanvas({newWidth: newWidth, newHeight: newHeight});
+    }
+
+    resizeCanvas(options) {
+        var $canvas = this.$el.find("#viewport");
+        $canvas.attr('width', options.newWidth);
+        $canvas.attr('height', options.newHeight);
+        this.system.screenSize(options.newWidth, options.newHeight);
     }
 
     /*fitCanvasToContainer() {
@@ -852,6 +863,12 @@ export class WorkflowView extends View{
         var that = this;
         this.$el.on('click', '#btn-zoomin', this.handleZoomIn.bind(this));
         this.$el.on('click', '#btn-zoomout', this.handleZoomOut.bind(this));
+        /*this.$el.find('#viewport').panzoom({
+         $zoomIn: that.$el.find("#btn-zoomin"),
+         $zoomOut: that.$el.find("btn-zoomout"),
+         $zoomRange: that.$el.find(".zoom-range"),
+         $reset: that.$el.find("#btn-reset")
+         });*/
         this.bindDragEventsOnModels();
         this.$el.find('#join_processes').click(function (event) {
             that.addProcessJoin();
