@@ -386,15 +386,6 @@ export class WorkflowView extends View{
         this.system.screenSize(options.newWidth, options.newHeight);
     }
 
-    /*fitCanvasToContainer() {
-        var canvas = document.querySelector('canvas');
-        // Make it visually fill the positioned parent
-        canvas.style.width = '100%';
-        canvas.style.height = '100%';
-        // ...then set the internal size to match
-        canvas.width = canvas.offsetWidth;
-        canvas.height = canvas.offsetHeight;
-     }*/
     getStoredNodePosition(nodeName) {
         var position = {};
         this.storedCoordinates.forEach(function (storedNode) {
@@ -417,12 +408,6 @@ export class WorkflowView extends View{
         var $canvas = this.$el.find("#viewport");
 
         var canvas = document.querySelector('canvas');
-        /* var rect = canvas.parentNode.getBoundingClientRect();
-        canvas.width = rect.width;
-        canvas.height = rect.height;
-
-         canvas.width = parentWidth;
-         canvas.height = parentHeight;*/
         canvas.width = parentWidth;
         canvas.height = parentHeight;
         this.system = arbor.ParticleSystem({
@@ -437,9 +422,7 @@ export class WorkflowView extends View{
         this.addProcessJoinsToGraph(this.processJoins);
         this.addProductsToGraph(this.products);
         this.addProductJoinsToGraph(this.productJoins);
-        /*if (this.treeNodes.length === 0) {//existing processes
-         this.system.parameters({repulsion: 0})
-         }*/
+
         setTimeout(function () {
             that.system.eachNode(function (node, point) {
                 console.log('Node: ' + node.name + ' X:' + point.x + ' Y:' + point.y);
@@ -869,6 +852,21 @@ export class WorkflowView extends View{
          $zoomRange: that.$el.find(".zoom-range"),
          $reset: that.$el.find("#btn-reset")
          });*/
+        this.$el.find("#viewport").dblclick(function (event) {
+            var offset = $(this).offset();
+            var X = event.pageX - offset.left;
+            var Y = event.pageY - offset.top;
+            if (event.shiftKey) {
+                that.handleZoomOut();
+            } else {
+                that.handleZoomIn();
+                that.$el.find('#canvas-container').animate({
+                    //scrollTop: $("#elementtoScrollToID").offset().top
+                    scrollTop: Y,
+                    scrollLeft: X
+                }, 500);
+            }
+        });
         this.bindDragEventsOnModels();
         this.$el.find('#join_processes').click(function (event) {
             that.addProcessJoin();

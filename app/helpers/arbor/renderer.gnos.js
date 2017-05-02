@@ -135,6 +135,12 @@
                 var dragged = null;
                 var oldmass = 1
 
+                var hoverHander = {
+                    hover: function (e) {
+                        console.log('hover');
+                    }
+                }
+
                 // set up a handler object that will initially listen for mousedowns then
                 // for moves and mouseups while dragging
                 var handler = {
@@ -159,6 +165,8 @@
                         if (dragged !== null && dragged.node !== null) {
                             var p = particleSystem.fromScreen(s)
                             dragged.node.p = p
+                        } else {
+                            console.log('hover');
                         }
 
                         return false
@@ -177,6 +185,7 @@
                     }
                 }
                 $(canvas).mousedown(handler.clicked);
+                $(canvas).mousemove(hoverHander.hover);
 
             }
 
