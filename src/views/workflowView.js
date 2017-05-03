@@ -843,6 +843,7 @@ export class WorkflowView extends View{
     }
 
     handleCanvasClick(e) {
+        var that = this;
         var pos = this.$el.find('#viewport').offset();
         var _mouseP = arbor.Point(e.pageX - pos.left, e.pageY - pos.top)
         var clickedNode = this.system.nearest(_mouseP);
@@ -852,10 +853,12 @@ export class WorkflowView extends View{
             .show()
             .css({
                 position: "absolute",
-                visibility: "visible",
                 left: e.clientX - $('#sidebar-wrapper').width(),
                 top: e.clientY
-            });
+            })
+        setTimeout(function () {
+            that.$el.find('.tooltiptext').hide();
+        }, 1000);
     }
 
     bindDomEvents() {
