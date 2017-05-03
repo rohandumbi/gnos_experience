@@ -185,8 +185,6 @@
                     }
                 }
                 $(canvas).mousedown(handler.clicked);
-                $(canvas).mousemove(hoverHander.hover);
-
             }
 
         }

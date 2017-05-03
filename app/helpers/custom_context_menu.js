@@ -22,7 +22,7 @@
                     .show()
                     .css({
                         position: "absolute",
-                        left: getMenuPosition(e.clientX, 'width', 'scrollLeft'),
+                        left: getMenuPosition((e.clientX - $('#sidebar-wrapper').width()), 'width', 'scrollLeft'),
                         top: getMenuPosition(e.clientY, 'height', 'scrollTop')
                     })
                     .off('click')

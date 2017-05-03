@@ -842,10 +842,27 @@ export class WorkflowView extends View{
         });
     }
 
+    handleCanvasClick(e) {
+        var pos = this.$el.find('#viewport').offset();
+        var _mouseP = arbor.Point(e.pageX - pos.left, e.pageY - pos.top)
+        var clickedNode = this.system.nearest(_mouseP);
+        if (clickedNode.node !== null) clickedNode.node.fixed = true;
+        this.$el.find('.tooltiptext').html(clickedNode.node.name);
+        this.$el.find('.tooltiptext')
+            .show()
+            .css({
+                position: "absolute",
+                visibility: "visible",
+                left: e.clientX - $('#sidebar-wrapper').width(),
+                top: e.clientY
+            });
+    }
+
     bindDomEvents() {
         var that = this;
         this.$el.on('click', '#btn-zoomin', this.handleZoomIn.bind(this));
         this.$el.on('click', '#btn-zoomout', this.handleZoomOut.bind(this));
+        this.$el.on('click', '#viewport', this.handleCanvasClick.bind(this));
         /*this.$el.find('#viewport').panzoom({
          $zoomIn: that.$el.find("#btn-zoomin"),
          $zoomOut: that.$el.find("btn-zoomout"),
@@ -861,7 +878,6 @@ export class WorkflowView extends View{
             } else {
                 that.handleZoomIn();
                 that.$el.find('#canvas-container').animate({
-                    //scrollTop: $("#elementtoScrollToID").offset().top
                     scrollTop: Y,
                     scrollLeft: X
                 }, 500);
