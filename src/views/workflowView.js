@@ -117,7 +117,7 @@ export class WorkflowView extends View{
         var that = this;
         productJoins.forEach(function (productJoin) {
             var productJoinNode = that.system.addNode(productJoin.name, {
-                'color': '#B3B3B3',
+                'color': '#E79A58',
                 'shape': 'rect',
                 'label': productJoin.name,
                 'category': 'productJoin'
@@ -128,7 +128,7 @@ export class WorkflowView extends View{
                     that.system.addEdge(productJoinNode, childProductNode, {
                         directed: true,
                         weight: 1,
-                        color: '#000000'
+                        color: '#333333'
                     });
                 }
             });
@@ -136,7 +136,7 @@ export class WorkflowView extends View{
                 var childProductJoinNode = that.getNodeWithName(productJoinName);
                 if (!childProductJoinNode) {
                     childProductJoinNode = that.system.addNode(productJoinName, {
-                        'color': '#B3B3B3',
+                        'color': '#E79A58',
                         'shape': 'rect',
                         'label': productJoinName,
                         'category': 'superProductJoin'
@@ -145,7 +145,7 @@ export class WorkflowView extends View{
                 that.system.addEdge(childProductJoinNode, productJoinNode, {
                     directed: true,
                     weight: 1,
-                    color: '#000000'
+                    color: '#333333'
                 });
             });
         });
@@ -155,7 +155,7 @@ export class WorkflowView extends View{
         var that = this;
         products.forEach(function (product) {
             var productNode = that.system.addNode(product.name, {
-                'color': '#96660E',
+                'color': '#A55540',
                 'shape': 'rect',
                 'label': product.name,
                 'category': 'product'
@@ -164,7 +164,7 @@ export class WorkflowView extends View{
             var modelId = product.modelId;
             var associatedModel = that.getModelWithId(modelId);
             var modelNode = that.system.getNode(associatedModel.name);
-            that.system.addEdge(modelNode, productNode, {directed: false, weight: 1, color: '#000000'});
+            that.system.addEdge(modelNode, productNode, {directed: false, weight: 1, color: '#333333'});
         });
     }
 
@@ -172,8 +172,8 @@ export class WorkflowView extends View{
         var that = this;
         processJoins.forEach(function (processJoin) {
             var processNode = that.system.addNode(processJoin.name, {
-                'color': '#00ff52',
-                'shape': 'rect',
+                'color': '#E1D5D2',
+                'shape': 'dot',
                 'label': processJoin.name,
                 'category': 'processJoin'
             });
@@ -181,7 +181,7 @@ export class WorkflowView extends View{
                 if (childProcessId > 0) {
                     var childModel = that.getModelWithId(childProcessId);
                     var childModelNode = that.system.getNode(childModel.name);
-                    that.system.addEdge(processNode, childModelNode, {directed: true, weight: 1, color: '#000000'});
+                    that.system.addEdge(processNode, childModelNode, {directed: true, weight: 1, color: '#333333'});
                 }
             });
         });
@@ -198,8 +198,8 @@ export class WorkflowView extends View{
             var modelNode = that.getNodeWithName(model.name);
             if (!modelNode) {
                 modelNode = that.system.addNode(model.name, {
-                    'color': '#95cde5',
-                    'shape': 'rect',
+                    'color': '#4B4A5A',
+                    'shape': 'dot',
                     'label': model.name,
                     'id': model.id,
                     'category': 'model'
@@ -211,7 +211,7 @@ export class WorkflowView extends View{
                 if (!parentNode) {
                     parentNode = that.system.addNode(parentModel.name, {
                         'color': '#95cde5',
-                        'shape': 'rect',
+                        'shape': 'dot',
                         'label': parentModel.name,
                         'id': parentModel.id,
                         'category': 'block'
@@ -221,7 +221,7 @@ export class WorkflowView extends View{
                 parentNode = that.getNodeWithName('Block');
             }
 
-            that.system.addEdge(parentNode, modelNode, {directed: true, weight: 1, color: '#000000'});
+            that.system.addEdge(parentNode, modelNode, {directed: true, weight: 1, color: '#333333'});
         });
     }
 
@@ -711,7 +711,7 @@ export class WorkflowView extends View{
                             that.system.addEdge(productJoinNode, selected.node, {
                                 directed: true,
                                 weight: 1,
-                                color: '#000000'
+                                color: '#333333'
                             });
                             that.$el.find('#target_product_join').val('');
                         },
@@ -746,7 +746,7 @@ export class WorkflowView extends View{
                             that.system.addEdge(productJoinNode, selected.node, {
                                 directed: true,
                                 weight: 1,
-                                color: '#000000'
+                                color: '#333333'
                             });
                             that.$el.find('#target_product_join').val('');
                         },
@@ -785,7 +785,7 @@ export class WorkflowView extends View{
                             that.system.addEdge(processJoinNode, selected.node, {
                                 directed: true,
                                 weight: 1,
-                                color: '#000000'
+                                color: '#333333'
                             });
                             that.$el.find('#target_join').val('');
                         }
