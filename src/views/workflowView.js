@@ -863,12 +863,6 @@ export class WorkflowView extends View{
         this.$el.on('click', '#btn-zoomin', this.handleZoomIn.bind(this));
         this.$el.on('click', '#btn-zoomout', this.handleZoomOut.bind(this));
         this.$el.on('click', '#viewport', this.handleCanvasClick.bind(this));
-        /*this.$el.find('#viewport').panzoom({
-         $zoomIn: that.$el.find("#btn-zoomin"),
-         $zoomOut: that.$el.find("btn-zoomout"),
-         $zoomRange: that.$el.find(".zoom-range"),
-         $reset: that.$el.find("#btn-reset")
-         });*/
         this.$el.find("#viewport").dblclick(function (event) {
             var offset = $(this).offset();
             var X = event.pageX - offset.left;
