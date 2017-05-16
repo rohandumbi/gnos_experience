@@ -125,7 +125,7 @@ export class WorkflowView extends View{
             productJoin.productList.forEach(function (productName) {
                 if (productName) {
                     var childProductNode = that.system.getNode(productName);
-                    that.system.addEdge(productJoinNode, childProductNode, {
+                    that.system.addEdge(childProductNode, productJoinNode, {
                         directed: true,
                         weight: 1,
                         color: '#333333'
@@ -142,7 +142,7 @@ export class WorkflowView extends View{
                         'category': 'superProductJoin'
                     });
                 }
-                that.system.addEdge(childProductJoinNode, productJoinNode, {
+                that.system.addEdge(productJoinNode, childProductJoinNode, {
                     directed: true,
                     weight: 1,
                     color: '#333333'
@@ -171,7 +171,7 @@ export class WorkflowView extends View{
     addProcessJoinsToGraph(processJoins) {
         var that = this;
         processJoins.forEach(function (processJoin) {
-            var processNode = that.system.addNode(processJoin.name, {
+            var processJoinNode = that.system.addNode(processJoin.name, {
                 'color': '#E1D5D2',
                 'shape': 'dot',
                 'label': processJoin.name,
@@ -181,7 +181,7 @@ export class WorkflowView extends View{
                 if (childProcessId > 0) {
                     var childModel = that.getModelWithId(childProcessId);
                     var childModelNode = that.system.getNode(childModel.name);
-                    that.system.addEdge(processNode, childModelNode, {directed: true, weight: 1, color: '#333333'});
+                    that.system.addEdge(childModelNode, processJoinNode, {directed: true, weight: 1, color: '#333333'});
                 }
             });
         });
@@ -708,7 +708,7 @@ export class WorkflowView extends View{
                         dataObject: updatedProductJoin,
                         success: function (data) {
                             alert('Successfully added to join.');
-                            that.system.addEdge(productJoinNode, selected.node, {
+                            that.system.addEdge(selected.node, productJoinNode, {
                                 directed: true,
                                 weight: 1,
                                 color: '#333333'
@@ -743,7 +743,7 @@ export class WorkflowView extends View{
                         dataObject: updatedProductJoin,
                         success: function (data) {
                             alert('Successfully added to join.');
-                            that.system.addEdge(productJoinNode, selected.node, {
+                            that.system.addEdge(selected.node, productJoinNode, {
                                 directed: true,
                                 weight: 1,
                                 color: '#333333'
@@ -782,7 +782,7 @@ export class WorkflowView extends View{
                         dataObject: newProcessJoin,
                         success: function (data) {
                             alert('Successfully added to join.');
-                            that.system.addEdge(processJoinNode, selected.node, {
+                            that.system.addEdge(selected.node, processJoinNode, {
                                 directed: true,
                                 weight: 1,
                                 color: '#333333'

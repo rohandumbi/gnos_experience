@@ -52,14 +52,16 @@
                     else ctx.fillStyle = "rgba(0,0,0,.2)"
                     if (node.data.color == 'none') ctx.fillStyle = "white"
 
-                    if (node.data.shape == 'dot') {
+                    /*if (node.data.shape == 'dot') {
                         gfx.oval(pt.x - w / 2, pt.y - w / 2, w, w, {fill: ctx.fillStyle})
                         nodeBoxes[node.name] = [pt.x - w / 2, pt.y - w / 2, w, w]
                     } else {
                         gfx.rect(pt.x - w / 2, pt.y - 10, w, 20, 4, {fill: ctx.fillStyle})
                         nodeBoxes[node.name] = [pt.x - w / 2, pt.y - 11, w, 22]
-                    }
+                     }*/
+
                     //gfx.oval(pt.x - w / 2, pt.y - w / 2, w, w, {fill: ctx.fillStyle})
+                    gfx.rect(pt.x - w / 2, pt.y - 10, w, 20, 4, {fill: ctx.fillStyle})
                     nodeBoxes[node.name] = [pt.x - w / 2, pt.y - w / 2, w, w]
 
                     // draw the text
