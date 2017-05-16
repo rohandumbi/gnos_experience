@@ -1,5 +1,6 @@
 import { View } from '../core/view';
 import { SideNavView } from './sideNavView';
+import {ProjectDefinitionView} from './projectDeinitionView';
 import { DataMappingView } from './dataMappingView';
 import { RequiredFieldMappingView } from './requiredFieldMappingView';
 import { ExpressionDefinitionView } from './expressionDefinitionView';
@@ -33,6 +34,12 @@ export class MainView extends View{
         this.sideNavView = new SideNavView();
         this.sideNavView.render();
         this.$el.find("#sidebar-wrapper").html(this.sideNavView.$el);
+    }
+
+    initializeProjectDefinition() {
+        this.projectDefinitionView = new ProjectDefinitionView({projectId: this.projectId});
+        this.projectDefinitionView.render();
+        this.$el.find("#page-content-wrapper").html(this.projectDefinitionView.$el);
     }
 
     initializeDatatypeDefinition(){
@@ -194,6 +201,9 @@ export class MainView extends View{
         console.log($el);
         var category = $el.data("category");
         switch(category){
+            case "project_definition":
+                this.initializeProjectDefinition();
+                break;
             case "datatype":
                 this.initializeDatatypeDefinition();
                 break;
