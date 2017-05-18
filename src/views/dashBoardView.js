@@ -103,6 +103,7 @@ export class DashBoardView extends View{
                 var $newProjectPane = that.$el.find('#newProjectPane');
                 $projectListPane.append(that.getCards(data));
                 $newProjectPane.append(that.getNewProjectCard());
+                that.projects = data;
                 that.bindEvents();
             },
             error: function(data){
@@ -112,10 +113,22 @@ export class DashBoardView extends View{
         //this.bindEvents();
     }
 
+    getProjectById(projectId) {
+        var myProject;
+        this.projects.forEach(function (project) {
+            if (project.id === projectId) {
+                myProject = project;
+            }
+        });
+        return myProject;
+    }
+
     bindEvents() {
         var that = this;
         this.$el.find('.openProjectBtn').click(function() {
-            that.trigger('open:project', {projectId: $(this).data('projectid')})
+            var projectId = $(this).data('projectid');
+            var project = that.getProjectById(projectId);
+            that.trigger('open:project', {projectId: projectId, project: project});
         });
         this.$el.find('.deleteProjectBtn').click(function () {
             //that.trigger('open:project', {projectId: $(this).data('projectid')})

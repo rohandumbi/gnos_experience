@@ -43,7 +43,7 @@ var loadProjectDashboard = () => {
 
 var loadProject = (options) => {
     console.log('Opening project: ' + options.projectId)
-    var mainView = new MainView({projectId: options.projectId});
+    var mainView = new MainView({projectId: options.projectId, project: options.project});
     mainView.off('open:dashboard');
     mainView.on('open:dashboard', function (options) {
         loadProjectDashboard(options);

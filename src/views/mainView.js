@@ -26,6 +26,7 @@ export class MainView extends View{
     constructor(options) {
         super();
         this.projectId = options.projectId;
+        this.project = options.project;
         //this.initializeSideNavView();
         //this.initializeContentView();
     }
@@ -37,7 +38,7 @@ export class MainView extends View{
     }
 
     initializeProjectDefinition() {
-        this.projectDefinitionView = new ProjectDefinitionView({projectId: this.projectId});
+        this.projectDefinitionView = new ProjectDefinitionView({projectId: this.projectId, project: this.project});
         this.projectDefinitionView.render();
         this.$el.find("#page-content-wrapper").html(this.projectDefinitionView.$el);
     }
