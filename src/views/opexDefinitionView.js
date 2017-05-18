@@ -162,6 +162,7 @@ export class OpexDefinitionView extends View{
             }
             row += (
                 '<tr>' +
+                '<td>' + opex.id + '</td>' +
                 '<td>' + opex.isRevenue + '</td>' +
                 '<td>' + opex.inUse + '</td>' +
                 '<td>' + opex.modelId + '</td>' +
@@ -185,6 +186,9 @@ export class OpexDefinitionView extends View{
             rowSelect: true,
             keepSelection: false,
             formatters: {
+                "id": function (column, row) {
+                    return "<span data-opex-id='" + row.id + "'></span>"
+                },
                 "commands": function (column, row) {
                     return "<button type=\"button\" class=\"btn btn-xs btn-default command-edit glyphicon glyphicon-edit copy-forward\" data-row-id=\"" + row.id + "\"><span class=\"fa fa-pencil\"></span></button> ";
                 },
@@ -473,6 +477,22 @@ export class OpexDefinitionView extends View{
     }
 
     deleteRows(rowIds) {
+        var selectedRowIds = this.$el.find("#datatype-grid-basic").bootgrid("getSelectedRows");
+        var that = this;
+        selectedRowIds.forEach(function (selectedRowId) {
+            //var deletedExpression = that.getExpressionByName(selectedRow);
+            console.log(selectedRowId);
+            that.opexModel.delete({
+                url: 'http://localhost:4567/opexdata',
+                id: selectedRowId,
+                success: function (data) {
+                    alert('Successfully deleted opex.');
+                },
+                error: function (data) {
+                    alert('Failed to delete opex.');
+                }
+            });
+        });
         this.$el.find("#datatype-grid-basic").bootgrid("remove");
     }
 }
