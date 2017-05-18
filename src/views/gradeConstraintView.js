@@ -143,6 +143,7 @@ export class GradeConstraintView extends View{
             var gradeConstraint = dataObject[i];
             row += (
                 '<tr>' +
+                '<td>' + gradeConstraint.id + '</td>' +
                 '<td>' + gradeConstraint.productJoinName + '</td>'
             )
             row += '<td>' + gradeConstraint.inUse + '</td>';
@@ -167,6 +168,9 @@ export class GradeConstraintView extends View{
             rowSelect: true,
             keepSelection: false,
             formatters: {
+                "id": function (column, row) {
+                    return "<span data-contraint-id='" + row.constraintId + "'></span>"
+                },
                 "commands": function (column, row) {
                     return "<button type=\"button\" class=\"btn btn-xs btn-default command-edit glyphicon glyphicon-edit copy-forward\" data-row-id=\"" + row.id + "\"><span class=\"fa fa-pencil\"></span></button> ";
                 },
@@ -299,8 +303,9 @@ export class GradeConstraintView extends View{
                 //$grade.val('NONE');
                 $grade.html('');
                 //that.updateGrade($grade);
-                var index = $grade.closest('tr').data('row-id');
-                var gradeConstraint = that.gradeConstraints[index];
+                var constraintId = $grade.closest('tr').data('row-id');
+                //var gradeConstraint = that.gradeConstraints[index];
+                var gradeConstraint = that.getConstraintById(constraintId);
                 gradeConstraint['selectedGradeName'] = '';
                 //gradeConstraint['selectorName'] = $grouping.find('option:checked').data('grouping-name');
                 console.log(gradeConstraint);
@@ -413,17 +418,17 @@ export class GradeConstraintView extends View{
     }
 
     updateInUse($row) {
-        var index = $row.closest('tr').data('row-id');
+        var constraintId = $row.closest('tr').data('row-id');
         var inUse = $row.is(':checked');
-        var gradeConstraint = this.gradeConstraints[index];
+        var gradeConstraint = this.getConstraintById(constraintId);
         gradeConstraint['inUse'] = inUse;
         console.log(gradeConstraint);
         this.updateConstraint({gradeConstraint: gradeConstraint});
     }
 
     updateProductJoin($productJoin) {
-        var index = $productJoin.closest('tr').data('row-id');
-        var gradeConstraint = this.gradeConstraints[index];
+        var constraintId = $productJoin.closest('tr').data('row-id');
+        var gradeConstraint = this.getConstraintById(constraintId);
         gradeConstraint['productJoinName'] = $productJoin.find('option:checked').val();
         //gradeConstraint['selectorName'] = $grouping.find('option:checked').data('grouping-name');
         console.log(gradeConstraint);
@@ -431,8 +436,8 @@ export class GradeConstraintView extends View{
     }
 
     updateGrade($grade) {
-        var index = $grade.closest('tr').data('row-id');
-        var gradeConstraint = this.gradeConstraints[index];
+        var constraintId = $grade.closest('tr').data('row-id');
+        var gradeConstraint = this.getConstraintById(constraintId);
         gradeConstraint['selectedGradeName'] = $grade.find('option:checked').val() || '';
         //gradeConstraint['selectorName'] = $grouping.find('option:checked').data('grouping-name');
         console.log(gradeConstraint);
@@ -440,8 +445,8 @@ export class GradeConstraintView extends View{
     }
 
     updateGrouping($grouping) {
-        var index = $grouping.closest('tr').data('row-id');
-        var gradeConstraint = this.gradeConstraints[index];
+        var constraintId = $grouping.closest('tr').data('row-id');
+        var gradeConstraint = this.getConstraintById(constraintId);
         gradeConstraint['selectionType'] = $grouping.find('option:checked').data('grouping-type');
         gradeConstraint['selectorName'] = $grouping.find('option:checked').data('grouping-name');
         console.log(gradeConstraint);
@@ -449,8 +454,8 @@ export class GradeConstraintView extends View{
     }
 
     updateIsMax($isMax) {
-        var index = $isMax.closest('tr').data('row-id');
-        var gradeConstraint = this.gradeConstraints[index];
+        var constraintId = $isMax.closest('tr').data('row-id');
+        var gradeConstraint = this.getConstraintById(constraintId);
         var isMax = ($isMax.find('option:checked').data('is-max').toString() === "true");
         gradeConstraint['isMax'] = isMax;
         //processConstraint['selector_name'] = $grouping.find('option:checked').data('grouping-name');
@@ -508,6 +513,32 @@ export class GradeConstraintView extends View{
     }
 
     deleteRows(rowIds) {
+        var selectedRowIds = this.$el.find("#datatype-grid-basic").bootgrid("getSelectedRows");
+        var that = this;
+        selectedRowIds.forEach(function (selectedRowId) {
+            //var deletedExpression = that.getExpressionByName(selectedRow);
+            console.log(selectedRowId);
+            that.gradeConstraintModel.delete({
+                url: 'http://localhost:4567/gradeconstraints',
+                id: selectedRowId,
+                success: function (data) {
+                    alert('Successfully deleted constraint.');
+                },
+                error: function (data) {
+                    alert('Failed to delete constraint.');
+                }
+            });
+        });
         this.$el.find("#datatype-grid-basic").bootgrid("remove");
+    }
+
+    getConstraintById(constraintId) {
+        var requiredConstraint;
+        this.gradeConstraints.forEach(function (gradeConstraint) {
+            if (constraintId === gradeConstraint.id) {
+                requiredConstraint = gradeConstraint;
+            }
+        });
+        return requiredConstraint;
     }
 }
