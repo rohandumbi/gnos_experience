@@ -302,10 +302,10 @@ export class BenchConstraintView extends View{
                 url: 'http://localhost:4567/benchconstraints',
                 id: deletedBenchConstraint.id,
                 success: function (data) {
-                    alert('Successfully deleted expression.');
+                    alert('Successfully deleted constraint.');
                 },
                 error: function (data) {
-                    alert('Failed to delete expression.' + data);
+                    alert('Failed to delete constraint.' + data);
                 }
             });
         });
