@@ -1,10 +1,10 @@
 import { View } from '../core/view';
-import { DashboardModel } from '../models/dashboardModel';
+import {ProjectModel} from '../models/projectModel';
 export class DashBoardView extends View{
 
     constructor(options) {
         super();
-        this.dashboardModel = new DashboardModel();
+        this.dashboardModel = new ProjectModel();
     }
 
     getHtml() {

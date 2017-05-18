@@ -38,7 +38,11 @@ export class MainView extends View{
     }
 
     initializeProjectDefinition() {
+        var that = this;
         this.projectDefinitionView = new ProjectDefinitionView({projectId: this.projectId, project: this.project});
+        this.projectDefinitionView.on('reload', function () {
+            that.initializeProjectDefinition();
+        });
         this.projectDefinitionView.render();
         this.$el.find("#page-content-wrapper").html(this.projectDefinitionView.$el);
     }
