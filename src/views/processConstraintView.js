@@ -173,6 +173,7 @@ export class ProcessConstraintView extends View{
             var processConstraint = dataObject[i];
             row += (
                 '<tr>' +
+                '<td>' + processConstraint.id + '</td>' +
                 '<td>' + processConstraint.coefficient_name + '</td>'
             )
             row += '<td>' + processConstraint.inUse + '</td>';
@@ -196,6 +197,9 @@ export class ProcessConstraintView extends View{
             rowSelect: true,
             keepSelection: false,
             formatters: {
+                "id": function (column, row) {
+                    return "<span data-contraint-id='" + row.constraintId + "'></span>"
+                },
                 "commands": function (column, row) {
                     return "<button type=\"button\" class=\"btn btn-xs btn-default command-edit glyphicon glyphicon-edit copy-forward\" data-row-id=\"" + row.id + "\"><span class=\"fa fa-pencil\"></span></button> ";
                 },
@@ -434,6 +438,22 @@ export class ProcessConstraintView extends View{
     }
 
     deleteRows(rowIds) {
+        var selectedRowIds = this.$el.find("#datatype-grid-basic").bootgrid("getSelectedRows");
+        var that = this;
+        selectedRowIds.forEach(function (selectedRowId) {
+            //var deletedExpression = that.getExpressionByName(selectedRow);
+            console.log(selectedRowId);
+            that.processConstraintModel.delete({
+                url: 'http://localhost:4567/processconstraints',
+                id: selectedRowId,
+                success: function (data) {
+                    alert('Successfully deleted constraint.');
+                },
+                error: function (data) {
+                    alert('Failed to delete constraint.');
+                }
+            });
+        });
         this.$el.find("#datatype-grid-basic").bootgrid("remove");
     }
 }
