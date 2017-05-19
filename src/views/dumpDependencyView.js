@@ -167,6 +167,7 @@ export class DumpDependencyView extends View {
             var dumpDependency = modelData[i];
             row += (
                 '<tr>' +
+                '<td>' + dumpDependency.id + '</td>' +
                 '<td>' + dumpDependency.firstPitName + '</td>' +
                 '<td>' + dumpDependency.firstPitGroupName + '</td>' +
                 '<td>' + dumpDependency.firstDumpName + '</td>' +
@@ -188,6 +189,9 @@ export class DumpDependencyView extends View {
             rowSelect: true,
             keepSelection: true,
             formatters: {
+                "id": function (column, row) {
+                    return "<span data-dependency-id='" + row.dependencyId + "'></span>"
+                },
                 "first_pit": function (column, row) {
                     var firstPitName = row.firstPitName;
                     if (!firstPitName || firstPitName.toString() === 'undefined') {
@@ -362,8 +366,19 @@ export class DumpDependencyView extends View {
 
     }
 
+    getDependencyById(dependencyById) {
+        var myDependency;
+        this.dumpDependency.forEach(function (data) {
+            if (data.id === dependencyById) {
+                myDependency = data;
+            }
+        });
+        return myDependency;
+    }
+
     updateFirstPit(options) {
-        var dumpDependency = this.dumpDependency[options.index];
+        //var dumpDependency = this.dumpDependency[options.index];
+        var dumpDependency = this.getDependencyById(options.index);
         dumpDependency['firstPitName'] = options.firstPitName;
         delete dumpDependency.firstDumpName;
         delete dumpDependency.firstPitGroupName;
@@ -372,7 +387,7 @@ export class DumpDependencyView extends View {
     }
 
     updateFirstPitGroup(options) {
-        var dumpDependency = this.dumpDependency[options.index];
+        var dumpDependency = this.getDependencyById(options.index);
         dumpDependency['firstPitGroupName'] = options.firstPitGroupName;
         delete dumpDependency.firstDumpName;
         delete dumpDependency.firstPitName;
@@ -381,7 +396,7 @@ export class DumpDependencyView extends View {
     }
 
     updateFirstDump(options) {
-        var dumpDependency = this.dumpDependency[options.index];
+        var dumpDependency = this.getDependencyById(options.index);
         dumpDependency['firstDumpName'] = options.firstDumpName;
         delete dumpDependency.firstPitName;
         delete dumpDependency.firstPitGroupName;
@@ -390,14 +405,14 @@ export class DumpDependencyView extends View {
     }
 
     updateDependentDump(options) {
-        var dumpDependency = this.dumpDependency[options.index];
+        var dumpDependency = this.getDependencyById(options.index);
         dumpDependency['dependentDumpName'] = options.dependentDumpName;
         console.log(dumpDependency);
         this.updateDumpDependency({dumpDependency: dumpDependency});
     }
 
     updateInUse(options) {
-        var dumpDependency = this.dumpDependency[options.index];
+        var dumpDependency = this.getDependencyById(options.index);
         dumpDependency['inUse'] = options.inUse;
         console.log(dumpDependency);
         this.updateDumpDependency({dumpDependency: dumpDependency});
@@ -456,19 +471,19 @@ export class DumpDependencyView extends View {
     }
 
     deleteRows() {
-        var selectedRows = this.$el.find("#datatype-grid-basic").bootgrid("getSelectedRows");
+        var selectedRowIds = this.$el.find("#datatype-grid-basic").bootgrid("getSelectedRows");
         var that = this;
-        selectedRows.forEach(function (selectedRow) {
-            var deletedExpression = that.getExpressionByName(selectedRow);
-            console.log(deletedExpression);
-            that.model.delete({
-                url: 'http://localhost:4567/expressions',
-                id: deletedExpression.id,
+        selectedRowIds.forEach(function (selectedRowId) {
+            //var deletedExpression = that.getExpressionByName(selectedRow);
+            console.log(selectedRowId);
+            that.dumpDependencyModel.delete({
+                url: 'http://localhost:4567/dumpdependencies',
+                id: selectedRowId,
                 success: function (data) {
-                    alert('Successfully deleted expression.');
+                    alert('Successfully deleted dependencies.');
                 },
                 error: function (data) {
-                    alert('Failed to delete expression.');
+                    alert('Failed to delete dependencies.');
                 }
             });
         });
