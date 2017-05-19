@@ -108,6 +108,7 @@ export class PitDependencyView extends View {
             var pitDependency = modelData[i];
             row += (
                 '<tr>' +
+                '<td>' + pitDependency.id + '</td>' +
                 '<td>' + pitDependency.firstPitName + '</td>' +
                 '<td>' + pitDependency.firstPitAssociatedBench + '</td>' +
                 '<td>' + pitDependency.dependentPitName + '</td>' +
@@ -130,6 +131,9 @@ export class PitDependencyView extends View {
             rowSelect: true,
             keepSelection: true,
             formatters: {
+                "id": function (column, row) {
+                    return "<span data-dependency-id='" + row.dependencyId + "'></span>"
+                },
                 "first_pit": function (column, row) {
                     var firstPitName = row.firstPitName;
                     var tableRow = '';
@@ -307,8 +311,18 @@ export class PitDependencyView extends View {
 
     }
 
+    getDependencyById(dependencyById) {
+        var myDependency;
+        this.pitDependency.forEach(function (data) {
+            if (data.id === dependencyById) {
+                myDependency = data;
+            }
+        });
+        return myDependency;
+    }
+
     updateFirstPit(options) {
-        var pitDependency = this.pitDependency[options.index];
+        var pitDependency = this.getDependencyById(options.index);
         pitDependency['firstPitName'] = options.firstPitName;
         delete pitDependency.firstPitAssociatedBench;
         console.log(pitDependency);
@@ -316,21 +330,21 @@ export class PitDependencyView extends View {
     }
 
     updateFirstPitAssociatedBench(options) {
-        var pitDependency = this.pitDependency[options.index];
+        var pitDependency = this.getDependencyById(options.index);
         pitDependency['firstPitAssociatedBench'] = options.firstPitAssociatedBench;
         console.log(pitDependency);
         this.updatePitDependency({pitDependency: pitDependency});
     }
 
     updateDependentPitAssociatedBench(options) {
-        var pitDependency = this.pitDependency[options.index];
+        var pitDependency = this.getDependencyById(options.index);
         pitDependency['dependentPitAssociatedBench'] = options.dependentPitAssociatedBench;
         console.log(pitDependency);
         this.updatePitDependency({pitDependency: pitDependency});
     }
 
     updateDependentPit(options) {
-        var pitDependency = this.pitDependency[options.index];
+        var pitDependency = this.getDependencyById(options.index);
         pitDependency['dependentPitName'] = options.dependentPitName;
         delete pitDependency.dependentPitAssociatedBench;
         console.log(pitDependency);
@@ -338,21 +352,21 @@ export class PitDependencyView extends View {
     }
 
     updateMaxLead(options) {
-        var pitDependency = this.pitDependency[options.index];
+        var pitDependency = this.getDependencyById(options.index);
         pitDependency['maxLead'] = options.maxLead;
         console.log(pitDependency);
         this.updatePitDependency({pitDependency: pitDependency});
     }
 
     updateMinLead(options) {
-        var pitDependency = this.pitDependency[options.index];
+        var pitDependency = this.getDependencyById(options.index);
         pitDependency['minLead'] = options.minLead;
         console.log(pitDependency);
         this.updatePitDependency({pitDependency: pitDependency});
     }
 
     updateInUse(options) {
-        var pitDependency = this.pitDependency[options.index];
+        var pitDependency = this.getDependencyById(options.index);
         pitDependency['inUse'] = options.inUse;
         console.log(pitDependency);
         this.updatePitDependency({pitDependency: pitDependency});
@@ -407,19 +421,19 @@ export class PitDependencyView extends View {
     }
 
     deleteRows() {
-        var selectedRows = this.$el.find("#datatype-grid-basic").bootgrid("getSelectedRows");
+        var selectedRowIds = this.$el.find("#datatype-grid-basic").bootgrid("getSelectedRows");
         var that = this;
-        selectedRows.forEach(function (selectedRow) {
-            var deletedExpression = that.getExpressionByName(selectedRow);
-            console.log(deletedExpression);
-            that.model.delete({
-                url: 'http://localhost:4567/expressions',
-                id: deletedExpression.id,
+        selectedRowIds.forEach(function (selectedRowId) {
+            //var deletedExpression = that.getExpressionByName(selectedRow);
+            console.log(selectedRowId);
+            that.pitDependencyModel.delete({
+                url: 'http://localhost:4567/pitdependencies',
+                id: selectedRowId,
                 success: function (data) {
-                    alert('Successfully deleted expression.');
+                    alert('Successfully deleted dependencies.');
                 },
                 error: function (data) {
-                    alert('Failed to delete expression.');
+                    alert('Failed to delete dependencies.');
                 }
             });
         });
