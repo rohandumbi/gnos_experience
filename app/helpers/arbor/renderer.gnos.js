@@ -66,7 +66,7 @@
 
                     // draw the text
                     if (label) {
-                        var fontSize = 4 * that.scaleFactor + 'px';
+                        var fontSize = 6 * that.scaleFactor + 'px';
                         //ctx.font = "2px Helvetica"
                         ctx.font = fontSize + " Helvetica"
                         ctx.textAlign = "center"
