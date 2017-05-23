@@ -433,7 +433,8 @@ export class ProcessConstraintView extends View{
             success: function (data) {
                 alert('added new data');
                 that.processConstraints.push(data);
-                that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
+                //that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
+                that.trigger('reload');
             },
             error: function (data) {
                 alert('Error creating opex data');

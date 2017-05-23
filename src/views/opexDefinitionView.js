@@ -355,6 +355,16 @@ export class OpexDefinitionView extends View{
         });
     }
 
+    getOpexDataById(opexId) {
+        var myOpex;
+        this.opexData.forEach(function (opex) {
+            if (opex.id == opexId) {
+                myOpex = opex;
+            }
+        });
+        return myOpex;
+    }
+
     updateOpex(options) {
         this.opexModel.update({
             url: 'http://localhost:4567/opexdata',
@@ -372,7 +382,7 @@ export class OpexDefinitionView extends View{
     }
 
     updateExpressionId(options) {
-        var opexData = this.opexData[options.index];
+        var opexData = this.getOpexDataById(options.index);
         opexData['unitType'] = 2;
         opexData['unitId'] = options.expressionId;
         console.log(opexData);
@@ -380,7 +390,7 @@ export class OpexDefinitionView extends View{
     }
 
     updateUnitId(options) {
-        var opexData = this.opexData[options.index];
+        var opexData = this.getOpexDataById(options.index);
         opexData['unitType'] = 1;
         opexData['unitId'] = options.unitId;
         console.log(opexData);
@@ -388,7 +398,7 @@ export class OpexDefinitionView extends View{
     }
 
     updateModelId(options) {
-        var opexData = this.opexData[options.index];
+        var opexData = this.getOpexDataById(options.index);
         opexData['modelId'] = options.modelId;
         var unitType = opexData.unitType;
         if (unitType === 1) {
@@ -401,7 +411,7 @@ export class OpexDefinitionView extends View{
     }
 
     updateCostData(options) {
-        var opexData = this.opexData[options.index];
+        var opexData = this.getOpexDataById(options.index);
         var unitType = opexData.unitType;
         if (unitType === 1) {
             opexData['unitId'] = opexData.fieldId;
@@ -415,7 +425,7 @@ export class OpexDefinitionView extends View{
     }
 
     updateInUse(options) {
-        var opexData = this.opexData[options.index];
+        var opexData = this.getOpexDataById(options.index);
         opexData['inUse'] = options.inUse;
         var unitType = opexData.unitType;
         if (unitType === 1) {
@@ -428,7 +438,7 @@ export class OpexDefinitionView extends View{
     }
 
     updateIsRevenue(options) {
-        var opexData = this.opexData[options.index];
+        var opexData = this.getOpexDataById(options.index);
         opexData['isRevenue'] = options.isRevenue;
         if (!options.isRevenue) {
             opexData["expressionId"] = 0;

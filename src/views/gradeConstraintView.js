@@ -342,7 +342,7 @@ export class GradeConstraintView extends View{
             });
 
         });
-        var $addButton = $('<button type="button" class="btn btn-default"></button>');
+        var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal"></button>');
         $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
 
         var $removeButton = $('<button type="button" class="btn btn-default"></button>');
@@ -408,10 +408,10 @@ export class GradeConstraintView extends View{
     }
 
     updateValues($row) {
-        var index = $row.closest('tr').data('row-id');
+        var constraintId = $row.closest('tr').data('row-id');
         var year = $row.data('year');
         var value = $row.val();
-        var gradeConstraint = this.gradeConstraints[index];
+        var gradeConstraint = this.getConstraintById(constraintId);
         gradeConstraint.constraintData[year] = parseFloat(value);
         console.log(gradeConstraint);
         this.updateConstraint({gradeConstraint: gradeConstraint});
@@ -503,7 +503,8 @@ export class GradeConstraintView extends View{
             success: function (data) {
                 alert('added new data');
                 that.gradeConstraints.push(data);
-                that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
+                //that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
+                that.trigger('reload');
             },
             error: function (data) {
                 alert('Error creating opex data');

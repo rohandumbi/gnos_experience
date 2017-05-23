@@ -44,19 +44,31 @@ export class ConstraintsView extends View {
     }
 
     loadProcessConstraint() {
+        var that = this;
         this.processConstraintView = new ProcessConstraintView({projectId: this.projectId, scenario: this.scenario});
+        this.processConstraintView.on('reload', function () {
+            that.loadProcessConstraint();
+        });
         this.processConstraintView.render();
         this.$el.find("#views").html(this.processConstraintView.$el);
     }
 
     loadGradeConstraint() {
+        var that = this;
         this.gradeConstraintView = new GradeConstraintView({projectId: this.projectId, scenario: this.scenario});
+        this.gradeConstraintView.on('reload', function () {
+            that.loadGradeConstraint();
+        });
         this.gradeConstraintView.render();
         this.$el.find("#views").html(this.gradeConstraintView.$el);
     }
 
     loadBenchConstraint() {
+        var that = this;
         this.benchConstraintView = new BenchConstraintView({projectId: this.projectId, scenario: this.scenario});
+        this.benchConstraintView.on('reload', function () {
+            that.loadBenchConstraint();
+        });
         this.benchConstraintView.render();
         this.$el.find("#views").html(this.benchConstraintView.$el);
     }

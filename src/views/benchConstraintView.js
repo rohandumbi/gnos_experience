@@ -162,7 +162,7 @@ export class BenchConstraintView extends View{
             that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
             that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
 
-            that.grid.find('.name').change(function (e) {
+            that.grid.find('.pit-name').change(function (e) {
                 //alert('update identifier of opex index: ' + $(this).closest('tr').data('row-id') + ':' + $(this).data('model-id'));
                 that.updatePitName({
                     newPitName: $(this).find(":selected").data('pit-name'),
@@ -185,7 +185,7 @@ export class BenchConstraintView extends View{
                 });
             });
         });
-        var $addButton = $('<button type="button" data-target="#pitModal" class="btn btn-default" data-toggle="modal"></button>');
+        var $addButton = $('<button type="button" data-target="#benchConstraintModal" class="btn btn-default" data-toggle="modal"></button>');
         $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
 
         var $removeButton = $('<button type="button" class="btn btn-default"></button>');
@@ -274,6 +274,8 @@ export class BenchConstraintView extends View{
                 alert('added new data');
                 that.benchConstraintData.push(data);
                 that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
+                $('.modal-backdrop').hide();
+                that.trigger('reload');
             },
             error: function (data) {
                 alert('Error creating bench data');
