@@ -44,7 +44,7 @@ export class CapexCollectionView extends View{
         this.capexCollection.add({
             dataObject: newCapex,
             success: function (data) {
-                that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
+                //that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
                 that.capex.push(data);
                 that.initializeCapexView(data);
                 that.$el.find('#new_capex_name').val('');
