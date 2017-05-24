@@ -5,6 +5,7 @@ export class ScenarioDefinitionView extends View{
 
     constructor(options) {
         super();
+        this.projectId = options.projectId;
         this.model = new ScenarioCollection(options);
         this.scenario = options.scenario;
     }
@@ -68,7 +69,9 @@ export class ScenarioDefinitionView extends View{
             keepSelection: true,
             formatters: {
                 "commands": function(column, row){
-                    return "<button title='Load Scenario' type=\"button\" class=\"btn btn-xs btn-default command-upload\" data-row-id=\"" + row.name + "\"><span class=\"glyphicon glyphicon-upload\"></span></button>";
+                    var buttonLoad = "<button title='Load Scenario' type=\"button\" class=\"btn btn-xs btn-default command-upload\" data-row-id=\"" + row.name + "\"><span class=\"glyphicon glyphicon-upload\"></span></button>";
+                    var buttonClone = "<button title='Clone Scenario' type=\"button\" class=\"btn btn-xs btn-default command-clone\" data-row-id=\"" + row.name + "\"><span class=\"glyphicon glyphicon-copy\"></span></button>";
+                    return buttonLoad + buttonClone;
                 }
             }
         }).on("loaded.rs.jquery.bootgrid", function()
@@ -79,6 +82,9 @@ export class ScenarioDefinitionView extends View{
 
             that.grid.find(".command-upload").on("click", function(e){
                 that.loadScenario($(this).data("row-id"));
+            });
+            that.grid.find(".command-clone").on("click", function (e) {
+                that.cloneScenario($(this).data("row-id"));
             })
         });
         var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#modelDefinitionModal"></button>');
@@ -101,6 +107,21 @@ export class ScenarioDefinitionView extends View{
     loadScenario(scenarioName) {
         this.$el.find('#scenario_name').val(scenarioName);
         this.trigger('loaded-scenario', this.getScenarioByName(scenarioName));
+    }
+
+    cloneScenario(scenarioName) {
+        var that = this;
+        var scenario = this.getScenarioByName(scenarioName);
+        this.model.add({
+            url: "http://localhost:4567/project/" + this.projectId + "/scenarios/" + scenario.id + "/copy",
+            dataObject: {},
+            success: function (data) {
+                that.trigger('reload');
+            },
+            error: function () {
+                alert('Error cloning scenario');
+            }
+        });
     }
 
     addRowToGrid() {

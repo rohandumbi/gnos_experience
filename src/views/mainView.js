@@ -125,6 +125,9 @@ export class MainView extends View{
     initializeScenarioDefinition() {
         var that = this;
         this.scenarioDefinitionView = new ScenarioDefinitionView({projectId: this.projectId, scenario: this.scenario});
+        this.scenarioDefinitionView.on('reload', function () {
+            that.initializeScenarioDefinition();
+        });
         this.scenarioDefinitionView.render();
         this.$el.find("#page-content-wrapper").html(this.scenarioDefinitionView.$el);
         this.scenarioDefinitionView.on('loaded-scenario', function (scenario) {
