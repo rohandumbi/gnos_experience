@@ -37,6 +37,7 @@ export class CapexView extends View{
 
     onDomLoaded() {
         this.$el.find('#capex_name').html(this.capex.name);
+        this.$el.find('.modal').attr("data-capexname", this.capex.name);
         this.fetchProcesses();
     }
 
@@ -174,7 +175,8 @@ export class CapexView extends View{
             });
 
         });
-        var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#' + this.capex.name + '"></button>');
+        //var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#' + encodeURI(this.capex.name) + '"></button>');
+        var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal"></button>');
         $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
 
         var $removeButton = $('<button type="button" class="btn btn-default"></button>');
@@ -182,6 +184,11 @@ export class CapexView extends View{
 
         this.$el.find(".actionBar").append($addButton);
         this.$el.find(".actionBar").append($removeButton);
+
+        $addButton.click(function () {
+            var selector = "div[id='" + that.capex.name + "']";//to allow spaces in name
+            that.$el.find(selector).modal();
+        });
 
         $removeButton.click(function(){
             that.deleteRows();
