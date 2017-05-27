@@ -33,6 +33,16 @@ export class ProjectDefinitionView extends View {
     onDomLoaded() {
         var that = this;
         this.bindEvents();
+        /*this.dropZone = this.$el.find("div#fileUpload").dropzone({
+         url: "/file/post",
+         autoProcessQueue:false
+         });*/
+        var myDropzone = new Dropzone("div#fileUpload", {
+            url: "/file/post",
+            autoProcessQueue: false,
+            addRemoveLinks: true
+        });
+
         this.projectModel.fetch({
             success: function (data) {
                 that.projects = data;
