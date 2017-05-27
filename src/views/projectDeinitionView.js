@@ -33,14 +33,25 @@ export class ProjectDefinitionView extends View {
     onDomLoaded() {
         var that = this;
         this.bindEvents();
-        /*this.dropZone = this.$el.find("div#fileUpload").dropzone({
-         url: "/file/post",
-         autoProcessQueue:false
-         });*/
+        this.files = [];
         var myDropzone = new Dropzone("div#fileUpload", {
             url: "/file/post",
             autoProcessQueue: false,
-            addRemoveLinks: true
+            addRemoveLinks: true,
+            dictDefaultMessage: 'Click to add files.'
+        });
+
+        myDropzone.on('addedfile', function (file, event) {
+            console.log(file);
+            that.files.push(file.path);
+        });
+        myDropzone.on('removedfile', function (file, event) {
+            that.files.forEach(function (fileName, i) {
+                if (fileName === file.path) {
+                    that.files.splice(i, 1);
+                    // break;       //<-- Uncomment  if only the first term has to be removed
+                }
+            });
         });
 
         this.projectModel.fetch({
@@ -68,8 +79,9 @@ export class ProjectDefinitionView extends View {
 
             var files = that.$el.find('#new-file').prop("files");
             /*assuming first selection to be valid*/
-            var file = files[0];
-            var filePath = file && file.path;
+            //var file = files[0];
+            //var filePath = file && file.path;
+            var filePath = that.files[0];
             if (!filePath) {
                 filePath = that.$el.find('#present-file').val();
             }
@@ -77,6 +89,7 @@ export class ProjectDefinitionView extends View {
             projectObject['name'] = projectName;
             projectObject['desc'] = projectDescriptions;
             projectObject['fileName'] = filePath;
+            //projectObject['fileName'] = that.files[0];
             //projectObject['createdDate'] = filePath;
             that.projectModel.update({
                 id: that.project.id,

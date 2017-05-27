@@ -47,6 +47,7 @@ export class DashBoardView extends View{
                         '<label class="col-md-4 control-label" for="fullname">File Location</label> ' +
                         '<div class="col-md-4"> ' +
                             '<input id="fileLocation" name="file" name="file" type="file" placeholder="" class="form-control input-md" required=""> ' +
+            '<div class="dropzone dz-default" style="margin-top: 50px;border: 2px dashed #0087F7;border-radius: 5px; background: white;" id="dropZone"></div>' +
                             '<span class="help-block">Browse and select CSV.</span> ' +
                         '</div> ' +
                     '</div> ' +
@@ -97,6 +98,7 @@ export class DashBoardView extends View{
 
     onDomLoaded() {
         var that = this;
+        this.files = [];
         this.dashboardModel.fetch({
             success: function(data){
                 var $projectListPane = that.$el.find('#projectListPane');
@@ -125,6 +127,25 @@ export class DashBoardView extends View{
 
     bindEvents() {
         var that = this;
+        var myDropzone = new Dropzone("div#dropZone", {
+            url: "/file/post",
+            autoProcessQueue: false,
+            addRemoveLinks: true,
+            dictDefaultMessage: 'Click to add files.'
+        });
+
+        myDropzone.on('addedfile', function (file, event) {
+            console.log(file);
+            that.files.push(file.path);
+        });
+        myDropzone.on('removedfile', function (file, event) {
+            that.files.forEach(function (fileName, i) {
+                if (fileName === file.path) {
+                    that.files.splice(i, 1);
+                    // break;       //<-- Uncomment  if only the first term has to be removed
+                }
+            });
+        });
         this.$el.find('.openProjectBtn').click(function() {
             var projectId = $(this).data('projectid');
             var project = that.getProjectById(projectId);
@@ -147,16 +168,17 @@ export class DashBoardView extends View{
         this.$el.find('#continue').click(function(event) {
             event.preventDefault();
             var name = that.$el.find('#projectName').val();
-            var fileInput = that.$el.find('#fileLocation').val();
+            //var fileInput = that.$el.find('#fileLocation').val();
             var desc = that.$el.find('#descriptions').val();
 
-            if(!name || !fileInput){
+            if (!name || (that.files.length === 0)) {
                 alert('One of the required fields is empty');
             }else{
                 var files = that.$el.find('#fileLocation').prop("files");
                 /*assuming first selection to be valid*/
                 var file = files[0];
-                var filePath = file.path;
+                //var filePath = file.path;
+                var filePath = that.files[0];
 
                 var projectObject = {};
                 projectObject['name'] = name;

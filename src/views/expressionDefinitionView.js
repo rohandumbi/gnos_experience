@@ -279,6 +279,7 @@ export class ExpressionDefinitionView extends View{
                     alert('Successfully added expression');
                     //that.data.push(data);
                     //that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
+                    $('.modal-backdrop').hide();
                     that.trigger('reload');
 
                 },
