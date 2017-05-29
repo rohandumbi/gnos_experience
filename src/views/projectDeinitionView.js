@@ -61,7 +61,7 @@ export class ProjectDefinitionView extends View {
                 that.$el.find('#name').val(that.project.name);
                 that.$el.find('#date').val(that.project.createdDate);
                 that.$el.find('#descriptions').val(that.project.desc);
-                that.$el.find('#present-file').val(that.project.fileName);
+                that.$el.find('#present-file').val(that.project.files[0]);
             },
             error: function (data) {
                 alert('Error fetching project data.');
@@ -77,20 +77,22 @@ export class ProjectDefinitionView extends View {
             var projectDescriptions = that.$el.find('#descriptions').val();
             //var projectFile = this.$el.find('#name').val();
 
-            var files = that.$el.find('#new-file').prop("files");
-            /*assuming first selection to be valid*/
+            /*var files = that.$el.find('#new-file').prop("files");
+            assuming first selection to be valid*/
             //var file = files[0];
             //var filePath = file && file.path;
-            var filePath = that.files[0];
-            if (!filePath) {
-                filePath = that.$el.find('#present-file').val();
+			
+            var files = that.files || [];
+            if ( files.length == 0 ) {
+				files[0] = that.$el.find('#present-file').val();
             }
             var projectObject = {};
+			var append = false; // This data should be read from the checkbox
             projectObject['name'] = projectName;
             projectObject['desc'] = projectDescriptions;
-            projectObject['fileName'] = filePath;
-            //projectObject['fileName'] = that.files[0];
-            //projectObject['createdDate'] = filePath;
+            projectObject['files'] = files;
+			projectObject['append'] = append;
+			
             that.projectModel.update({
                 id: that.project.id,
                 dataObject: projectObject,
