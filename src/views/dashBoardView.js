@@ -176,14 +176,15 @@ export class DashBoardView extends View{
             }else{
                 var files = that.$el.find('#fileLocation').prop("files");
                 /*assuming first selection to be valid*/
-                var file = files[0];
+                //var file = files[0];
                 //var filePath = file.path;
-                var filePath = that.files[0];
+                //var filePath = that.files;
 
                 var projectObject = {};
                 projectObject['name'] = name;
                 projectObject['desc'] = desc;
-                projectObject['fileName'] = filePath;
+                projectObject['files'] = that.files;
+                projectObject['append'] = false;
                 that.projectModel.add({
                     dataObject: projectObject,
                     success: function(data){
