@@ -3,6 +3,7 @@ import { OpexModel } from '../models/opexModel';
 import {ExpressionModel} from '../models/expressionModel';
 import {GnosModel} from '../models/gnosModel';
 import {UnitModel} from '../models/unitModel';
+import {ProductJoinModel} from '../models/productJoinModel';
 
 export class OpexDefinitionView extends View{
 
@@ -15,6 +16,7 @@ export class OpexDefinitionView extends View{
         this.expressionModel = new ExpressionModel({projectId: this.projectId});
         this.gnosModel = new GnosModel({projectId: this.projectId});
         this.unitModel = new UnitModel({projectId: this.projectId});
+        this.productJoinModel = new ProductJoinModel({projectId: this.projectId});
     }
 
     render() {
@@ -62,12 +64,25 @@ export class OpexDefinitionView extends View{
         this.gnosModel.fetch({
             success: function (data) {
                 that.models = data;
-                that.fetchOpexList();
+                that.fetchProductJoinList();
             },
             error: function (data) {
                 alert('Failed getting list of opex data.');
             }
         })
+    }
+
+    fetchProductJoinList() {
+        var that = this;
+        this.productJoinModel.fetch({
+            success: function (data) {
+                that.productJoins = data;
+                that.fetchOpexList();
+            },
+            error: function (data) {
+                alert('Error fetching opex data: ' + data);
+            }
+        });
     }
 
     fetchOpexList() {
@@ -221,7 +236,11 @@ export class OpexDefinitionView extends View{
                         '<option selected disabled hidden>' + modelName + '</option>'
                     );
                     that.models.forEach(function (model) {
-                        tableRow += '<option data-model-id="' + model.id + '" value="model 1">' + model.name + '</option>';
+                        tableRow += '<option data-identifier-type="1" data-model-id="' + model.id + '" value="">' + model.name + '</option>';
+                    });
+
+                    that.productJoins.forEach(function (productJoin) {
+                        tableRow += '<option data-identifier-type="2" value="' + productJoin.name + '">' + productJoin.name + '</option>';
                     });
 
                     tableRow += '</select>';
@@ -302,10 +321,19 @@ export class OpexDefinitionView extends View{
             });
             that.grid.find('.identifier').change(function (e) {
                 //alert('update identifier of opex index: ' + $(this).closest('tr').data('row-id') + ':' + $(this).data('model-id'));
-                that.updateModelId({
-                    modelId: $(this).find(":selected").data('model-id'),
-                    index: $(this).closest('tr').data('row-id')
-                })
+                var identifierType = $(this).find(":selected").data('identifier-type');
+                if (identifierType === 1) {
+                    that.updateModelId({
+                        modelId: $(this).find(":selected").data('model-id'),
+                        index: $(this).closest('tr').data('row-id')
+                    });
+                } else if (identifierType === 2) {
+                    that.updateIdentifier({
+                        identifierName: $(this).find(":selected").val(),
+                        identifierType: identifierType,
+                        index: $(this).closest('tr').data('row-id')
+                    })
+                }
             });
             that.grid.find('.cost').change(function (e) {
                 //alert('update year of opex index: ' + $(this).data('year') + ':' + $(this).closest('tr').data('row-id') + ':' + $(this).val());
@@ -408,6 +436,13 @@ export class OpexDefinitionView extends View{
         }
         console.log(opexData);
         this.updateOpex({opexData: opexData});
+    }
+
+    updateIdentifier(options) {
+        var opexData = this.getOpexDataById(options.index);
+        var identifierName = options.identifierName;
+        var identifierType = options.identifierType;
+        //TODO update call as per new properties.
     }
 
     updateCostData(options) {
