@@ -130,7 +130,8 @@ export class DashBoardView extends View{
             url: "/file/post",
             autoProcessQueue: false,
             addRemoveLinks: true,
-            dictDefaultMessage: 'Click to add files.'
+            dictDefaultMessage: 'Click to add files.',
+            acceptedFiles: '.csv'
         });
 
         myDropzone.on('addedfile', function (file, event) {
