@@ -1,6 +1,6 @@
 import { View } from '../core/view';
 import { SideNavView } from './sideNavView';
-import {ProjectDefinitionView} from './projectDeinitionView';
+import {ProjectDefinitionView} from './projectDefinitionView';
 import { DataMappingView } from './dataMappingView';
 import { RequiredFieldMappingView } from './requiredFieldMappingView';
 import { ExpressionDefinitionView } from './expressionDefinitionView';

@@ -11,16 +11,19 @@
     <input id="descriptions" name="" type="text" placeholder="Notes" class="form-control input-md" required=""/>
 </div>
 <div class="form-group" style="margin-top: 20px">
-    <label for="present-file">Present File:</label>
+    <label for="present-file">Present File(s):</label>
     <input id="present-file" name="" type="text" placeholder="Notes" class="form-control input-md" required=""/>
 </div>
 <div class="form-group" style="margin-top: 20px">
-    <label for="new-file">New File:</label>
-    <input id="new-file" name="file" name="file" type="file" placeholder="" class="form-control input-md col-xs-5"
-           required=""/>
+    <label for="fileUpload">New File(s):</label>
+    <!--<input id="new-file" name="file" name="file" type="file" placeholder="" class="form-control input-md col-xs-5"
+           required=""/>-->
+    <div class="dropzone dz-default"
+         style="margin-top: 50px;border: 2px dashed #0087F7;border-radius: 5px; background: white;"
+         id="fileUpload"></div>
 </div>
-<div class="dropzone dz-default"
-     style="margin-top: 50px;border: 2px dashed #0087F7;border-radius: 5px; background: white;"
-     id="fileUpload"></div>
+<div class="checkbox">
+    <label><input id="override" type="checkbox" value="">Overwrite existing data</label>
+</div>
 <!--<form action="/file-upload" class="dropzone" id="fileUpload"></form>-->
 <button id="btn-update" type="submit" class="btn btn-success" style="margin-top: 20px">Update</button>

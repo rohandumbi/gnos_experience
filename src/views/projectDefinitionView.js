@@ -61,7 +61,11 @@ export class ProjectDefinitionView extends View {
                 that.$el.find('#name').val(that.project.name);
                 that.$el.find('#date').val(that.project.createdDate);
                 that.$el.find('#descriptions').val(that.project.desc);
-                that.$el.find('#present-file').val(that.project.files[0]);
+                var files = '';
+                that.project.files.forEach(function (fileName) {
+                    files += fileName + ';'
+                });
+                that.$el.find('#present-file').val(files);
             },
             error: function (data) {
                 alert('Error fetching project data.');
@@ -81,18 +85,18 @@ export class ProjectDefinitionView extends View {
             assuming first selection to be valid*/
             //var file = files[0];
             //var filePath = file && file.path;
-			
+
             var files = that.files || [];
             if ( files.length == 0 ) {
 				files[0] = that.$el.find('#present-file').val();
             }
             var projectObject = {};
-			var append = false; // This data should be read from the checkbox
+            var append = !(that.$el.find('#override').prop("checked")); // This data should be read from the checkbox
             projectObject['name'] = projectName;
             projectObject['desc'] = projectDescriptions;
             projectObject['files'] = files;
 			projectObject['append'] = append;
-			
+
             that.projectModel.update({
                 id: that.project.id,
                 dataObject: projectObject,

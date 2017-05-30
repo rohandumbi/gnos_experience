@@ -4,7 +4,7 @@ export class DashBoardView extends View{
 
     constructor(options) {
         super();
-        this.dashboardModel = new ProjectModel();
+        this.projectModel = new ProjectModel();
     }
 
     getHtml() {
@@ -46,7 +46,6 @@ export class DashBoardView extends View{
                     '<div class="form-group"> ' +
                         '<label class="col-md-4 control-label" for="fullname">File Location</label> ' +
                         '<div class="col-md-4"> ' +
-                            '<input id="fileLocation" name="file" name="file" type="file" placeholder="" class="form-control input-md" required=""> ' +
             '<div class="dropzone dz-default" style="margin-top: 50px;border: 2px dashed #0087F7;border-radius: 5px; background: white;" id="dropZone"></div>' +
                             '<span class="help-block">Browse and select CSV.</span> ' +
                         '</div> ' +
@@ -99,7 +98,7 @@ export class DashBoardView extends View{
     onDomLoaded() {
         var that = this;
         this.files = [];
-        this.dashboardModel.fetch({
+        this.projectModel.fetch({
             success: function(data){
                 var $projectListPane = that.$el.find('#projectListPane');
                 var $newProjectPane = that.$el.find('#newProjectPane');
@@ -155,7 +154,7 @@ export class DashBoardView extends View{
             //that.trigger('open:project', {projectId: $(this).data('projectid')})
             event.preventDefault();
             var projectId = $(this).data('projectid');
-            that.dashboardModel.delete({
+            that.projectModel.delete({
                 id: projectId,
                 success: function (data) {
                     that.trigger('reload');
@@ -184,7 +183,7 @@ export class DashBoardView extends View{
                 projectObject['name'] = name;
                 projectObject['desc'] = desc;
                 projectObject['fileName'] = filePath;
-                that.dashboardModel.add({
+                that.projectModel.add({
                     dataObject: projectObject,
                     success: function(data){
                         //alert()
