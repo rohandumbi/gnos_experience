@@ -236,13 +236,13 @@ export class OpexDefinitionView extends View{
                         '<option selected disabled hidden>' + modelName + '</option>'
                     );
                     that.models.forEach(function (model) {
-                        tableRow += '<option data-identifier-type="1" data-model-id="' + model.id + '" value="">' + model.name + '</option>';
+                        tableRow += '<option data-identifier-type="1" data-model-id="' + model.id + '" value=" ' + model.name + '">' + model.name + '</option>';
                     });
-
-                    that.productJoins.forEach(function (productJoin) {
-                        tableRow += '<option data-identifier-type="2" value="' + productJoin.name + '">' + productJoin.name + '</option>';
-                    });
-
+                    if (row.isRevenue.toString() === "true") {
+                        that.productJoins.forEach(function (productJoin) {
+                            tableRow += '<option data-identifier-type="2" value="' + productJoin.name + '">' + productJoin.name + '</option>';
+                        });
+                    }
                     tableRow += '</select>';
                     return tableRow;
                 },
@@ -314,25 +314,23 @@ export class OpexDefinitionView extends View{
                     var unit = that.getUnitByName(unitName);
                     that.updateUnitId({index: $(this).closest('tr').data('row-id'), unitId: unit.id});
                 }
-                /*that.updateExpressionId({
-                    expressionId: $(this).find(":selected").data('expression-id'),
-                    index: $(this).closest('tr').data('row-id')
-                 });*/
             });
             that.grid.find('.identifier').change(function (e) {
-                //alert('update identifier of opex index: ' + $(this).closest('tr').data('row-id') + ':' + $(this).data('model-id'));
                 var identifierType = $(this).find(":selected").data('identifier-type');
                 if (identifierType === 1) {
-                    that.updateModelId({
-                        modelId: $(this).find(":selected").data('model-id'),
+                    var modelId = $(this).find(":selected").data('model-id');
+                    that.updateIdentifier({
+                        modelId: modelId,
+                        identifierType: identifierType,
                         index: $(this).closest('tr').data('row-id')
                     });
                 } else if (identifierType === 2) {
+                    var productJoin = $(this).find(":selected").val();
                     that.updateIdentifier({
-                        identifierName: $(this).find(":selected").val(),
+                        productJoin: productJoin,
                         identifierType: identifierType,
                         index: $(this).closest('tr').data('row-id')
-                    })
+                    });
                 }
             });
             that.grid.find('.cost').change(function (e) {
@@ -364,6 +362,10 @@ export class OpexDefinitionView extends View{
                     //$(this).closest('tr').find('.expression').show();
                 }
                 that.updateIsRevenue({index: index, isRevenue: isRevenue});
+                that.updateIdentifierList({
+                    isRevenue: isRevenue,
+                    $identifier: $(this).closest('tr').find('.identifier')
+                });
             });
         });
         var $addButton = $('<button id="addOpex" type="button" class="btn btn-default" data-toggle="modal"></button>');
@@ -381,6 +383,26 @@ export class OpexDefinitionView extends View{
         $addButton.click(function () {
             that.addRowToGrid();
         });
+    }
+
+    updateIdentifierList(options) {
+        var $identifierSelect = options.$identifier;
+        var isRevenue = options.isRevenue;
+
+        var options = (
+            '<option selected disabled hidden>' + $identifierSelect.find(':selected').val() + '</option>'
+        );
+        //var options = '';
+        this.models.forEach(function (model) {
+            options += '<option data-identifier-type="1" data-model-id="' + model.id + '" value="">' + model.name + '</option>';
+        });
+        if (isRevenue) {
+            this.productJoins.forEach(function (productJoin) {
+                options += '<option data-identifier-type="2" value="' + productJoin.name + '">' + productJoin.name + '</option>';
+            });
+        }
+
+        $identifierSelect.empty().append(options);
     }
 
     getOpexDataById(opexId) {
@@ -425,9 +447,16 @@ export class OpexDefinitionView extends View{
         this.updateOpex({opexData: opexData});
     }
 
-    updateModelId(options) {
+    updateIdentifier(options) {
         var opexData = this.getOpexDataById(options.index);
-        opexData['modelId'] = options.modelId;
+
+        if (options.identifierType === 1) {
+            delete opexData.productJoin;
+            opexData['modelId'] = options.modelId;
+        } else {
+            delete opexData.modelId;
+            opexData['productJoin'] = options.productJoin;
+        }
         var unitType = opexData.unitType;
         if (unitType === 1) {
             opexData['unitId'] = opexData.fieldId;
@@ -436,13 +465,6 @@ export class OpexDefinitionView extends View{
         }
         console.log(opexData);
         this.updateOpex({opexData: opexData});
-    }
-
-    updateIdentifier(options) {
-        var opexData = this.getOpexDataById(options.index);
-        var identifierName = options.identifierName;
-        var identifierType = options.identifierType;
-        //TODO update call as per new properties.
     }
 
     updateCostData(options) {
