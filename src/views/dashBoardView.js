@@ -188,7 +188,6 @@ export class DashBoardView extends View{
                 that.projectModel.add({
                     dataObject: projectObject,
                     success: function(data){
-                        //alert()
                         that.trigger('reload');
                     },
                     error: function(data){
