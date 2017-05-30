@@ -162,6 +162,7 @@ export class OpexDefinitionView extends View{
         for (var i = 0; i < opexData.length; i++) {
             var opex = opexData[i];
             var unitName = '';
+            var identifier
             if (opex.expressionId > 0) {//expression
                 var expressionId = opex.expressionId;
                 var expression = this.getExpressionById(expressionId);
@@ -202,7 +203,7 @@ export class OpexDefinitionView extends View{
             keepSelection: false,
             formatters: {
                 "id": function (column, row) {
-                    return "<span data-opex-id='" + row.id + "'></span>"
+                    return "<span data-opex-id='" + row.opexId + "'></span>"
                 },
                 "commands": function (column, row) {
                     return "<button type=\"button\" class=\"btn btn-xs btn-default command-edit glyphicon glyphicon-edit copy-forward\" data-row-id=\"" + row.id + "\"><span class=\"fa fa-pencil\"></span></button> ";
@@ -226,14 +227,19 @@ export class OpexDefinitionView extends View{
                 },
 
                 "identifier": function(column, row) {
-                    var model = that.getModelById(row.modelId);
-                    var modelName = '';
-                    if (model && model.name) {
-                        modelName = model.name;
+                    var identifierName = '';
+                    if (row.modelId < 0) {//meaning identifier is not model
+                        var opex = that.getOpexDataById(row.opexId);
+                        identifierName = opex.productJoinName;
+                    } else {
+                        var model = that.getModelById(row.modelId);
+                        if (model && model.name) {
+                            identifierName = model.name;
+                        }
                     }
                     var tableRow = (
                         '<select class="identifier" value="test">' +
-                        '<option selected disabled hidden>' + modelName + '</option>'
+                        '<option selected disabled hidden>' + identifierName + '</option>'
                     );
                     that.models.forEach(function (model) {
                         tableRow += '<option data-identifier-type="1" data-model-id="' + model.id + '" value=" ' + model.name + '">' + model.name + '</option>';
@@ -451,11 +457,13 @@ export class OpexDefinitionView extends View{
         var opexData = this.getOpexDataById(options.index);
 
         if (options.identifierType === 1) {
-            delete opexData.productJoin;
+            //delete opexData.productJoin;
+            opexData['productJoinName'] = null;
             opexData['modelId'] = options.modelId;
         } else {
-            delete opexData.modelId;
-            opexData['productJoin'] = options.productJoin;
+            //delete opexData.modelId;
+            opexData['modelId'] = null;
+            opexData['productJoinName'] = options.productJoin;
         }
         var unitType = opexData.unitType;
         if (unitType === 1) {
