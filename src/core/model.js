@@ -15,8 +15,9 @@ export class Model {
             success: function(data){
                 options.success(JSON.parse(data));
             },
-            error: function(data) {
-                options.error(JSON.parse(data));
+            error: function (xhr, textStatus, errorThrown) {
+                //options.error(JSON.parse(data));
+                options.error(xhr, textStatus, errorThrown);
             }
         });
     }

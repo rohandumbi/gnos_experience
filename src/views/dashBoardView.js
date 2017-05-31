@@ -107,8 +107,8 @@ export class DashBoardView extends View{
                 that.projects = data;
                 that.bindEvents();
             },
-            error: function(data){
-                alert("Error: " + data);
+            error: function (xhr, textStatus, errorThrown) {
+                alert(textStatus + ": " + xhr.responseText);
             }
         });
         //this.bindEvents();
