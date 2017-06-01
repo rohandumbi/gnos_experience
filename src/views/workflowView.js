@@ -181,7 +181,13 @@ export class WorkflowView extends View{
                 if (childProcessId > 0) {
                     var childModel = that.getModelWithId(childProcessId);
                     var childModelNode = that.system.getNode(childModel.name);
-                    that.system.addEdge(childModelNode, processJoinNode, {directed: true, weight: 1, color: '#333333'});
+                    if (childModelNode) {
+                        that.system.addEdge(childModelNode, processJoinNode, {
+                            directed: true,
+                            weight: 1,
+                            color: '#333333'
+                        });
+                    }
                 }
             });
         });
@@ -550,6 +556,29 @@ export class WorkflowView extends View{
         });
     }
 
+    removeProcessFromProcessJoins(processNode) {
+        var that = this;
+        var parentProcessJoinNodes = this.system.getEdgesFrom(processNode);
+        parentProcessJoinNodes.forEach(function (parentProcessJoinNode) {
+            console.log(parentProcessJoinNode.target.name);
+            that.removeProcessFromProcessJoin(processNode.data.id, parentProcessJoinNode.target.name);
+        });
+    }
+
+    removeProcessFromProcessJoin(modelId, processJoinName) {
+        var that = this;
+        this.processJoinModel.delete({
+            url: 'http://localhost:4567/project/' + that.projectId + '/processjoins/' + processJoinName + '/process',
+            id: modelId,
+            success: function (data) {
+                alert('Successfully deleted model node.')
+            },
+            error: function (data) {
+                alert('Failed to delete product join.');
+            }
+        });
+    }
+
     handleDelete(selected) {
         var that = this;
         var selected = selected;
@@ -561,6 +590,7 @@ export class WorkflowView extends View{
                     url: 'http://localhost:4567/project/' + that.projectId + '/processtreenodes/model',
                     id: selected.node.data.id,
                     success: function () {
+                        that.removeProcessFromProcessJoins(selected.node);
                         that.system.pruneNode(selected.node);
                         var listOfBlockChildren = that.system.getEdgesFrom('Block');
                         if (listOfBlockChildren.length === 0) {// no more processes in graph
