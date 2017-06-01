@@ -123,8 +123,8 @@ export class WorkflowView extends View{
                 'category': 'productJoin'
             });
             productJoin.productList.forEach(function (productName) {
-                if (productName) {
-                    var childProductNode = that.system.getNode(productName);
+                var childProductNode = that.system.getNode(productName);
+                if (childProductNode) {
                     that.system.addEdge(childProductNode, productJoinNode, {
                         directed: true,
                         weight: 1,
@@ -388,6 +388,9 @@ export class WorkflowView extends View{
 
     getStoredNodePosition(nodeName) {
         var position = {};
+        if (!this.storedCoordinates) {
+            return null;
+        }
         this.storedCoordinates.forEach(function (storedNode) {
             if (storedNode.name === nodeName) {
                 position['x'] = storedNode.x;
@@ -427,13 +430,13 @@ export class WorkflowView extends View{
             that.system.eachNode(function (node, point) {
                 console.log('Node: ' + node.name + ' X:' + point.x + ' Y:' + point.y);
                 var position = that.getStoredNodePosition(node.name);
-                var node = that.system.getNode(node.name);
-                var pos = $(canvas).offset();
-                var s = arbor.Point(position.x - pos.left, position.x - pos.top);
-                //var s = arbor.Point(position.x, position.x);
-                var p = that.system.fromScreen(s);
-                //node.p = p
-                node.p = position.screenPosition;
+                if (position) {
+                    var node = that.system.getNode(node.name);
+                    var pos = $(canvas).offset();
+                    var s = arbor.Point(position.x - pos.left, position.x - pos.top);
+                    var p = that.system.fromScreen(s);
+                    node.p = position.screenPosition;
+                }
             });
         }, 100);
         $canvas.contextMenu({
@@ -524,6 +527,28 @@ export class WorkflowView extends View{
         });
     }
 
+    removeProductFromProductJoins(productNode) {
+        var that = this;
+        var parentProductJoinNodes = this.system.getEdgesFrom(productNode);
+        parentProductJoinNodes.forEach(function (parentProductJoinNode) {
+            console.log(parentProductJoinNode.target.name);
+            that.removeProductFromProductJoin(productNode.name, parentProductJoinNode.target.name);
+        });
+    }
+
+    removeProductFromProductJoin(productName, productJoinName) {
+        var that = this;
+        this.productJoinModel.delete({
+            url: 'http://localhost:4567/project/' + that.projectId + '/productjoins/' + productJoinName + '/product',
+            id: productName,
+            success: function (data) {
+                alert('Successfully deleted product node.')
+            },
+            error: function (data) {
+                alert('Failed to delete product join.');
+            }
+        });
+    }
 
     handleDelete(selected) {
         var that = this;
@@ -562,6 +587,7 @@ export class WorkflowView extends View{
                     url: 'http://localhost:4567/project/' + that.projectId + '/products',
                     id: selected.node.name,
                     success: function () {
+                        that.removeProductFromProductJoins(selected.node);
                         that.system.pruneNode(selected.node);
                     },
                     error: function (data) {
