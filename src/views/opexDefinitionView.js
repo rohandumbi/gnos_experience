@@ -422,6 +422,9 @@ export class OpexDefinitionView extends View{
     }
 
     updateOpex(options) {
+        if (options.opexData.modelId && options.opexData.modelId < 0) {
+            options.opexData.modelId = null;
+        }
         this.opexModel.update({
             url: 'http://localhost:4567/opexdata',
             id: options.opexData.id,
