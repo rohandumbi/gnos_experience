@@ -55,6 +55,16 @@ export class WorkflowView extends View{
         return object;
     }
 
+    getExpressionById(expressionId) {
+        var object = null;
+        this.expressions.forEach(function (expression) {
+            if (expression.id === expressionId) {
+                object = expression;
+            }
+        });
+        return object;
+    }
+
     getProductWithName(productName) {
         var object = null;
         this.products.forEach(function (product) {
@@ -69,6 +79,16 @@ export class WorkflowView extends View{
         var object = null;
         this.units.forEach(function (unit) {
             if (unit.name === unitName) {
+                object = unit;
+            }
+        });
+        return object;
+    }
+
+    getUnitWithId(unitId) {
+        var object = null;
+        this.units.forEach(function (unit) {
+            if (unit.id === unitId) {
                 object = unit;
             }
         });
@@ -91,7 +111,8 @@ export class WorkflowView extends View{
             '<select id="grade-expression" class="grade-expression form-control" value="test">'
         );
         var tableRow1 = (
-            '<select id="edit-grade-expression" class="grade-expression form-control" value="test">'
+            '<select id="edit-grade-expression" class="grade-expression form-control" value="test">' +
+            '<option class="present-value" selected="" disabled="" hidden=""></option>'
         );
         //add non-grade expressions
         that.nonGradeExpressions.forEach(function (expression) {
@@ -489,6 +510,19 @@ export class WorkflowView extends View{
                 /*that.$el.find('#grade-list').html('');
                  that.showGradeListForProduct(selected.node.name);
                  that.$el.find('#associatedGrades').modal();*/
+                var product = that.getProductWithName(selected.node.name);
+                var unitId, expressionId;
+                var unitName;
+                if (product.fieldIdList.length > 0) {
+                    unitId = product.fieldIdList[0];
+                    var unit = that.getUnitWithId(unitId);
+                    unitName = unit.name;
+                } else {
+                    expressionId = product.expressionIdList[0];
+                    var expression = that.getExpressionById(expressionId);
+                    unitName = expression.name;
+                }
+                that.$el.find('#edit-grade-expression .present-value').html(unitName);
                 that.$el.find('input#edit-name').val(selected.node.name);
                 that.$el.find('#productEditModal').modal();
             } else {
@@ -1086,5 +1120,14 @@ export class WorkflowView extends View{
             }
         });
         return selectedModel;
+    }
+
+    refreshProducts() {
+        var that = this;
+        this.productModel.fetch({
+            success: function (data) {
+                that.products = data;
+            }
+        });
     }
 }
