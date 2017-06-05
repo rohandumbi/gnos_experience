@@ -108,21 +108,21 @@ export class WorkflowView extends View{
             }
         });
         var tableRow = (
-            '<select id="grade-expression" class="grade-expression form-control" value="test">'
+            '<select id="grade-expression" class="grade-expression form-control">'
         );
         var tableRow1 = (
-            '<select id="edit-grade-expression" class="grade-expression form-control" value="test">' +
-            '<option class="present-value" selected="" disabled="" hidden=""></option>'
+            '<select id="edit-grade-expression" class="grade-expression form-control">' /*+
+             '<option class="present-value" selected="" disabled="" hidden=""></option>'*/
         );
         //add non-grade expressions
         that.nonGradeExpressions.forEach(function (expression) {
             tableRow += '<option data-unit-id="' + expression.id + '" data-unit-type="2" data-unit-name="' + expression.name + '">' + expression.name + '</option>';
-            tableRow1 += '<option data-unit-id="' + expression.id + '" data-unit-type="2" data-unit-name="' + expression.name + '">' + expression.name + '</option>';
+            tableRow1 += '<option data-unit-id="' + expression.id + '" data-unit-type="2" value="' + expression.name + '" data-unit-name="' + expression.name + '">' + expression.name + '</option>';
         });
         //add units
         that.units.forEach(function (unit) {
             tableRow += '<option data-unit-id="' + unit.id + '" data-unit-type="1" data-unit-name="' + unit.name + '">' + unit.name + '</option>';
-            tableRow1 += '<option data-unit-id="' + unit.id + '" data-unit-type="1" data-unit-name="' + unit.name + '">' + unit.name + '</option>';
+            tableRow1 += '<option data-unit-id="' + unit.id + '" data-unit-type="1" value="' + unit.name + '" data-unit-name="' + unit.name + '">' + unit.name + '</option>';
         });
         tableRow += '</select>';
         tableRow1 += '</select>';
@@ -522,7 +522,13 @@ export class WorkflowView extends View{
                     var expression = that.getExpressionById(expressionId);
                     unitName = expression.name;
                 }
-                that.$el.find('#edit-grade-expression .present-value').html(unitName);
+                that.$el.find('#edit-grade-expression').val('');
+                //that.$el.find('#edit-grade-expression .present-value').html(unitName);
+                that.$el.find('#edit-grade-expression option').filter(function () {
+                    //may want to use $.trim in here
+                    return $(this).text() === unitName;
+                }).prop('selected', true);
+
                 that.$el.find('input#edit-name').val(selected.node.name);
                 that.$el.find('#productEditModal').modal();
             } else {
@@ -532,7 +538,36 @@ export class WorkflowView extends View{
     }
 
     editProduct(event) {
-
+        var that = this;
+        var productName = this.$el.find('input#edit-name').val();
+        var unitType = this.$el.find('#edit-grade-expression').find(':selected').data('unit-type');
+        var unitName = this.$el.find('#edit-grade-expression').find(':selected').data('unit-name');
+        this.productModel.delete({
+            url: 'http://localhost:4567/project/' + that.projectId + '/products',
+            id: productName,
+            success: function () {
+                var updatedProduct = that.getProductWithName(productName);
+                updatedProduct['unitType'] = unitType;
+                if (unitType === 1) {
+                    updatedProduct['unitId'] = that.getUnitWithName(unitName).id;
+                } else if (unitType === 2) {
+                    updatedProduct['unitId'] = that.getExpressionByName(unitName).id;
+                }
+                that.productModel.add({
+                    dataObject: updatedProduct,
+                    success: function (data) {
+                        alert('Successfully updated product.');
+                        that.refreshProducts();
+                    },
+                    error: function (data) {
+                        alert('Error updating product.');
+                    }
+                });
+            },
+            error: function (data) {
+                alert('Failed to delete product.');
+            }
+        });
     }
 
     handleViewGrades(selected) {
