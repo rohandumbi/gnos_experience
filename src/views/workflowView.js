@@ -90,16 +90,23 @@ export class WorkflowView extends View{
         var tableRow = (
             '<select id="grade-expression" class="grade-expression form-control" value="test">'
         );
+        var tableRow1 = (
+            '<select id="edit-grade-expression" class="grade-expression form-control" value="test">'
+        );
         //add non-grade expressions
         that.nonGradeExpressions.forEach(function (expression) {
             tableRow += '<option data-unit-id="' + expression.id + '" data-unit-type="2" data-unit-name="' + expression.name + '">' + expression.name + '</option>';
+            tableRow1 += '<option data-unit-id="' + expression.id + '" data-unit-type="2" data-unit-name="' + expression.name + '">' + expression.name + '</option>';
         });
         //add units
         that.units.forEach(function (unit) {
             tableRow += '<option data-unit-id="' + unit.id + '" data-unit-type="1" data-unit-name="' + unit.name + '">' + unit.name + '</option>';
+            tableRow1 += '<option data-unit-id="' + unit.id + '" data-unit-type="1" data-unit-name="' + unit.name + '">' + unit.name + '</option>';
         });
         tableRow += '</select>';
+        tableRow1 += '</select>';
         that.$el.find('#unit-list').append(tableRow);
+        that.$el.find('#edit-unit-list').append(tableRow1);
 
         var fieldSet = (
             '<fieldset class="group">' +
@@ -465,9 +472,33 @@ export class WorkflowView extends View{
                     that.handleAddUnitToProduct(selected);
                 } else if ((selectedAction.toString() === 'View grades')) {
                     that.handleViewGrades(selected);
+                } else if ((selectedAction.toString() === 'Edit')) {
+                    that.handleEdit(selected);
                 }
             }
         });
+    }
+
+    handleEdit(selected) {
+        var that = this;
+        var selected = selected;
+        if (selected.node) {
+            var category = selected.node.data.category;
+
+            if (category === 'product') {
+                /*that.$el.find('#grade-list').html('');
+                 that.showGradeListForProduct(selected.node.name);
+                 that.$el.find('#associatedGrades').modal();*/
+                that.$el.find('input#edit-name').val(selected.node.name);
+                that.$el.find('#productEditModal').modal();
+            } else {
+                alert("Edit not available for category: " + category);
+            }
+        }
+    }
+
+    editProduct(event) {
+
     }
 
     handleViewGrades(selected) {
@@ -945,6 +976,9 @@ export class WorkflowView extends View{
         });
         this.$el.find('#add-product').click(function (event) {
             that.addProduct();
+        });
+        this.$el.find('#edit-product').click(function (event) {
+            that.editProduct();
         });
         this.$el.find('#save-graph').click(function (event) {
             var coordinateSystem = [];
