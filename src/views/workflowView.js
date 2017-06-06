@@ -618,7 +618,8 @@ export class WorkflowView extends View{
         this.productGradeModel.fetch({
             success: function (data) {
                 var associatedGrades = data;
-                var listGroup = '<ul class="list-group">';
+                var listGroup = '<ul class="list-group" style="display:inline-block">';
+                listGroup += '<li class="list-group-item">' + '<b>' + productName + '</b>' + '</li>'
                 associatedGrades.forEach(function (associatedGrade) {
                     listGroup += '<li class="list-group-item">' + associatedGrade.name + '</li>'
                 });
