@@ -14,6 +14,7 @@ var srcDir = jetpack.cwd('./src');
 var destDir = jetpack.cwd('./app');
 var contentDir = jetpack.cwd('./content');
 var resourceDir = jetpack.cwd('./resources');
+var serviceDir = jetpack.cwd('./service');
 
 gulp.task('bundle', function () {
     return Promise.all([
@@ -30,6 +31,11 @@ gulp.task('template', function () {
 gulp.task('resources', function () {
     return gulp.src(resourceDir.cwd() + '/**/*')
         .pipe(gulp.dest(destDir.path('resources')));
+});
+
+gulp.task('service', function () {
+    return gulp.src(serviceDir.cwd() + '/**/*')
+        .pipe(gulp.dest(destDir.path('service')));
 });
 
 gulp.task('less', function () {
@@ -62,4 +68,4 @@ gulp.task('watch', function () {
     }));
 });
 
-gulp.task('build', ['bundle', 'template', 'resources', 'less', 'environment']);
+gulp.task('build', ['bundle', 'template', 'resources', 'service', 'less', 'environment']);

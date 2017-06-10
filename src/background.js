@@ -13,6 +13,7 @@ import createWindow from './helpers/window';
 import env from './env';
 
 var mainWindow;
+var childProcess;
 
 var setApplicationMenu = function () {
     var menus = [editMenuTemplate, devMenuTemplate];
@@ -31,11 +32,22 @@ if (env.name !== 'production') {
 }
 
 app.on('ready', function () {
+    const jarPath = __dirname + '\\..\\service\\backend.jar';
+    const exec = require('child_process').exec;
+    childProcess = exec('start "gnos_service" java -jar ' + jarPath,
+        (error, stdout, stderr) => {
+            console.log('stdout: ' + stdout);
+            console.log('stderr: ' + stderr);
+            if (error !== null) {
+                console.log('exec error: ' + error);
+            }
+        }
+    )
     setApplicationMenu();
 
     var mainWindow = createWindow('main', {
-        width: 1024,
-        height: 720
+        width: 0,
+        height: 0
     });
     mainWindow.maximize();
     //mainWindow.setFullScreen(true);
@@ -45,9 +57,18 @@ app.on('ready', function () {
     if (env.name === 'development') {
         mainWindow.openDevTools();
     }
-    //mainWindow.openDevTools();
 });
 
 app.on('window-all-closed', function () {
+    const exec = require('child_process').exec;
+    const child = exec('TASKKILL /FI "WINDOWTITLE eq gnos_service"',
+        (error, stdout, stderr) => {
+            console.log('stdout: ' + stdout);
+            console.log('stderr: ' + stderr);
+            if (error !== null) {
+                console.log('exec error: ' + error);
+            }
+        }
+    )
     app.quit();
 });

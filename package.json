@@ -4,7 +4,8 @@
     "app-category-type": "your.app.category.type",
     "extraResources": [
       "content/**/*",
-      "resources/**/*"
+      "resources/**/*",
+      "service/**/*"
     ],
     "win": {
       "target": [
