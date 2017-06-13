@@ -13,6 +13,7 @@ import createWindow from './helpers/window';
 import env from './env';
 
 var mainWindow;
+var childProcessId;
 var childProcess;
 
 var setApplicationMenu = function () {
@@ -34,7 +35,16 @@ if (env.name !== 'production') {
 app.on('ready', function () {
     const jarPath = __dirname + '\\..\\service\\backend.jar';
     const exec = require('child_process').exec;
-    childProcess = exec('start "gnos_service" java -jar ' + jarPath,
+    /*const childProcess = exec('start "gnos_service" java -jar ' + jarPath,
+        (error, stdout, stderr) => {
+            console.log('stdout: ' + stdout);
+            console.log('stderr: ' + stderr);
+            if (error !== null) {
+                console.log('exec error: ' + error);
+            }
+        }
+     )*/
+    const childProcess = exec('javaw -jar ' + jarPath,
         (error, stdout, stderr) => {
             console.log('stdout: ' + stdout);
             console.log('stderr: ' + stderr);
@@ -43,6 +53,8 @@ app.on('ready', function () {
             }
         }
     )
+    childProcessId = childProcess.pid;
+    console.log('Starting pid: ' + childProcessId);
     setApplicationMenu();
 
     var mainWindow = createWindow('main', {
@@ -61,7 +73,17 @@ app.on('ready', function () {
 
 app.on('window-all-closed', function () {
     const exec = require('child_process').exec;
-    const child = exec('TASKKILL /FI "WINDOWTITLE eq gnos_service"',
+    /*const child = exec('TASKKILL /FI "WINDOWTITLE eq gnos_service"',
+        (error, stdout, stderr) => {
+            console.log('stdout: ' + stdout);
+            console.log('stderr: ' + stderr);
+            if (error !== null) {
+                console.log('exec error: ' + error);
+            }
+        }
+     )*/
+    console.log('Closing pid: ' + childProcessId);
+    childProcess = exec('taskkill /pid ' + childProcessId,
         (error, stdout, stderr) => {
             console.log('stdout: ' + stdout);
             console.log('stderr: ' + stderr);
