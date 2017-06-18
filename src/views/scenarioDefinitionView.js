@@ -203,11 +203,14 @@ export class ScenarioDefinitionView extends View{
     }
 
     updateScenario(scenario) {
+        var that = this;
         this.model.update({
             url: 'http://localhost:4567/scenarios',
             id: scenario.id,
             dataObject: scenario,
             success: function () {
+                that.$el.find('#scenario_name').val(scenario.name);
+                that.trigger('loaded-scenario', scenario);
             },
             error: function () {
                 alert('Error updating scenario.');
