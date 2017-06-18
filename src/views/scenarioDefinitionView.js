@@ -29,6 +29,16 @@ export class ScenarioDefinitionView extends View{
         return object;
     }
 
+    getScenarioById(scenarioId) {
+        var object = null;
+        this.data.forEach(function (scenario) {
+            if (scenario.id === scenarioId) {
+                object = scenario;
+            }
+        });
+        return object;
+    }
+
     onDomLoaded() {
         var that = this;
         this.model.fetch({
@@ -53,6 +63,7 @@ export class ScenarioDefinitionView extends View{
             var scenario = scenarios[i];
             row += (
                 '<tr>' +
+                '<td>' + scenario.id + '</td>' +
                 '<td>' + scenario.name + '</td>' +
                 '<td>' + scenario.startYear + '</td>' +
                 '<td>' + scenario.timePeriod + '</td>' +
@@ -69,10 +80,35 @@ export class ScenarioDefinitionView extends View{
             keepSelection: true,
             formatters: {
                 "commands": function(column, row){
-                    var buttonLoad = "<button title='Load Scenario' type=\"button\" class=\"btn btn-xs btn-default command-upload\" data-row-id=\"" + row.name + "\"><span class=\"glyphicon glyphicon-upload\"></span></button>";
-                    var buttonClone = "<button title='Clone Scenario' type=\"button\" class=\"btn btn-xs btn-default command-clone\" data-row-id=\"" + row.name + "\"><span class=\"glyphicon glyphicon-copy\"></span></button>";
+                    var buttonLoad = "<button title='Load Scenario' type=\"button\" class=\"btn btn-xs btn-default command-upload\" data-row-id=\"" + row.id + "\"><span class=\"glyphicon glyphicon-upload\"></span></button>";
+                    var buttonClone = "<button title='Clone Scenario' type=\"button\" class=\"btn btn-xs btn-default command-clone\" data-row-id=\"" + row.id + "\"><span class=\"glyphicon glyphicon-copy\"></span></button>";
                     return buttonLoad + buttonClone;
-                }
+                },
+                "id": function (column, row) {
+                    return (
+                        '<span></span>'
+                    );
+                },
+                "name": function (column, row) {
+                    return (
+                        '<input data-scenario-id="' + row.id + '" class="name" style="min-width:250px" type="text" value="' + row.name + '"' + '>'
+                    );
+                },
+                "startYear": function (column, row) {
+                    return (
+                        '<input data-scenario-id="' + row.id + '" class="start-year" style="min-width:250px" type="text" value="' + row.startYear + '"' + '>'
+                    );
+                },
+                "timePeriod": function (column, row) {
+                    return (
+                        '<input data-scenario-id="' + row.id + '" class="time-period" style="min-width:250px" type="text" value="' + row.timePeriod + '"' + '>'
+                    );
+                },
+                "discount": function (column, row) {
+                    return (
+                        '<input data-scenario-id="' + row.id + '" class="discount" style="min-width:250px" type="text" value="' + row.discount + '"' + '>'
+                    );
+                },
             }
         }).on("loaded.rs.jquery.bootgrid", function()
         {
@@ -85,7 +121,22 @@ export class ScenarioDefinitionView extends View{
             });
             that.grid.find(".command-clone").on("click", function (e) {
                 that.cloneScenario($(this).data("row-id"));
-            })
+            });
+            that.grid.find(".name").change(function (event) {
+                var scenarioId = $(this).data('scenario-id');
+                var newName = $(this).val();
+                that.updateScenarioName({scenarioId: scenarioId, name: newName});
+            });
+            that.grid.find(".time-period").change(function (event) {
+                var scenarioId = $(this).data('scenario-id');
+                var newTimePeriod = $(this).val();
+                that.updateTimePeriod({scenarioId: scenarioId, timePeriod: newTimePeriod});
+            });
+            that.grid.find(".discount").change(function (event) {
+                var scenarioId = $(this).data('scenario-id');
+                var newDiscount = $(this).val();
+                that.updateDiscountFactor({scenarioId: scenarioId, discount: newDiscount});
+            });
         });
         var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#modelDefinitionModal"></button>');
         $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
@@ -104,22 +155,65 @@ export class ScenarioDefinitionView extends View{
         });
     }
 
-    loadScenario(scenarioName) {
-        this.$el.find('#scenario_name').val(scenarioName);
-        this.trigger('loaded-scenario', this.getScenarioByName(scenarioName));
+    loadScenario(scenarioId) {
+        var selectedScenario = this.getScenarioById(scenarioId);
+        this.$el.find('#scenario_name').val(selectedScenario.name);
+        this.trigger('loaded-scenario', selectedScenario);
     }
 
-    cloneScenario(scenarioName) {
+    cloneScenario(scenarioId) {
         var that = this;
-        var scenario = this.getScenarioByName(scenarioName);
         this.model.add({
-            url: "http://localhost:4567/project/" + this.projectId + "/scenarios/" + scenario.id + "/copy",
+            url: "http://localhost:4567/project/" + this.projectId + "/scenarios/" + scenarioId + "/copy",
             dataObject: {},
             success: function (data) {
                 that.trigger('reload');
             },
             error: function () {
                 alert('Error cloning scenario');
+            }
+        });
+    }
+
+    updateScenarioName(options) {
+        var that = this;
+        var scenarioId = options.scenarioId;
+        var newName = options.name;
+        var updatedScenario = this.getScenarioById(scenarioId);
+        updatedScenario['name'] = newName;
+        this.updateScenario(updatedScenario);
+    }
+
+    updateTimePeriod(options) {
+        var that = this;
+        var scenarioId = options.scenarioId;
+        var newTimePeriod = options.timePeriod;
+        var updatedScenario = this.getScenarioById(scenarioId);
+        updatedScenario['timePeriod'] = newTimePeriod;
+        this.updateScenario(updatedScenario);
+    }
+
+    updateDiscountFactor(options) {
+        var that = this;
+        var scenarioId = options.scenarioId;
+        var newDiscountFactor = options.discount;
+        var updatedScenario = this.getScenarioById(scenarioId);
+        updatedScenario['discount'] = newDiscountFactor;
+        this.updateScenario(updatedScenario);
+    }
+
+    updateScenario(scenario) {
+        var that = this;
+        this.model.update({
+            url: 'http://localhost:4567/scenarios',
+            id: scenario.id,
+            dataObject: scenario,
+            success: function () {
+                that.$el.find('#scenario_name').val(scenario.name);
+                that.trigger('loaded-scenario', scenario);
+            },
+            error: function () {
+                alert('Error updating scenario.');
             }
         });
     }
@@ -160,17 +254,15 @@ export class ScenarioDefinitionView extends View{
     deleteRows() {
         var selectedRows = this.$el.find("#datatype-grid-basic").bootgrid("getSelectedRows");
         var that = this;
-        selectedRows.forEach(function (selectedRow) {
-            var deletedScenario = that.getScenarioByName(selectedRow);
-            console.log(deletedScenario);
+        selectedRows.forEach(function (scenarioId) {
             that.model.delete({
                 url: 'http://localhost:4567/scenarios',
-                id: deletedScenario.id,
+                id: scenarioId,
                 success: function (data) {
-                    alert('Successfully deleted expression.');
+                    alert('Successfully deleted scenario.');
                 },
                 error: function (data) {
-                    alert('Failed to delete expression.' + data);
+                    alert('Failed to delete scenario.' + data);
                 }
             });
         });
