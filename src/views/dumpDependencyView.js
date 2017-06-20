@@ -456,6 +456,8 @@ export class DumpDependencyView extends View {
                 alert('added new data');
                 that.dumpDependency.push(data);
                 that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
+                $('.modal-backdrop').hide();//temp hack
+                that.trigger('reload');
             },
             error: function (data) {
                 alert('Error creating dump dependency');

@@ -406,6 +406,8 @@ export class PitDependencyView extends View {
                 alert('added new data');
                 that.pitDependency.push(data);
                 that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
+                $('.modal-backdrop').hide();//temp hack
+                that.trigger('reload');
             },
             error: function (data) {
                 alert('Error creating bench data');

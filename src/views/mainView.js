@@ -157,21 +157,29 @@ export class MainView extends View{
     }
 
     initializePitDependency() {
+        var that = this;
         if (!this.scenario) {
             alert('Select a scenario first from Scenario Definition');
             return;
         }
         this.pitDependencyView = new PitDependencyView({projectId: this.projectId, scenario: this.scenario});
+        this.pitDependencyView.on('reload', function () {
+            that.initializePitDependency();
+        });
         this.pitDependencyView.render();
         this.$el.find("#page-content-wrapper").html(this.pitDependencyView.$el);
     }
 
     initializeDumpDependency() {
+        var that = this;
         if (!this.scenario) {
             alert('Select a scenario first from Scenario Definition');
             return;
         }
         this.dumpDependencyView = new DumpDependencyView({projectId: this.projectId, scenario: this.scenario});
+        this.dumpDependencyView.on('reload', function () {
+            that.initializeDumpDependency();
+        });
         this.dumpDependencyView.render();
         this.$el.find("#page-content-wrapper").html(this.dumpDependencyView.$el);
     }
