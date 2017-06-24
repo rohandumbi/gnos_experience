@@ -25,13 +25,13 @@ export class Model {
                 //options.error(xhr, textStatus, errorThrown);
             },
             statusCode: {
-                401: function (response) {
-                    // Only if your server returns a 403 status code can it come in this block. :-)
-                    alert("Error 401");
+                401: function (xhr, textStatus, errorThrown) {
+                    // Only if your server returns a 401 status code can it come in this block. :-)
+                    alert(textStatus + ": " + xhr.responseText);
                 },
-                400: function (response) {
-                    // Only if your server returns a 403 status code can it come in this block. :-)
-                    alert("Error 400");
+                400: function (xhr, textStatus, errorThrown) {
+                    // Only if your server returns a 400 status code can it come in this block. :-)
+                    alert(textStatus + ": " + xhr.responseText);
                 }
             }
         });
@@ -58,13 +58,13 @@ export class Model {
                 }
             },
             statusCode: {
-                401: function (response) {
-                    // Only if your server returns a 403 status code can it come in this block. :-)
-                    alert("Error 401");
+                401: function (xhr, textStatus, errorThrown) {
+                    // Only if your server returns a 401 status code can it come in this block. :-)
+                    alert(textStatus + ": " + xhr.responseText);
                 },
-                400: function (response) {
-                    // Only if your server returns a 403 status code can it come in this block. :-)
-                    alert("Error 400");
+                400: function (xhr, textStatus, errorThrown) {
+                    // Only if your server returns a 400 status code can it come in this block. :-)
+                    alert(textStatus + ": " + xhr.responseText);
                 }
             },
             dataType: 'json'
@@ -95,13 +95,13 @@ export class Model {
                 }
             },
             statusCode: {
-                401: function (response) {
-                    // Only if your server returns a 403 status code can it come in this block. :-)
-                    alert("Error 401");
+                401: function (xhr, textStatus, errorThrown) {
+                    // Only if your server returns a 401 status code can it come in this block. :-)
+                    alert(textStatus + ": " + xhr.responseText);
                 },
-                400: function (response) {
-                    // Only if your server returns a 403 status code can it come in this block. :-)
-                    alert("Error 400");
+                400: function (xhr, textStatus, errorThrown) {
+                    // Only if your server returns a 400 status code can it come in this block. :-)
+                    alert(textStatus + ": " + xhr.responseText);
                 }
             },
             dataType: 'json'
@@ -125,13 +125,13 @@ export class Model {
                 }
             },
             statusCode: {
-                401: function (response) {
-                    // Only if your server returns a 403 status code can it come in this block. :-)
-                    alert("Error 401");
+                401: function (xhr, textStatus, errorThrown) {
+                    // Only if your server returns a 401 status code can it come in this block. :-)
+                    alert(textStatus + ": " + xhr.responseText);
                 },
-                400: function (response) {
-                    // Only if your server returns a 403 status code can it come in this block. :-)
-                    alert("Error 400");
+                400: function (xhr, textStatus, errorThrown) {
+                    // Only if your server returns a 400 status code can it come in this block. :-)
+                    alert(textStatus + ": " + xhr.responseText);
                 }
             }
         });
