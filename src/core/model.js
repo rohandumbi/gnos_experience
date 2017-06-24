@@ -17,7 +17,22 @@ export class Model {
             },
             error: function (xhr, textStatus, errorThrown) {
                 //options.error(JSON.parse(data));
-                options.error(xhr, textStatus, errorThrown);
+                if (xhr.status === 0) {
+                    alert('Service not available ');
+                } else {
+                    alert(textStatus + ": " + xhr.responseText);
+                }
+                //options.error(xhr, textStatus, errorThrown);
+            },
+            statusCode: {
+                401: function (response) {
+                    // Only if your server returns a 403 status code can it come in this block. :-)
+                    alert("Error 401");
+                },
+                400: function (response) {
+                    // Only if your server returns a 403 status code can it come in this block. :-)
+                    alert("Error 400");
+                }
             }
         });
     }
@@ -35,8 +50,22 @@ export class Model {
             success: function(data){
                 options.success(data);
             },
-            error: function(data) {
-                options.error(data);
+            error: function (xhr, textStatus, errorThrown) {
+                if (xhr.status === 0) {
+                    alert('Service not available ');
+                } else {
+                    alert(textStatus + ": " + xhr.responseText);
+                }
+            },
+            statusCode: {
+                401: function (response) {
+                    // Only if your server returns a 403 status code can it come in this block. :-)
+                    alert("Error 401");
+                },
+                400: function (response) {
+                    // Only if your server returns a 403 status code can it come in this block. :-)
+                    alert("Error 400");
+                }
             },
             dataType: 'json'
         });
@@ -58,8 +87,22 @@ export class Model {
             success: function(data){
                 options.success(data);
             },
-            error: function(data) {
-                options.error(data);
+            error: function (xhr, textStatus, errorThrown) {
+                if (xhr.status === 0) {
+                    alert('Service not available ');
+                } else {
+                    alert(textStatus + ": " + xhr.responseText);
+                }
+            },
+            statusCode: {
+                401: function (response) {
+                    // Only if your server returns a 403 status code can it come in this block. :-)
+                    alert("Error 401");
+                },
+                400: function (response) {
+                    // Only if your server returns a 403 status code can it come in this block. :-)
+                    alert("Error 400");
+                }
             },
             dataType: 'json'
         });
@@ -74,7 +117,23 @@ export class Model {
             url: url + '/' + options.id,
             type: 'DELETE',
             success: options.success || $.noop,
-            error: options.error || $.noop
+            error: function (xhr, textStatus, errorThrown) {
+                if (xhr.status === 0) {
+                    alert('Service not available ');
+                } else {
+                    alert(textStatus + ": " + xhr.responseText);
+                }
+            },
+            statusCode: {
+                401: function (response) {
+                    // Only if your server returns a 403 status code can it come in this block. :-)
+                    alert("Error 401");
+                },
+                400: function (response) {
+                    // Only if your server returns a 403 status code can it come in this block. :-)
+                    alert("Error 400");
+                }
+            }
         });
     }
 }
