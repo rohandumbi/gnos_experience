@@ -174,30 +174,6 @@ export class ReportView extends View {
             labels.push(key);
             data.push(reportData[key])
         }
-        /*this.myChart = new Chart(this.ctx, {
-         data: {
-         labels: labels,
-         datasets: [{
-         type: 'line',
-         label: 'Total',
-         data: data,
-         stack: 'Stack 0',
-         backgroundColor: 'rgba(153, 102, 255, 0.2)',
-         borderColor: 'rgba(153, 102, 255, 1)',
-         borderWidth: 1
-         }]
-         },
-         options: {
-         scales: {
-         yAxes: [{
-         ticks: {
-         beginAtZero: true
-         }
-         }]
-         }
-         }
-         });*/
-
 
         var barChartData = {
             labels: labels,
@@ -575,6 +551,9 @@ export class ReportView extends View {
         this.$el.find('#show-report').click(function (event) {
             that.loadReportGraph();
         });
+        this.$el.find('#export-report').click(function (event) {
+            that.exportReportGraph();
+        });
         this.$el.find('#datatype-selector').change(function (event) {
             var dataType = $(this).find(':selected').data('datatype');
             switch (dataType) {
@@ -605,6 +584,23 @@ export class ReportView extends View {
             }
 
         });
+    }
+
+    exportReportGraph() {
+        var req = new XMLHttpRequest();
+        req.open("GET", 'http://localhost:4567/project/' + this.projectId + '/scenario/' + this.scenarioId + '/report/csv', true);
+        req.responseType = "blob";
+
+        req.onload = function (event) {
+            var blob = req.response;
+            console.log(blob.size);
+            var link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = "Report_" + new Date() + ".csv";
+            link.click();
+        };
+
+        req.send();
     }
 
     loadReportGraph() {
