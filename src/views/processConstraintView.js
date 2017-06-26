@@ -399,7 +399,7 @@ export class ProcessConstraintView extends View{
             id: options.processConstraint.id,
             dataObject: options.processConstraint,
             success: function (data) {
-                alert('Successfully updated.');
+                //alert('Successfully updated.');
                 if (options.success) options.success(data);
             },
             error: function (data) {
@@ -431,7 +431,7 @@ export class ProcessConstraintView extends View{
         this.processConstraintModel.add({
             dataObject: newProcessConstraint,
             success: function (data) {
-                alert('added new data');
+                //alert('added new data');
                 that.processConstraints.push(data);
                 //that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
                 that.trigger('reload');
@@ -453,7 +453,7 @@ export class ProcessConstraintView extends View{
                 url: 'http://localhost:4567/processconstraints',
                 id: selectedRowId,
                 success: function (data) {
-                    alert('Successfully deleted constraint.');
+                    //alert('Successfully deleted constraint.');
                 },
                 error: function (data) {
                     alert('Failed to delete constraint.');

@@ -122,7 +122,7 @@ export class DataMappingView extends View{
             id: field.id,
             dataObject: field,
             success: function (data) {
-                alert('Successfully Updated');
+                //alert('Successfully Updated');
             },
             error: function (data) {
                 alert('Error Updating: ' + data);

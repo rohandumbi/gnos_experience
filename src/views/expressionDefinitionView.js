@@ -196,7 +196,7 @@ export class ExpressionDefinitionView extends View{
             url: 'http://localhost:4567/project/'+this.projectId+'/expressions',
             dataObject: updatedExpression,
             success: function (data) {
-                alert('Successfully updated');
+                //alert('Successfully updated');
             },
             error: function (data) {
                 alert('Failed to update: ' + data);
@@ -213,7 +213,7 @@ export class ExpressionDefinitionView extends View{
             url: 'http://localhost:4567/project/'+this.projectId+'/expressions',
             dataObject: updatedExpression,
             success: function (data) {
-                alert('Successfully updated');
+                //alert('Successfully updated');
             },
             error: function (data) {
                 alert('Failed to update: ' + data);
@@ -229,7 +229,7 @@ export class ExpressionDefinitionView extends View{
             url: 'http://localhost:4567/project/'+this.projectId+'/expressions',
             dataObject: updatedExpression,
             success: function (data) {
-                alert('Successfully updated');
+                //alert('Successfully updated');
             },
             error: function (data) {
                 alert('Failed to update: ' + data);
@@ -249,7 +249,7 @@ export class ExpressionDefinitionView extends View{
             url: 'http://localhost:4567/project/'+this.projectId+'/expressions',
             dataObject: updatedExpression,
             success: function (data) {
-                alert('Successfully updated');
+                //alert('Successfully updated');
                 that.trigger('reload');
             },
             error: function (data) {
@@ -276,7 +276,7 @@ export class ExpressionDefinitionView extends View{
             this.model.add({
                 dataObject: newExpression,
                 success: function (data) {
-                    alert('Successfully added expression');
+                    //alert('Successfully added expression');
                     //that.data.push(data);
                     //that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
                     $('.modal-backdrop').hide();
@@ -312,7 +312,7 @@ export class ExpressionDefinitionView extends View{
                 url: 'http://localhost:4567/expressions',
                 id: deletedExpression.id,
                 success: function (data) {
-                    alert('Successfully deleted expression.');
+                    //alert('Successfully deleted expression.');
                 },
                 error: function (data) {
                     alert('Failed to delete expression.');

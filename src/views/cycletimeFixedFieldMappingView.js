@@ -131,7 +131,7 @@ export class CycletimeFixedFieldMappingView extends View {
             url: 'http://localhost:4567/project/' + that.projectId + '/cycletimemappings',
             dataObject: options.object,
             success: function (data) {
-                alert('Successfully updated fixed fields');
+                //alert('Successfully updated fixed fields');
                 if (options.success) options.success(data);
             },
             error: function () {
@@ -147,7 +147,7 @@ export class CycletimeFixedFieldMappingView extends View {
             url: 'http://localhost:4567/project/' + that.projectId + '/cycletimemappings',
             dataObject: options.object,
             success: function (data) {
-                alert('Successfully updated fixed fields');
+                //alert('Successfully updated fixed fields');
                 if (options.success) options.success(data);
             },
             error: function () {

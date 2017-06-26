@@ -424,7 +424,7 @@ export class DumpDependencyView extends View {
             url: 'http://localhost:4567/dumpdependencies',
             dataObject: options.dumpDependency,
             success: function (data) {
-                alert('Successfully updated');
+                //alert('Successfully updated');
                 if (options.success) {
                     options.success();
                 }
@@ -453,7 +453,7 @@ export class DumpDependencyView extends View {
         this.dumpDependencyModel.add({
             dataObject: newDumpDependency,
             success: function (data) {
-                alert('added new data');
+                //alert('added new data');
                 that.dumpDependency.push(data);
                 that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
                 $('.modal-backdrop').hide();//temp hack
@@ -482,7 +482,7 @@ export class DumpDependencyView extends View {
                 url: 'http://localhost:4567/dumpdependencies',
                 id: selectedRowId,
                 success: function (data) {
-                    alert('Successfully deleted dependencies.');
+                    //alert('Successfully deleted dependencies.');
                 },
                 error: function (data) {
                     alert('Failed to delete dependencies.');

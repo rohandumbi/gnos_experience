@@ -124,7 +124,7 @@ export class CycletimeProcessFieldMappingView extends View {
             url: 'http://localhost:4567/project/' + that.projectId + '/cycletimemappings',
             dataObject: object,
             success: function (data) {
-                alert('Successfully updated process fields');
+                //alert('Successfully updated process fields');
             },
             error: function () {
                 alert('Error updating process fields');
@@ -153,7 +153,7 @@ export class CycletimeProcessFieldMappingView extends View {
             url: 'http://localhost:4567/project/' + that.projectId + '/cycletimemappings',
             dataObject: options.object,
             success: function (data) {
-                alert('Successfully updated process fields');
+                //alert('Successfully updated process fields');
                 if (options.success) options.success(data);
             },
             error: function () {

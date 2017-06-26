@@ -258,7 +258,7 @@ export class DumpDefinitionView extends View {
             url: 'http://localhost:4567/dumps',
             dataObject: updatedDump,
             success: function (data) {
-                alert('Successfully updated');
+                //alert('Successfully updated');
             },
             error: function (data) {
                 alert('Failed to update: ' + data);
@@ -278,7 +278,7 @@ export class DumpDefinitionView extends View {
             url: 'http://localhost:4567/dumps',
             dataObject: updatedDump,
             success: function (data) {
-                alert('Successfully updated');
+                //alert('Successfully updated');
             },
             error: function (data) {
                 alert('Failed to update: ' + data);
@@ -296,7 +296,7 @@ export class DumpDefinitionView extends View {
             url: 'http://localhost:4567/dumps',
             dataObject: updatedDump,
             success: function (data) {
-                alert('Successfully updated');
+                //alert('Successfully updated');
             },
             error: function (data) {
                 alert('Failed to update: ' + data);
@@ -314,7 +314,7 @@ export class DumpDefinitionView extends View {
             url: 'http://localhost:4567/dumps',
             dataObject: updatedDump,
             success: function (data) {
-                alert('Successfully updated');
+                //alert('Successfully updated');
             },
             error: function (data) {
                 alert('Failed to update: ' + data);
@@ -332,7 +332,7 @@ export class DumpDefinitionView extends View {
             url: 'http://localhost:4567/dumps',
             dataObject: updatedDump,
             success: function (data) {
-                alert('Successfully updated');
+                //alert('Successfully updated');
             },
             error: function (data) {
                 alert('Failed to update: ' + data);
@@ -379,7 +379,7 @@ export class DumpDefinitionView extends View {
                 url: 'http://localhost:4567/dumps',
                 id: deletedDump.id,
                 success: function (data) {
-                    alert('Successfully deleted dump.');
+                    //alert('Successfully deleted dump.');
                 },
                 error: function (data) {
                     alert('Failed to delete dump.');

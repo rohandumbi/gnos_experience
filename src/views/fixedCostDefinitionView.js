@@ -151,7 +151,7 @@ export class FixedCostDefinitionView extends View{
             that.fixedCostModel.add({
                 dataObject: object,
                 success: function (data) {
-                    alert('Successfully added fixed cost.');
+                    //alert('Successfully added fixed cost.');
                     data.name = that.costHeadNames[data.costHead];
                     that.fixedCostData.push(data);
                     that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
@@ -175,7 +175,7 @@ export class FixedCostDefinitionView extends View{
         this.fixedCostModel.update({
             dataObject: fixedCostData,
             success: function (data) {
-                alert('Successfully updated.');
+                //alert('Successfully updated.');
                 //that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
             },
             error: function (data) {

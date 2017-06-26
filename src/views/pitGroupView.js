@@ -166,7 +166,7 @@ export class PitGroupView extends View {
         this.pitGroupModel.add({
             dataObject: updatedPitGroup,
             success: function (data) {
-                alert('Added pit to group');
+                //('Added pit to group');
                 pitGroup.listChildPits.push(childPit.pitName);
 
                 var pitNode = that.system.addNode(childPit.pitName, {
@@ -202,7 +202,7 @@ export class PitGroupView extends View {
         this.pitGroupModel.add({
             dataObject: newPitGroup,
             success: function (data) {
-                alert('Added pit group');
+                //alert('Added pit group');
                 //pitGroup.listChildPits.push(childPit.pitName);
                 that.pitGroups.push(newPitGroup);
                 that.system.addNode(groupName, {'color': 'red', 'shape': 'dot', 'label': groupName});

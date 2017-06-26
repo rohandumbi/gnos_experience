@@ -430,7 +430,7 @@ export class OpexDefinitionView extends View{
             id: options.opexData.id,
             dataObject: options.opexData,
             success: function (data) {
-                alert('Successfully updated.');
+                //alert('Successfully updated.');
                 if (options.success) options.success(data);
             },
             error: function (data) {
@@ -542,7 +542,7 @@ export class OpexDefinitionView extends View{
         this.opexModel.add({
             dataObject: newOpex,
             success: function (data) {
-                alert('added new data');
+                //alert('added new data');
                 that.trigger('reload');
                 //that.opexData.push(data);
                 //that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
@@ -564,7 +564,7 @@ export class OpexDefinitionView extends View{
                 url: 'http://localhost:4567/opexdata',
                 id: selectedRowId,
                 success: function (data) {
-                    alert('Successfully deleted opex.');
+                    //alert('Successfully deleted opex.');
                 },
                 error: function (data) {
                     alert('Failed to delete opex.');

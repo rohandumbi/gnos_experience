@@ -32,7 +32,7 @@ export class TruckParamView extends View {
                     that.fixedTimeModel.add({
                         url: 'http://localhost:4567/project/' + that.projectId + '/fixedtime/' + defaultFixedTime,
                         success: function (data) {
-                            alert('Successfully created default fixed time');
+                            //alert('Successfully created default fixed time');
                             that.$el.find('#fixed_time').val(defaultFixedTime);
                         },
                         error: function (data) {
@@ -46,7 +46,7 @@ export class TruckParamView extends View {
                     that.fixedTimeModel.update({
                         url: 'http://localhost:4567/project/' + that.projectId + '/fixedtime/' + $(this).val(),
                         success: function (data) {
-                            alert('Successfully updated fixed time');
+                            //alert('Successfully updated fixed time');
                         },
                         error: function (data) {
                             alert('Error updating fixed time: ' + data);

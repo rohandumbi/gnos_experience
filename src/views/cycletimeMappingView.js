@@ -126,7 +126,7 @@ export class CycletimeMappingView extends View {
             var fileInput = that.$el.find('#cycletimeInputFile').val();
 
             if (!fileInput) {
-                alert('Cycle time imput file missing.');
+                alert('Cycle time input file missing.');
             } else {
                 var files = that.$el.find('#cycletimeInputFile').prop("files");
                 /*assuming first selection to be valid*/
@@ -138,7 +138,7 @@ export class CycletimeMappingView extends View {
                 that.cycletimeModel.add({
                     dataObject: cycletimeObject,
                     success: function (data) {
-                        alert('Successfully uploaded data');
+                        //alert('Successfully uploaded data');
                         that.trigger('reload');
                         //that.trigger('reload');
                     },
@@ -246,7 +246,7 @@ export class CycletimeMappingView extends View {
             url: 'http://localhost:4567/expressions',
             dataObject: updatedExpression,
             success: function (data) {
-                alert('Successfully updated');
+                //alert('Successfully updated');
             },
             error: function (data) {
                 alert('Failed to update: ' + data);
@@ -262,7 +262,7 @@ export class CycletimeMappingView extends View {
             url: 'http://localhost:4567/expressions',
             dataObject: updatedExpression,
             success: function (data) {
-                alert('Successfully updated');
+                //alert('Successfully updated');
             },
             error: function (data) {
                 alert('Failed to update: ' + data);
@@ -278,7 +278,7 @@ export class CycletimeMappingView extends View {
             url: 'http://localhost:4567/expressions',
             dataObject: updatedExpression,
             success: function (data) {
-                alert('Successfully updated');
+                //alert('Successfully updated');
             },
             error: function (data) {
                 alert('Failed to update: ' + data);
@@ -305,7 +305,7 @@ export class CycletimeMappingView extends View {
             this.model.add({
                 dataObject: newExpression,
                 success: function (data) {
-                    alert('Successfully added expression');
+                    //alert('Successfully added expression');
                     that.data.push(data);
                     that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
                 },
@@ -338,7 +338,7 @@ export class CycletimeMappingView extends View {
                 url: 'http://localhost:4567/expressions',
                 id: deletedExpression.id,
                 success: function (data) {
-                    alert('Successfully deleted expression.');
+                    //alert('Successfully deleted expression.');
                 },
                 error: function (data) {
                     alert('Failed to delete expression.');

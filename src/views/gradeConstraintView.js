@@ -469,7 +469,7 @@ export class GradeConstraintView extends View{
             id: options.gradeConstraint.id,
             dataObject: options.gradeConstraint,
             success: function (data) {
-                alert('Successfully updated.');
+                //alert('Successfully updated.');
                 if (options.success) options.success(data);
             },
             error: function (data) {
@@ -501,7 +501,7 @@ export class GradeConstraintView extends View{
         this.gradeConstraintModel.add({
             dataObject: newGradeConstraint,
             success: function (data) {
-                alert('added new data');
+                //alert('added new data');
                 that.gradeConstraints.push(data);
                 //that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
                 that.trigger('reload');
@@ -523,7 +523,7 @@ export class GradeConstraintView extends View{
                 url: 'http://localhost:4567/gradeconstraints',
                 id: selectedRowId,
                 success: function (data) {
-                    alert('Successfully deleted constraint.');
+                    //alert('Successfully deleted constraint.');
                 },
                 error: function (data) {
                     alert('Failed to delete constraint.');

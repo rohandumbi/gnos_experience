@@ -238,7 +238,7 @@ export class ScenarioDefinitionView extends View{
                 success: function (data) {
                     that.data.push(data);
                     that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
-                    alert('Successfully created new scenario');
+                    //alert('Successfully created new scenario');
                 },
                 error: function (data) {
                     alert('Failed to create new scenario');
@@ -259,7 +259,7 @@ export class ScenarioDefinitionView extends View{
                 url: 'http://localhost:4567/scenarios',
                 id: scenarioId,
                 success: function (data) {
-                    alert('Successfully deleted scenario.');
+                    //alert('Successfully deleted scenario.');
                 },
                 error: function (data) {
                     alert('Failed to delete scenario.' + data);

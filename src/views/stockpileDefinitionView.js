@@ -240,7 +240,7 @@ export class StockpileDefinitionView extends View {
             url: 'http://localhost:4567/stockpiles',
             dataObject: updatedStockpile,
             success: function (data) {
-                alert('Successfully updated');
+                //alert('Successfully updated');
             },
             error: function (data) {
                 alert('Failed to update: ' + data);
@@ -260,7 +260,7 @@ export class StockpileDefinitionView extends View {
             url: 'http://localhost:4567/stockpiles',
             dataObject: updatedStockpile,
             success: function (data) {
-                alert('Successfully updated');
+                //('Successfully updated');
             },
             error: function (data) {
                 alert('Failed to update: ' + data);
@@ -278,7 +278,7 @@ export class StockpileDefinitionView extends View {
             url: 'http://localhost:4567/stockpiles',
             dataObject: updatedStockpile,
             success: function (data) {
-                alert('Successfully updated');
+                //alert('Successfully updated');
             },
             error: function (data) {
                 alert('Failed to update: ' + data);
@@ -296,7 +296,7 @@ export class StockpileDefinitionView extends View {
             url: 'http://localhost:4567/stockpiles',
             dataObject: updatedStockpile,
             success: function (data) {
-                alert('Successfully updated');
+                //alert('Successfully updated');
             },
             error: function (data) {
                 alert('Failed to update: ' + data);
@@ -314,7 +314,7 @@ export class StockpileDefinitionView extends View {
             url: 'http://localhost:4567/stockpiles',
             dataObject: updatedStockpile,
             success: function (data) {
-                alert('Successfully updated');
+                //alert('Successfully updated');
             },
             error: function (data) {
                 alert('Failed to update: ' + data);
@@ -332,7 +332,7 @@ export class StockpileDefinitionView extends View {
             url: 'http://localhost:4567/stockpiles',
             dataObject: updatedStockpile,
             success: function (data) {
-                alert('Successfully updated');
+                //alert('Successfully updated');
             },
             error: function (data) {
                 alert('Failed to update: ' + data);
@@ -380,7 +380,7 @@ export class StockpileDefinitionView extends View {
                 url: 'http://localhost:4567/stockpiles',
                 id: deletedStockpile.id,
                 success: function (data) {
-                    alert('Successfully deleted stockpile.');
+                    //alert('Successfully deleted stockpile.');
                 },
                 error: function (data) {
                     alert('Failed to delete stockpile.');

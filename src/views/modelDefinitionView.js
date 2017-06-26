@@ -236,7 +236,7 @@ export class ModelDefinitionView extends View{
             url: 'http://localhost:4567/model',
             dataObject: updatedModel,
             success: function (data) {
-                alert('Successfully updated');
+                //alert('Successfully updated');
             },
             error: function (data) {
                 alert('Failed to update: ' + data);
@@ -253,7 +253,7 @@ export class ModelDefinitionView extends View{
             url: 'http://localhost:4567/model',
             dataObject: updatedModel,
             success: function (data) {
-                alert('Successfully updated');
+                //alert('Successfully updated');
             },
             error: function (data) {
                 alert('Failed to update: ' + data);
@@ -278,7 +278,7 @@ export class ModelDefinitionView extends View{
             url: 'http://localhost:4567/model',
             dataObject: updatedModel,
             success: function (data) {
-                alert('Successfully updated');
+                //alert('Successfully updated');
             },
             error: function (data) {
                 alert('Failed to update: ' + data);
@@ -329,7 +329,7 @@ export class ModelDefinitionView extends View{
                 url: 'http://localhost:4567/model',
                 id: deletedModel.id,
                 success: function (data) {
-                    alert('Successfully deleted expression.');
+                    //alert('Successfully deleted expression.');
                 },
                 error: function (data) {
                     alert('Failed to delete expression.');

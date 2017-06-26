@@ -556,7 +556,7 @@ export class WorkflowView extends View{
                 that.productModel.add({
                     dataObject: updatedProduct,
                     success: function (data) {
-                        alert('Successfully updated product.');
+                        //alert('Successfully updated product.');
                         that.refreshProducts();
                     },
                     error: function (data) {
@@ -649,7 +649,7 @@ export class WorkflowView extends View{
             url: 'http://localhost:4567/project/' + that.projectId + '/productjoins/' + productJoinName + '/product',
             id: productName,
             success: function (data) {
-                alert('Successfully deleted product node.')
+                //alert('Successfully deleted product node.')
             },
             error: function (data) {
                 alert('Failed to delete product join.');
@@ -672,7 +672,7 @@ export class WorkflowView extends View{
             url: 'http://localhost:4567/project/' + that.projectId + '/processjoins/' + processJoinName + '/process',
             id: modelId,
             success: function (data) {
-                alert('Successfully deleted model node.')
+                //alert('Successfully deleted model node.')
             },
             error: function (data) {
                 alert('Failed to delete product join.');
@@ -772,7 +772,7 @@ export class WorkflowView extends View{
                         that.productModel.add({
                             dataObject: updatedProduct,
                             success: function (data) {
-                                alert('Successfully added expression to product.');
+                                //alert('Successfully added expression to product.');
                             },
                             error: function (data) {
                                 alert('Error adding product to join');
@@ -805,7 +805,7 @@ export class WorkflowView extends View{
                         that.productModel.add({
                             dataObject: updatedProduct,
                             success: function (data) {
-                                alert('Successfully added unit to product.');
+                                //alert('Successfully added unit to product.');
                             },
                             error: function (data) {
                                 alert('Error adding product to join');
@@ -864,7 +864,7 @@ export class WorkflowView extends View{
                     that.productJoinModel.add({
                         dataObject: updatedProductJoin,
                         success: function (data) {
-                            alert('Successfully added to join.');
+                            //alert('Successfully added to join.');
                             that.system.addEdge(selected.node, productJoinNode, {
                                 directed: true,
                                 weight: 1,
@@ -899,7 +899,7 @@ export class WorkflowView extends View{
                     that.productJoinModel.add({
                         dataObject: updatedProductJoin,
                         success: function (data) {
-                            alert('Successfully added to join.');
+                            //alert('Successfully added to join.');
                             that.system.addEdge(selected.node, productJoinNode, {
                                 directed: true,
                                 weight: 1,
@@ -938,7 +938,7 @@ export class WorkflowView extends View{
                     that.processJoinModel.add({
                         dataObject: newProcessJoin,
                         success: function (data) {
-                            alert('Successfully added to join.');
+                            //alert('Successfully added to join.');
                             that.system.addEdge(selected.node, processJoinNode, {
                                 directed: true,
                                 weight: 1,
@@ -1085,7 +1085,7 @@ export class WorkflowView extends View{
         this.processJoinModel.add({
             dataObject: newProcessJoin,
             success: function (data) {
-                alert('Successfully created join.');
+                //alert('Successfully created join.');
                 that.processJoins.push(data);
                 that.addProcessJoinsToGraph([data]);
                 that.$el.find('#join_name').val('');
@@ -1102,7 +1102,7 @@ export class WorkflowView extends View{
         this.productJoinModel.add({
             dataObject: newProductJoin,
             success: function (data) {
-                alert('Successfully created product join.');
+                //alert('Successfully created product join.');
                 that.productJoins.push(data);
                 that.addProductJoinsToGraph([data]);
                 that.$el.find('#product_join_name').val('');
@@ -1127,7 +1127,7 @@ export class WorkflowView extends View{
         this.productModel.add({
             dataObject: newProduct,
             success: function (data) {
-                alert('Successfully created product.');
+                //alert('Successfully created product.');
                 that.products.push(data);
                 that.addProductsToGraph([data]);
                 that.$el.find('#product_name').val('');

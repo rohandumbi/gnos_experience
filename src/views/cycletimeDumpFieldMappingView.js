@@ -124,7 +124,7 @@ export class CycletimeDumpFieldMappingView extends View {
             url: 'http://localhost:4567/project/' + that.projectId + '/cycletimemappings',
             dataObject: object,
             success: function (data) {
-                alert('Successfully updated dump fields');
+                //alert('Successfully updated dump fields');
             },
             error: function () {
                 alert('Error updating fixed fields');
@@ -153,7 +153,7 @@ export class CycletimeDumpFieldMappingView extends View {
             url: 'http://localhost:4567/project/' + that.projectId + '/cycletimemappings',
             dataObject: options.object,
             success: function (data) {
-                alert('Successfully updated dump fields');
+                //alert('Successfully updated dump fields');
                 if (options.success) options.success(data);
             },
             error: function () {

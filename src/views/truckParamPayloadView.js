@@ -117,7 +117,7 @@ export class TruckParamPayloadView extends View {
                 that.truckParamPayloadModel.update({
                     dataObject: updatedPayload,
                     success: function (data) {
-                        alert('Updated payload');
+                        //alert('Updated payload');
                     },
                     error: function (data) {
                         alert('Error updating payload: ' + data);
@@ -151,7 +151,7 @@ export class TruckParamPayloadView extends View {
             url: 'http://localhost:4567/expressions',
             dataObject: updatedExpression,
             success: function (data) {
-                alert('Successfully updated');
+                //alert('Successfully updated');
             },
             error: function (data) {
                 alert('Failed to update: ' + data);
@@ -167,7 +167,7 @@ export class TruckParamPayloadView extends View {
             url: 'http://localhost:4567/expressions',
             dataObject: updatedExpression,
             success: function (data) {
-                alert('Successfully updated');
+                //alert('Successfully updated');
             },
             error: function (data) {
                 alert('Failed to update: ' + data);
@@ -183,7 +183,7 @@ export class TruckParamPayloadView extends View {
             url: 'http://localhost:4567/expressions',
             dataObject: updatedExpression,
             success: function (data) {
-                alert('Successfully updated');
+                //alert('Successfully updated');
             },
             error: function (data) {
                 alert('Failed to update: ' + data);
@@ -228,7 +228,7 @@ export class TruckParamPayloadView extends View {
                 url: 'http://localhost:4567/project/' + that.projectId + '/payloads/material',
                 id: deletedMaterialName,
                 success: function (data) {
-                    alert('Successfully deleted expression.');
+                    //alert('Successfully deleted expression.');
                 },
                 error: function (data) {
                     alert('Failed to delete expression.');

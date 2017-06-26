@@ -94,7 +94,7 @@ export class CapexCollectionView extends View{
                 url: 'http://localhost:4567/capex',
                 id: capex.id,
                 success: function (data) {
-                    alert('Successfully deleted capex.');
+                    //alert('Successfully deleted capex.');
                 },
                 error: function (data) {
                     alert('Failed to delete capex.');
@@ -107,7 +107,7 @@ export class CapexCollectionView extends View{
                 url: 'http://localhost:4567/capex/' + instance.capexId + '/capexInstance',
                 id: instance.id,
                 success: function (data) {
-                    alert('Successfully deleted instance.');
+                    //alert('Successfully deleted instance.');
                 },
                 error: function (data) {
                     alert('Failed to delete capex.');
@@ -124,7 +124,7 @@ export class CapexCollectionView extends View{
             url: 'http://localhost:4567/capex',
             dataObject: options.capex,
             success: options.success || function () {
-                alert('Successfully updated instance')
+                //alert('Successfully updated instance')
             },
             error: options.error || function (data) {
                 alert('Failed to update: ' + data);

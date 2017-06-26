@@ -146,7 +146,7 @@ export class TruckParamCycleTimeView extends View {
         this.cycleTimeModel.update({
             dataObject: object,
             success: function (data) {
-                alert('Successfully updated data');
+                //alert('Successfully updated data');
             },
             error: function (data) {
                 alert('Error updating process data');
@@ -187,7 +187,7 @@ export class TruckParamCycleTimeView extends View {
             that.cycleTimeModel.add({
                 dataObject: dataObject,
                 success: function (data) {
-                    alert('Successfully added data');
+                    //alert('Successfully added data');
                     newCycleTime.processData[process.name] = 0;
                     counter++;
                     if (counter === that.processes.length) {

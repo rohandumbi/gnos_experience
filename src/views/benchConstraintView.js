@@ -210,7 +210,7 @@ export class BenchConstraintView extends View{
             id: options.benchData.id,
             dataObject: options.benchData,
             success: function (data) {
-                alert('Successfully updated.');
+                //alert('Successfully updated.');
                 if (options.success) options.success(data);
             },
             error: function (data) {
@@ -271,7 +271,7 @@ export class BenchConstraintView extends View{
         this.benchConstraintModel.add({
             dataObject: newBenchConstraint,
             success: function (data) {
-                alert('added new data');
+                //alert('added new data');
                 that.benchConstraintData.push(data);
                 that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
                 $('.modal-backdrop').hide();
@@ -304,7 +304,7 @@ export class BenchConstraintView extends View{
                 url: 'http://localhost:4567/benchconstraints',
                 id: deletedBenchConstraint.id,
                 success: function (data) {
-                    alert('Successfully deleted constraint.');
+                    //alert('Successfully deleted constraint.');
                 },
                 error: function (data) {
                     alert('Failed to delete constraint.' + data);

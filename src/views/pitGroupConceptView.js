@@ -255,7 +255,7 @@ export class PitGroupConceptView extends View {
         this.pitGroupModel.add({
             dataObject: newPitGroup,
             success: function (data) {
-                alert('Added pit group');
+                //alert('Added pit group');
                 that.pitGroups.push(newPitGroup);
                 var $liPitGroups = that.$el.find('#pit-group-list');
                 var $li = $('<a href="#" data-pitgroupname="' + data.name + '" draggable="false">' + data.name + '<span class="pull-right">'

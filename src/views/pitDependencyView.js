@@ -378,7 +378,7 @@ export class PitDependencyView extends View {
             url: 'http://localhost:4567/pitdependencies',
             dataObject: options.pitDependency,
             success: function (data) {
-                alert('Successfully updated');
+                //alert('Successfully updated');
                 if (options.success) {
                     options.success();
                 }
@@ -403,7 +403,7 @@ export class PitDependencyView extends View {
         this.pitDependencyModel.add({
             dataObject: newPitDependency,
             success: function (data) {
-                alert('added new data');
+                //alert('added new data');
                 that.pitDependency.push(data);
                 that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
                 $('.modal-backdrop').hide();//temp hack
@@ -432,7 +432,7 @@ export class PitDependencyView extends View {
                 url: 'http://localhost:4567/pitdependencies',
                 id: selectedRowId,
                 success: function (data) {
-                    alert('Successfully deleted dependencies.');
+                    //alert('Successfully deleted dependencies.');
                 },
                 error: function (data) {
                     alert('Failed to delete dependencies.');
