@@ -20,6 +20,7 @@ import {ControlScreenView} from './controlScreenView';
 import {CycletimeMappingView} from './cycletimeMappingView';
 import {ReportContainerView} from './reportContainerView';
 import {PitGroupConceptView} from './pitGroupConceptView';
+import {ReserveView} from './reserveView';
 
 export class MainView extends View{
 
@@ -67,7 +68,9 @@ export class MainView extends View{
         this.$el.find("#page-content-wrapper").html(this.expressionDefinitionView.$el);
     }
     initializeReserveDefinition(){
-
+        this.reserveView = new ReserveView({projectId: this.projectId});
+        this.reserveView.render();
+        this.$el.find("#page-content-wrapper").html(this.reserveView.$el);
     }
     initializeModelDefinition(){
         this.modelDefinitionView = new ModelDefinitionView({projectId: this.projectId});
