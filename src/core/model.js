@@ -22,7 +22,10 @@ export class Model {
                 } else {
                     alert(textStatus + ": " + xhr.responseText);
                 }
-                //options.error(xhr, textStatus, errorThrown);
+                //commented out for the time being
+                /*if(options.error){
+                 options.error(xhr, textStatus, errorThrown);
+                 }*/
             },
             statusCode: {
                 401: function (xhr, textStatus, errorThrown) {
@@ -56,6 +59,10 @@ export class Model {
                 } else {
                     alert(textStatus + ": " + xhr.responseText);
                 }
+                //commented out for the time being
+                /*if(options.error){
+                 options.error(xhr, textStatus, errorThrown);
+                 }*/
             },
             statusCode: {
                 401: function (xhr, textStatus, errorThrown) {
@@ -93,6 +100,10 @@ export class Model {
                 } else {
                     alert(textStatus + ": " + xhr.responseText);
                 }
+                //commented out for the time being
+                /*if(options.error){
+                 options.error(xhr, textStatus, errorThrown);
+                 }*/
             },
             statusCode: {
                 401: function (xhr, textStatus, errorThrown) {
@@ -123,6 +134,10 @@ export class Model {
                 } else {
                     alert(textStatus + ": " + xhr.responseText);
                 }
+                //commented out for the time being
+                /*if(options.error){
+                 options.error(xhr, textStatus, errorThrown);
+                 }*/
             },
             statusCode: {
                 401: function (xhr, textStatus, errorThrown) {
