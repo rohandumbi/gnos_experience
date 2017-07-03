@@ -36,7 +36,7 @@ app.on('ready', function () {
     if (env.name === 'production') {
         const jarPath = __dirname + '\\..\\service\\backend.jar';
         const exec = require('child_process').exec;
-        const childProcess = exec('javaw -jar ' + jarPath,
+        const childProcess = exec('javaw -jar ' + jarPath + ' -Djava.library.path=C:\\GNOS\\dll',
             (error, stdout, stderr) => {
                 console.log('stdout: ' + stdout);
                 console.log('stderr: ' + stderr);
