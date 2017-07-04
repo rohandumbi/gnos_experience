@@ -22,6 +22,15 @@ export class ControlScreenView extends View{
 
     bindEvents() {
         var that = this;
+        this.$el.find('input:radio[name=modeoption]').change(function (e) {
+            if (this.value === '1') {
+                that.$el.find('#window').prop('disabled', true);
+                that.$el.find('#step-size').prop('disabled', true);
+            } else if (this.value === '2') {
+                that.$el.find('#window').prop('disabled', false);
+                that.$el.find('#step-size').prop('disabled', false);
+            }
+        });
 
 		this.$el.find('#controlScreenForm').submit(function(e) {
 			e.preventDefault();

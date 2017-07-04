@@ -3,25 +3,6 @@
         <div class="row">
             <div class="col-md-12 col-sm-12 col-xs-12">
                 <form id="controlScreenForm" method="post">
-                    <div class="form-group" id="mode-option">
-                        <label class="control-label requiredField" for="radio">
-                            Mode of running scheduler
-                            <span class="asteriskField">*</span>
-                        </label>
-                        <div class="">
-                            <label class="radio-inline">
-                                <input id="globalBtn" type="radio" name="modeoption" value="1" checked="checked"/>
-                                Global
-                            </label>
-                            <label class="radio-inline">
-                                <input id="slidingBtn" name="modeoption" type="radio" value="2"/>
-                                Sliding Window
-                            </label>
-                            <span class="help-block" id="hint_radio">
-                                Please select if you want to run the scheduler in Global mode or Sliding Window mode
-                            </span>
-                        </div>
-                    </div>
                     <div class="form-group ">
                         <label class="control-label ">
                             Select the equations to be included
@@ -86,6 +67,23 @@
                         </div>
                     </div>
                     <div id="swOptions" class="form-group">
+                        <label class="control-label requiredField" for="radio">
+                            Mode of running scheduler
+                            <span class="asteriskField">*</span>
+                        </label>
+                        <div class="">
+                            <label class="radio-inline">
+                                <input id="globalBtn" type="radio" name="modeoption" value="1" checked="checked"/>
+                                Global
+                            </label>
+                            <label class="radio-inline">
+                                <input id="slidingBtn" name="modeoption" type="radio" value="2"/>
+                                Sliding Window
+                            </label>
+                            <span class="help-block" id="hint_radio">
+                                Please select if you want to run the scheduler in Global mode or Sliding Window mode
+		                    </span>
+                        </div>
                         <div class="checkbox">
                             <label class="checkbox">
                                 <input id="reclaimoption" name="checkbox" type="checkbox" value="isReclaim"/>
@@ -93,7 +91,7 @@
                             </label>
                         </div>
                         <label class="control-label requiredField" for="period">
-                            Period
+                            Period To
                             <span class="asteriskField">*</span>
                         </label>
                         <div class="input-group col-md-3 col-sm-3 col-xs-12">
@@ -108,7 +106,7 @@
                             <span class="asteriskField">*</span>
                         </label>
                         <div class="input-group col-md-3 col-sm-3 col-xs-12">
-                            <input class="form-control" id="window" name="window" type="text"/>
+                            <input class="form-control" id="window" name="window" type="text" disabled="true"/>
                             <div class="input-group-addon">
                                 <i class="glyphicon glyphicon-signal">
                                 </i>
@@ -118,7 +116,7 @@
                             Step Size
                         </label>
                         <div class="input-group col-md-3 col-sm-3 col-xs-12">
-                            <input class="form-control" id="step-size" name="text2" type="text"/>
+                            <input class="form-control" id="step-size" name="text2" type="text" disabled="true"/>
                             <div class="input-group-addon">
                                 <i class="glyphicon glyphicon-align-right">
                                 </i>
