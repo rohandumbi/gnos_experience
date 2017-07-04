@@ -45,6 +45,7 @@ export class ControlScreenView extends View{
 				dataObj.enableEquations[$(this).val()] = true;
 			})
             dataObj.period = that.$el.find('#period').val();
+            dataObj.gap = that.$el.find('#gap').val();
             dataObj.window = that.$el.find('#window').val();
             dataObj.stepSize = that.$el.find('#step-size').val();
 
