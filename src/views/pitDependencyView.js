@@ -82,7 +82,6 @@ export class PitDependencyView extends View {
     }
 
     getDescriptionForRow(row) {
-        //var rowNumber = $(row).closest('tr').data('row-id');
         var firstPitName = row.firstPitName;
         var firstPitAssociatedBench = row.firstPitAssociatedBench;
         if (!firstPitAssociatedBench || firstPitAssociatedBench.toString() === 'undefined') {
@@ -253,7 +252,7 @@ export class PitDependencyView extends View {
                 "description": function (column, row) {
                     var description = that.getDescriptionForRow(row);
                     return (
-                        '<input style="width:100%" class="description" type="text" value="' + description + '"' + '>'
+                        '<input disabled="true" style="width:100%" class="description" type="text" value="' + description + '"' + '>'
                     );
                 }
             }
