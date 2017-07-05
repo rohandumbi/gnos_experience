@@ -85,12 +85,12 @@ export class PitDependencyView extends View {
         //var rowNumber = $(row).closest('tr').data('row-id');
         var firstPitName = row.firstPitName;
         var firstPitAssociatedBench = row.firstPitAssociatedBench;
-        if (firstPitAssociatedBench.toString() === 'undefined') {
+        if (!firstPitAssociatedBench || firstPitAssociatedBench.toString() === 'undefined') {
             firstPitAssociatedBench = '';
         }
         var dependentPitName = row.dependentPitName;
         var dependentPitAssociatedBench = row.dependentPitAssociatedBench;
-        if (dependentPitAssociatedBench.toString() === 'undefined') {
+        if (!dependentPitAssociatedBench || dependentPitAssociatedBench.toString() === 'undefined') {
             dependentPitAssociatedBench = '';
         }
         var maxLead = parseInt(row.maxLead);
