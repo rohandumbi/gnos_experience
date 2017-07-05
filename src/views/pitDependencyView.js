@@ -83,7 +83,37 @@ export class PitDependencyView extends View {
 
     getDescriptionForRow(row) {
         //var rowNumber = $(row).closest('tr').data('row-id');
-        return 'Hello first pit: ' + row.firstPitName;
+        var firstPitName = row.firstPitName;
+        var firstPitAssociatedBench = row.firstPitAssociatedBench;
+        if (firstPitAssociatedBench.toString() === 'undefined') {
+            firstPitAssociatedBench = '';
+        }
+        var dependentPitName = row.dependentPitName;
+        var dependentPitAssociatedBench = row.dependentPitAssociatedBench;
+        if (dependentPitAssociatedBench.toString() === 'undefined') {
+            dependentPitAssociatedBench = '';
+        }
+        var maxLead = parseInt(row.maxLead);
+        var minLead = parseInt(row.minLead);
+
+        var firstPitString = firstPitName + '/' + firstPitAssociatedBench;
+        var dependentPitString = dependentPitName + '/' + dependentPitAssociatedBench;
+        var descriptionString = ' will be mined ';
+        var detailsString = '';
+        if (minLead < 0 && maxLead < 0) {
+            detailsString += ' totally ahead of '
+        } else {
+            if (minLead > 0) {
+                detailsString += ' atleast ' + minLead + ' benches ahead ';
+            }
+            if (maxLead > 0) {
+                detailsString += ' atmost ' + maxLead + ' benches ahead ';
+            }
+
+            detailsString += ' of '
+        }
+        var description = firstPitString + descriptionString + detailsString + dependentPitString;
+        return description;
     }
 
     getPitByName(pitName) {
@@ -174,13 +204,13 @@ export class PitDependencyView extends View {
                 "min_lead": function (column, row) {
                     var minLead = (row.minLead < 0 ) ? '' : row.minLead;
                     return (
-                        '<input class="min_lead" type="text" value="' + minLead + '"' + '>'
+                        '<input style="width:100%" class="min_lead" type="text" value="' + minLead + '"' + '>'
                     );
                 },
                 "max_lead": function (column, row) {
                     var maxLead = (row.maxLead < 0 ) ? '' : row.maxLead;
                     return (
-                        '<input class="max_lead" type="text" value="' + maxLead + '"' + '>'
+                        '<input style="width:100%" class="max_lead" type="text" value="' + maxLead + '"' + '>'
                     );
                 },
                 "first_pit_bench": function (column, row) {
@@ -223,7 +253,7 @@ export class PitDependencyView extends View {
                 "description": function (column, row) {
                     var description = that.getDescriptionForRow(row);
                     return (
-                        '<input class="description" type="text" value="' + description + '"' + '>'
+                        '<input style="width:100%" class="description" type="text" value="' + description + '"' + '>'
                     );
                 }
             }
@@ -305,6 +335,7 @@ export class PitDependencyView extends View {
             var dependentPitName = that.$el.find('select#dependent_pit option:checked').val();
             if (!firstPitName || !dependentPitName) {
                 alert('Select a pit');
+                return;
             }
             that.addRowToGrid({firstPitName: firstPitName, dependentPitName: dependentPitName});
         });
