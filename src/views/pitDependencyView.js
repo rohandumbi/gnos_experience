@@ -81,6 +81,25 @@ export class PitDependencyView extends View {
         });
     }
 
+    updateRowDescription($row) {
+        var firstPitName = $row.find('.first_pit').find(":selected").val();
+        var firstPitAssociatedBench = $row.find('.first_pit_bench').find(":selected").val();
+        var dependentPitName = $row.find('.dependent_pit').find(":selected").val();
+        var dependentPitAssociatedBench = $row.find('.dependent_pit_bench').find(":selected").val();
+        var maxLead = $row.find('.max_lead').val() || "-1";
+        var minLead = $row.find('.min_lead').val() || "-1";
+        var description = this.getDescriptionForRow({
+            firstPitName: firstPitName,
+            firstPitAssociatedBench: firstPitAssociatedBench,
+            dependentPitName: dependentPitName,
+            dependentPitAssociatedBench: dependentPitAssociatedBench,
+            maxLead: maxLead,
+            minLead: minLead
+        });
+        $row.find('.description').val(description);
+
+    }
+
     getDescriptionForRow(row) {
         var firstPitName = row.firstPitName;
         var firstPitAssociatedBench = row.firstPitAssociatedBench;
@@ -271,6 +290,7 @@ export class PitDependencyView extends View {
                     selectOptions += '<option data-pit-name="' + firstPitName + '" data-bench-no="' + bench.benchName + '">' + bench.benchName + '</option>';
                 });
                 $associatedBench.html(selectOptions);
+                that.updateRowDescription($(this).closest('tr'));
                 that.updateFirstPit({index: index, firstPitName: firstPitName});
             });
             that.grid.find(".dependent_pit").change(function (event) {
@@ -284,16 +304,19 @@ export class PitDependencyView extends View {
                     selectOptions += '<option data-pit-name="' + dependentPitName + '" data-bench-no="' + bench.benchName + '">' + bench.benchName + '</option>';
                 });
                 $associatedBench.html(selectOptions);
+                that.updateRowDescription($(this).closest('tr'));
                 that.updateDependentPit({index: index, dependentPitName: dependentPitName});
             });
             that.grid.find(".first_pit_bench").change(function (event) {
                 var index = $(this).closest('tr').data('row-id');
                 var firstPitAssociatedBench = $(this).find(":selected").val();
+                that.updateRowDescription($(this).closest('tr'));
                 that.updateFirstPitAssociatedBench({index: index, firstPitAssociatedBench: firstPitAssociatedBench});
             });
             that.grid.find(".dependent_pit_bench").change(function (event) {
                 var index = $(this).closest('tr').data('row-id');
                 var dependentPitAssociatedBench = $(this).find(":selected").val();
+                that.updateRowDescription($(this).closest('tr'));
                 that.updateDependentPitAssociatedBench({
                     index: index,
                     dependentPitAssociatedBench: dependentPitAssociatedBench
@@ -302,11 +325,13 @@ export class PitDependencyView extends View {
             that.grid.find(".max_lead").change(function (event) {
                 var index = $(this).closest('tr').data('row-id');
                 var maxLead = $(this).val();
+                that.updateRowDescription($(this).closest('tr'));
                 that.updateMaxLead({index: index, maxLead: maxLead});
             });
             that.grid.find(".min_lead").change(function (event) {
                 var index = $(this).closest('tr').data('row-id');
                 var minLead = $(this).val();
+                that.updateRowDescription($(this).closest('tr'));
                 that.updateMinLead({index: index, minLead: minLead});
             });
             that.grid.find(".in_use").change(function (event) {
