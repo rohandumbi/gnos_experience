@@ -140,9 +140,37 @@ export class DumpDependencyView extends View {
         });
     }
 
+    updateRowDescription($row) {
+        var firstPitName = $row.find('.first_pit').find(":selected").val();
+        var firstPitGroupName = $row.find('.first_pit_group').find(":selected").val();
+        var firstDumpName = $row.find('.first_dump').find(":selected").val();
+        var dependentDumpName = $row.find('.dependent_dump').find(":selected").val();
+
+        var description = this.getDescriptionForRow({
+            firstPitName: firstPitName,
+            firstPitGroupName: firstPitGroupName,
+            firstDumpName: firstDumpName,
+            dependentDumpName: dependentDumpName
+        });
+        $row.find('.description').val(description);
+
+    }
+
     getDescriptionForRow(row) {
-        //var rowNumber = $(row).closest('tr').data('row-id');
-        return 'Hello dump: ' + row.dependentDumpName;
+        var firstPitName = row.firstPitName;
+        var firstPitGroupName = row.firstPitGroupName;
+        var firstDumpName = row.firstDumpName;
+        var dependentDumpName = row.dependentDumpName;
+        var description = '';
+
+        if (firstPitName && firstPitName.toString() !== 'undefined') {
+            description = 'Pit: ' + firstPitName + ' will be completely mined before ' + dependentDumpName + ' will be started';
+        } else if (firstPitGroupName && firstPitGroupName.toString() !== 'undefined') {
+            description = 'PitGroup: ' + firstPitGroupName + ' will be completely mined before ' + dependentDumpName + ' will be started';
+        } else if (firstDumpName && firstDumpName.toString() !== 'undefined') {
+            description = 'Dump: ' + firstDumpName + ' will be completely filled before ' + dependentDumpName + ' will be started';
+        }
+        return description;
     }
 
     getPitByName(pitName) {
@@ -270,7 +298,7 @@ export class DumpDependencyView extends View {
                 "description": function (column, row) {
                     var description = that.getDescriptionForRow(row);
                     return (
-                        '<input class="description" type="text" value="' + description + '"' + '>'
+                        '<input  disabled="true" style="width:100%" class="description" type="text" value="' + description + '"' + '>'
                     );
                 }
             }
@@ -294,6 +322,7 @@ export class DumpDependencyView extends View {
 
                 $firstDump.val('');
                 $firstPitGroup.val('');
+                that.updateRowDescription($(this).closest('tr'));
                 that.updateFirstPit({index: index, firstPitName: firstPitName});
             });
 
@@ -305,6 +334,7 @@ export class DumpDependencyView extends View {
 
                 $firstDump.val('');
                 $firstPit.val('');
+                that.updateRowDescription($(this).closest('tr'));
                 that.updateFirstPitGroup({index: index, firstPitGroupName: firstPitGroupName});
             });
             that.grid.find(".first_dump").change(function (event) {
@@ -315,12 +345,14 @@ export class DumpDependencyView extends View {
 
                 $firstPit.val('');
                 $firstPitGroup.val('');
+                that.updateRowDescription($(this).closest('tr'));
                 that.updateFirstDump({index: index, firstDumpName: firstDumpName});
             });
 
             that.grid.find(".dependent_dump").change(function (event) {
                 var index = $(this).closest('tr').data('row-id');
                 var dependentDumpName = $(this).find(":selected").val();
+                that.updateRowDescription($(this).closest('tr'));
                 that.updateDependentDump({index: index, dependentDumpName: dependentDumpName});
             });
             that.grid.find(".in_use").change(function (event) {
