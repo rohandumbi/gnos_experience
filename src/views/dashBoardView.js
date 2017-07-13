@@ -1,5 +1,6 @@
 import { View } from '../core/view';
 import {ProjectModel} from '../models/projectModel';
+import {ProjectExportModel} from '../models/projectExportModel';
 export class DashBoardView extends View{
 
     constructor(options) {
@@ -84,6 +85,7 @@ export class DashBoardView extends View{
                                         '<p class"text-muted">Created: ' + data[i].createdDate + '</p>' +
                                     '</div>' +
                 '<button type="button" data-projectid="' + data[i].id + '" class="openProjectBtn btn btn-primary btn-xs btn-update btn-add-card">Open</button> ' +
+                '<button type="button" data-projectid="' + data[i].id + '" class="exportProjectBtn btn btn-info btn-xs btn-update btn-add-card">Export</button> ' +
                                     '<span title="' + data[i].desc + '" class="glyphicon glyphicon-exclamation-sign text-danger pull-right icon-style"></span> ' +
                                 '</div>' +
                             '</div> ' +
@@ -150,6 +152,16 @@ export class DashBoardView extends View{
             var projectId = $(this).data('projectid');
             var project = that.getProjectById(projectId);
             that.trigger('open:project', {projectId: projectId, project: project});
+        });
+        this.$el.find('.exportProjectBtn').click(function () {
+            var projectId = $(this).data('projectid');
+            //var project = that.getProjectById(projectId);
+            var exportModel = new ProjectExportModel({projectId: projectId});
+            exportModel.fetch({
+                success: function (data) {
+                    that.trigger('export:project', {data: data});
+                }
+            });
         });
         this.$el.find('.deleteProjectBtn').click(function () {
             //that.trigger('open:project', {projectId: $(this).data('projectid')})
