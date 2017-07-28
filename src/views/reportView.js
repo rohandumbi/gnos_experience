@@ -76,7 +76,7 @@ export class ReportView extends View {
             var yearlyValuesObject = valueMap[groupName];
             //var hue = 'rgb(' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ')';
             var colorCode = (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256));
-            var background = 'rgba(' + colorCode + ', 0.2)';
+            var background = 'rgba(' + colorCode + ', 0.7)';
             var border = 'rgba(' + colorCode + ', 1)';
             var dataSetEntry = {
                 label: groupName,
@@ -276,7 +276,7 @@ export class ReportView extends View {
                     label: 'Total',
                     data: data,
                     stack: 'Stack 0',
-                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                    backgroundColor: 'rgba(153, 102, 255, 0.7)',
                     borderColor: 'rgba(153, 102, 255, 1)',
                     borderWidth: 1
                 }]
