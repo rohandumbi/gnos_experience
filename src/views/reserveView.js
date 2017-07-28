@@ -19,6 +19,7 @@ export class ReserveView extends View {
 
     fetchReserves() {
         var that = this;
+        this.$el.find("#loading-indicator").show();
         this.reserveModel.fetch({
             success: function (data) {
                 that.loadReserveTable(data);
@@ -27,13 +28,15 @@ export class ReserveView extends View {
     }
 
     loadReserveTable(reserveData) {
+        var that = this;
         var tableHeaderNames = reserveData[0];
-        var tableHeaders = '<thead><tr>';
+        var tableHeaders = '<tr>';
         tableHeaderNames.forEach(function (tableHeaderName) {
-            tableHeaders += '<th>' + tableHeaderName + '</th>';
+            tableHeaders += '<th data-header-css-class="yearlyValueColumn" data-column-id="' + tableHeaderName + '">' + tableHeaderName + '</th>';
         });
-        tableHeaders += '</tr></thead>';
-        var tableBody = '<tbody>';
+        tableHeaders += '</tr>';
+        this.$el.find("#datatype-grid-basic").addClass('long-grid');
+
         var tableRows = '';
         for (var i = 1; i < reserveData.length; i++) {
             var tableRow = '<tr>';
@@ -43,10 +46,20 @@ export class ReserveView extends View {
             tableRow += '</tr>';
             tableRows += tableRow;
         }
-        tableBody += tableRows + '</tbody>';
+        this.$el.find('#tableHead').append($(tableHeaders));
+        this.$el.find("#tableBody").append($(tableRows));
 
-        this.$el.find('#reserve-table').append(tableHeaders);
-        this.$el.find('#reserve-table').append(tableBody);
+        this.grid = this.$el.find("#datatype-grid-basic").bootgrid({
+            rowCount: [20, 15, 10, 25],
+            selection: true,
+            multiSelect: true,
+            rowSelect: true,
+            keepSelection: false
+        }).on("loaded.rs.jquery.bootgrid", function () {
+            that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
+            that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
+            that.$el.find("#loading-indicator").hide();
+        });
     }
 
     onDomLoaded() {
