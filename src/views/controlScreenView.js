@@ -3,6 +3,7 @@ export class ControlScreenView extends View{
 
     constructor(options) {
         super();
+        this.scenario = options.scenario;
 		this.projectId = options.projectId;
 		this.scenarioId = options.scenario.id;
     }
@@ -14,6 +15,11 @@ export class ControlScreenView extends View{
             })
         });
         return promise;
+    }
+
+    render() {
+        super.render(this.scenario);
+        return this;
     }
 
     onDomLoaded() {

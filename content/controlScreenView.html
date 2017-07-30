@@ -95,7 +95,14 @@
                             <span class="asteriskField">*</span>
                         </label>
                         <div class="input-group col-md-3 col-sm-3 col-xs-12">
-                            <input class="form-control" id="period" name="text" type="text"/>
+                            <!--<input class="form-control" id="period" name="text" type="text"/>-->
+                            <select id="period" class="form-control">
+                                <% var counter = timePeriod %>
+                                <% for(var i=1; i< counter; i++) { %>
+                                <option value="<%= (startYear + (counter - i)) %>"><%= (startYear + (counter - i)) %>
+                                </option>
+                                <% } %>
+                            </select>
                             <div class="input-group-addon">
                                 <i class="glyphicon glyphicon-calendar">
                                 </i>
