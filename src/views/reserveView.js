@@ -47,9 +47,10 @@ export class ReserveView extends View {
             tableRows += tableRow;
         }
         this.$el.find('#tableHead').append($(tableHeaders));
+        this.$el.find('#tableFoot').append($(tableHeaders));
         this.$el.find("#tableBody").append($(tableRows));
 
-        this.grid = this.$el.find("#datatype-grid-basic").bootgrid({
+        /*this.grid = this.$el.find("#datatype-grid-basic").bootgrid({
             rowCount: [20, 15, 10, 25],
             selection: true,
             multiSelect: true,
@@ -59,7 +60,9 @@ export class ReserveView extends View {
             that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
             that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
             that.$el.find("#loading-indicator").hide();
-        });
+         });*/
+
+        this.grid = this.$el.find("#datatype-grid-basic").DataTable();
     }
 
     onDomLoaded() {

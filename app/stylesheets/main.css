@@ -1,6 +1,5 @@
 /*@import url('./bootstrap.min.css');*/
-@import url(http://fonts.googleapis.com/css?family=Roboto);
-@import url('https://fonts.googleapis.com/css?family=Roboto');
+/*@import url(http://fonts.googleapis.com/css?family=Roboto);*/
 #loginView {
   color: #74b1be;
   background-color: #2b2e3b;
@@ -210,6 +209,8 @@ input[type=password]:hover {
 p.caption {
   font-size: 30px;
 }
+
+/*@import url('https://fonts.googleapis.com/css?family=Roboto');*/
 #newProjectPane {
   width: 45%;
   padding: 20px;
@@ -728,14 +729,12 @@ body {
           color: #3c3c3c;
       }*/
 }
-
 #reserveView #loading-indicator {
     z-index: 2000;
     position: absolute;
     left: 45%;
     top: 45%;
 }
-
 #reserveView .loader {
     border: 16px solid #f3f3f3;
     border-radius: 50%;
@@ -745,7 +744,6 @@ body {
     -webkit-animation: spin 2s linear infinite;
     animation: spin 2s linear infinite;
 }
-
 @-webkit-keyframes spin {
     0% {
         -webkit-transform: rotate(0deg);
@@ -754,7 +752,6 @@ body {
         -webkit-transform: rotate(360deg);
     }
 }
-
 @keyframes spin {
     0% {
         transform: rotate(0deg);
