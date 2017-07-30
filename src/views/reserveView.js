@@ -19,7 +19,7 @@ export class ReserveView extends View {
 
     fetchReserves() {
         var that = this;
-        this.$el.find("#loading-indicator").show();
+        //this.$el.find("#loading-indicator").show();
         this.reserveModel.fetch({
             success: function (data) {
                 that.loadReserveTable(data);
