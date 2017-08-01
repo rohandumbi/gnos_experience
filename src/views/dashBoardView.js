@@ -85,7 +85,7 @@ export class DashBoardView extends View{
                                         '<p class"text-muted">Created: ' + data[i].createdDate + '</p>' +
                                     '</div>' +
                 '<button type="button" data-projectid="' + data[i].id + '" class="openProjectBtn btn btn-primary btn-xs btn-update btn-add-card">Open</button> ' +
-                '<button type="button" data-projectid="' + data[i].id + '" class="exportProjectBtn btn btn-info btn-xs btn-update btn-add-card">Export</button> ' +
+                /*'<button type="button" data-projectid="' + data[i].id + '" class="exportProjectBtn btn btn-info btn-xs btn-update btn-add-card">Export</button> ' +*/
                                     '<span title="' + data[i].desc + '" class="glyphicon glyphicon-exclamation-sign text-danger pull-right icon-style"></span> ' +
                                 '</div>' +
                             '</div> ' +
