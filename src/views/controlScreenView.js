@@ -49,7 +49,14 @@ export class ControlScreenView extends View{
 			dataObj.enableEquations = {};
 			$('#equations input:checkbox:checked').each(function(){
 				dataObj.enableEquations[$(this).val()] = true;
-			})
+            });
+            dataObj.enableEquations["PROCESS_CONSTRAINT"] = true;
+            dataObj.enableEquations["BENCH_CONSTRAINT"] = true;
+            dataObj.enableEquations["DUMP_CAPACITIES"] = true;
+            dataObj.enableEquations["DUMP_DEPENDENCY"] = true;
+            dataObj.enableEquations["PIT_DEPENDENCY"] = true;
+            dataObj.enableEquations["BOUNDARY_VARIABLES"] = true;
+
             dataObj.period = that.$el.find('#period').val();
             dataObj.gap = that.$el.find('#gap').val();
             dataObj.window = that.$el.find('#window').val();
