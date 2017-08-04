@@ -58,7 +58,11 @@ export class ControlScreenView extends View{
             dataObj.enableEquations["BOUNDARY_VARIABLES"] = true;
 
             dataObj.period = that.$el.find('#period').val();
-            dataObj.gap = that.$el.find('#gap').val();
+            var gapValue = that.$el.find('#gap').val();
+            if (!gapValue) {
+                gapValue = 0;
+            }
+            dataObj.gap = gapValue;
             dataObj.window = that.$el.find('#window').val();
             dataObj.stepSize = that.$el.find('#step-size').val();
 
