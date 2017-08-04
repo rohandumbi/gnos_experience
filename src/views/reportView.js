@@ -18,6 +18,8 @@ export class ReportView extends View {
         this.projectId = options.projectId;
         this.scenarioId = options.scenario.id;
         this.scenarioName = options.scenario.name;
+        this.scenarioTimePeriod = options.scenario.timePeriod;
+        this.scenarioStartYear = options.scenario.startYear;
         this.unitModel = new UnitModel({projectId: options.projectId});
         this.productModel = new ProductModel({projectId: options.projectId});
         this.productJoinModel = new ProductJoinModel({projectId: options.projectId});
@@ -91,6 +93,10 @@ export class ReportView extends View {
             }
             dataSetEntry['data'] = data;
             dataSets.push(dataSetEntry);
+        }
+        labels.length = 0;
+        for (let j = 0; j < this.scenarioTimePeriod; j++) {
+            labels.push(this.scenarioStartYear + j);
         }
 
         this.myChart = new Chart(this.ctx, {
@@ -171,8 +177,11 @@ export class ReportView extends View {
         var labels = [];
         var data = [];
         for (let key of Object.keys(reportData)) {
-            labels.push(key);
+            //labels.push(key);
             data.push(reportData[key])
+        }
+        for (let j = 0; j < this.scenarioTimePeriod; j++) {
+            labels.push(this.scenarioStartYear + j);
         }
 
         var barChartData = {
@@ -265,8 +274,11 @@ export class ReportView extends View {
         var labels = [];
         var data = [];
         for (let key of Object.keys(reportData)) {
-            labels.push(key);
-            data.push(reportData[key])
+            //labels.push(key);
+            data.push(reportData[key]);
+        }
+        for (let j = 0; j < this.scenarioTimePeriod; j++) {
+            labels.push(this.scenarioStartYear + j);
         }
         this.myChart = new Chart(this.ctx, {
             type: 'bar',

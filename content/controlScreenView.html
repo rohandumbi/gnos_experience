@@ -97,8 +97,8 @@
                             <!--<input class="form-control" id="period" name="text" type="text"/>-->
                             <select id="period" class="form-control">
                                 <% var counter = timePeriod %>
-                                <% for(var i=1; i< counter; i++) { %>
-                                <option value="<%= (startYear + (counter - i)) %>"><%= (startYear + (counter - i)) %>
+                                <% for(var i=1; i<= counter; i++) { %>
+                                <option value="<%= (counter - (i - 1))%>"><%= (startYear + (counter - i)) %>
                                 </option>
                                 <% } %>
                             </select>
