@@ -10,6 +10,7 @@ import {ReportModel} from '../models/reportModel';
 import {TextFieldModel} from '../models/textFieldModel';
 import {ProcessJoinModel} from '../models/processJoinModel';
 import {PitGroupModel} from '../models/pitGroupModel';
+import {ScenarioCollection} from '../models/scenarioCollection';
 
 export class ReportView extends View {
 
@@ -29,6 +30,7 @@ export class ReportView extends View {
         this.textFieldModel = new TextFieldModel({projectId: options.projectId});
         this.processJoinModel = new ProcessJoinModel({projectId: options.projectId});
         this.pitGroupModel = new PitGroupModel({projectId: options.projectId});
+        this.scenarioCollection = new ScenarioCollection({projectId: options.projectId});
     }
 
     getHtml() {
@@ -455,7 +457,29 @@ export class ReportView extends View {
         });
     }
 
+    fetchScenarios() {
+        var that = this;
+        this.scenarioCollection.fetch({
+            success: function (data) {
+                that.scenarios = data;
+                var $modalBody = '';
+                that.scenarios.forEach(function (scenario) {
+                    $modalBody += ('<div class="checkbox">' +
+                    '<label class="checkbox">' +
+                    '<input name="scenario" type="checkbox" checked="checked" value="' + scenario.id + '"/>' + scenario.name +
+                    '</label>' +
+                    '</div>')
+                });
+                that.$el.find('#scenarioModal').find('.modal-body').append($modalBody);
+            },
+            error: function (data) {
+                alert('Could not fetch scenario list: ' + data);
+            }
+        });
+    }
+
     onDomLoaded() {
+        this.fetchScenarios();
         this.fetchExpressions();
         this.fetchTextFields();
         this.loadSavedReport();
@@ -599,20 +623,28 @@ export class ReportView extends View {
     }
 
     exportReportGraph() {
+        var selectedScenarioIds = [];
+        this.$el.find('input:checkbox[name=scenario]:checked').each(function () {
+            selectedScenarioIds.push(parseInt($(this).val(), 10));
+        });
+        var body = {
+            "scenarioIds": selectedScenarioIds
+        }
         var req = new XMLHttpRequest();
-        req.open("GET", 'http://localhost:4567/project/' + this.projectId + '/scenario/' + this.scenarioId + '/report/csv', true);
+        req.open("POST", 'http://localhost:4567/project/' + this.projectId + '/report/csv', true);
+        req.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         req.responseType = "blob";
 
         req.onload = function (event) {
             var blob = req.response;
-            console.log(blob.size);
+            //console.log(blob.size);
             var link = document.createElement('a');
             link.href = window.URL.createObjectURL(blob);
             link.download = "Report_" + new Date() + ".csv";
             link.click();
         };
 
-        req.send();
+        req.send(JSON.stringify(body));
     }
 
     loadReportGraph() {

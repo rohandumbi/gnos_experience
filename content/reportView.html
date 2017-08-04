@@ -37,8 +37,28 @@
         </div>
         <div style="width:15%" class="selectContainer form-group">
             <button id="show-report" data-toggle="modal" type="button" class="btn btn-primary">Show Report</button>
-            <button id="export-report" data-toggle="modal" type="button" class="btn btn-info">Export Report</button>
+            <button id="show-scenarios" data-toggle="modal" data-target="#scenarioModal" type="button"
+                    class="btn btn-info">Export Report
+            </button>
         </div>
     </form>
     <canvas id="myChart"></canvas>
+</div>
+<!-- Modal -->
+<div id="scenarioModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Select Scenarios</h4>
+            </div>
+            <div class="modal-body"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button id="export-report" type="button" class="btn btn-primary" data-dismiss="modal">Export</button>
+            </div>
+        </div>
+
+    </div>
 </div>
