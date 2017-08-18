@@ -59,8 +59,13 @@ export class ControlScreenView extends View{
 
             dataObj.period = that.$el.find('#period').val();
             var gapValue = that.$el.find('#gap').val();
-            if (!gapValue) {
+            /*if (!gapValue) {
                 gapValue = 0;
+            }*/
+            var intGap = parseInt(gapValue, 10);
+            if(!gapValue || intGap <= 0 || intGap> 100){
+                alert("The GAP value must be greater than 0 and less than 100");
+                return;
             }
             dataObj.gap = gapValue;
             dataObj.window = that.$el.find('#window').val();
