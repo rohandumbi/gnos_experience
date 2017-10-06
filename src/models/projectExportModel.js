@@ -4,6 +4,6 @@ export class ProjectExportModel extends Model {
         super();
         this.properties = options;
         this.projectId = options.projectId;
-        this.url = "http://localhost:4567/project/" + this.projectId + "/export";
+        this.url = "http://localhost:4567/projects/" + this.projectId + "/export";
     }
 }
