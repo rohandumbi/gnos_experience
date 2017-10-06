@@ -33,10 +33,10 @@ if (env.name !== 'production') {
 }
 
 app.on('ready', function () {
-    if (env.name === 'production') {
+    if (env.name === 'production' || env.name === 'development') {
         const jarPath = __dirname + '\\..\\service\\backend.jar';
-        const exec = require('child_process').exec;
-        const childProcess = exec('javaw -jar ' + jarPath + ' -Djava.library.path=C:\\GNOS\\dll',
+        /*const exec = require('child_process').exec;
+         const childProcess = exec('start javaw -jar ' + jarPath + ' -Djava.library.path=C:\\GNOS\\dll',
             (error, stdout, stderr) => {
                 console.log('stdout: ' + stdout);
                 console.log('stderr: ' + stderr);
@@ -46,7 +46,23 @@ app.on('ready', function () {
             }
         )
         childProcessId = childProcess.pid;
-        console.log('Starting pid: ' + childProcessId);
+         console.log('Starting pid: ' + childProcessId);*/
+
+        /*const { spawn } = require('child_process');
+         const child = spawn('javaw -jar ' + jarPath + ' -Djava.library.path=C:\\GNOS\\dll');*/
+
+        const exec = require('child_process').exec;
+        const childProcess = exec('start "gnos_service" java -Djava.library.path=C:\\GNOS\\dll -jar ' + jarPath,
+            (error, stdout, stderr) => {
+                console.log('stdout: ' + stdout);
+                console.log('stderr: ' + stderr);
+                if (error !== null) {
+                    console.log('exec error: ' + error);
+                }
+            }
+        )
+
+
     }
     setApplicationMenu();
 
@@ -65,10 +81,22 @@ app.on('ready', function () {
 });
 
 app.on('window-all-closed', function () {
-    if (env.name === 'production') {
-        const exec = require('child_process').exec;
+    if (env.name === 'production' || env.name === 'development') {
+        /*const exec = require('child_process').exec;
         console.log('Closing pid: ' + childProcessId);
         childProcess = exec('taskkill /pid ' + childProcessId,
+         (error, stdout, stderr) => {
+         console.log('stdout: ' + stdout);
+         console.log('stderr: ' + stderr);
+         if (error !== null) {
+         console.log('exec error: ' + error);
+         }
+         }
+         )*/
+
+        const exec = require('child_process').exec;
+        console.log('Closing pid: ' + childProcessId);
+        childProcess = exec('TASKKILL /FI "WINDOWTITLE eq gnos_service"',
             (error, stdout, stderr) => {
                 console.log('stdout: ' + stdout);
                 console.log('stderr: ' + stderr);
