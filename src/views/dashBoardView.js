@@ -64,6 +64,22 @@ export class DashBoardView extends View{
                         '</div> ' +
                     '</div> ' +
                 '</fieldset> ' +
+            '<fieldset>' +
+            '<legend>Import exsiting project </legend> ' +
+            '<div class="form-group"> ' +
+            '<label class="col-md-4 control-label" for="projectName">Project Location</label> ' +
+            '<div class="col-md-5"> ' +
+            '<input id="importedProjectFile" name="Card" type="file" placeholder="" class="form-control input-md" required="" accept=".data"> ' +
+            '<span class="help-block">Browse for the project.</span> ' +
+            '</div> ' +
+            '</div> ' +
+            '<div class="form-group"> ' +
+            '<label class="col-md-4 control-label" for="import"></label> ' +
+            '<div class="col-md-4"> ' +
+            '<button id="import" name="import" class="btn btn-success">Import</button> ' +
+            '</div> ' +
+            '</div> ' +
+            '</fieldset> ' +
             '</form>');
         return htmlForm;
     }
@@ -184,6 +200,26 @@ export class DashBoardView extends View{
                     alert("Could not delete: " + data);
                 }
             });
+        });
+        this.$el.find('#import').click(function (event) {
+            event.preventDefault();
+            var importedFileLocation = that.$el.find('#importedProjectFile')[0].files[0].path;
+            var body = {
+                "filename": importedFileLocation
+            }
+            var req = new XMLHttpRequest();
+            req.open("POST", 'http://localhost:4567/projects/import', true);
+            req.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            req.responseType = "blob";
+
+            req.onload = function (event) {
+                var blob = req.response;
+                //console.log(blob.size);
+                that.trigger('reload');
+            };
+
+            req.send(JSON.stringify(body));
+            console.log(importedFileLocation);
         });
         this.$el.find('#continue').click(function(event) {
             event.preventDefault();
