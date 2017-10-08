@@ -11,6 +11,5 @@ Thumbs.db
 /app/**/*.map
 /app/stylesheets/main.css
 
-/dist
 
 /coverage

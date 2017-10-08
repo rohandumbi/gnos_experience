@@ -1,0 +1,120 @@
+<div id="pitGroupConceptView" class="container-fluid" style="height:100%">
+    <div id="pit-list-container" class="col-md-2" style="height:100%">
+        <div class="panel panel-primary" style="height:100%">
+            <div class="panel-heading">
+                <h3 class="panel-title">List of Pits</h3>
+            </div>
+            <div class="panel-body" style="height:90%; overflow: auto">
+                <ul id="pit-list" class="list-group"></ul>
+            </div>
+        </div>
+    </div>
+    <div id="pit-group-list-container" class="col-md-3" style="height:100%">
+        <div class="panel panel-primary" style="height:100%">
+            <div class="panel-heading">
+                <h3 class="panel-title">List of Pit Groups</h3>
+                <button type="button" class="btn btn-default btn-panel" data-toggle="modal"
+                        data-target="#pit-group-modal"><span class="glyphicon glyphicon-plus"></span></button>
+            </div>
+            <div class="panel-body" style="height:90%; overflow: auto">
+                <ul id="pit-group-list" class="list-group"></ul>
+            </div>
+        </div>
+    </div>
+    <div id="pit-group-details-container" class="col-md-7" style="height:100%">
+        <div class="panel panel-primary" style="height:100%">
+            <div class="panel-heading">
+                <h3 class="panel-title">Pit Group Details</h3>
+            </div>
+            <div class="panel-body" style="height:90%; overflow: auto">
+                <div class="panel panel-info col-md-5" style="height:100%; padding:0px">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Available Pits</h3>
+                    </div>
+                    <div class="panel-body dual-list list-left col-md-12" style="height:90%; overflow:auto">
+                        <div class="well text-right">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <div class="btn-group">
+                                        <a class="btn btn-default selector" title="select all"><i
+                                            class="glyphicon glyphicon-unchecked"></i></a>
+                                    </div>
+                                </div>
+                                <div class="col-md-10">
+                                    <div class="input-group">
+                                        <input type="text" name="SearchDualList" class="form-control"
+                                               placeholder="search"/>
+                                        <span class="input-group-addon glyphicon glyphicon-search"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <ul class="list-group all-pits"></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="list-arrows col-md-2 text-center">
+                    <button class="btn btn-default btn-sm move-left">
+                        <span class="glyphicon glyphicon-chevron-left"></span>
+                    </button>
+
+                    <button class="btn btn-default btn-sm move-right">
+                        <span class="glyphicon glyphicon-chevron-right"></span>
+                    </button>
+                </div>
+
+                <div class="panel panel-success col-md-5" style="height:100%; padding:0px">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Included Pits</h3>
+                    </div>
+                    <div class="panel-body dual-list list-right col-md-12" style="height:90%; overflow:auto">
+                        <div class="well">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <div class="btn-group">
+                                        <a class="btn btn-default selector" title="select all"><i
+                                            class="glyphicon glyphicon-unchecked"></i></a>
+                                    </div>
+                                </div>
+                                <div class="col-md-10">
+                                    <div class="input-group">
+                                        <input type="text" name="SearchDualList" class="form-control"
+                                               placeholder="search"/>
+                                        <span class="input-group-addon glyphicon glyphicon-search"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <ul class="list-group child-pits"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Modal Dialog for new pit group definition-->
+    <div class="modal fade" id="pit-group-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Pit Group Definition</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form">
+                        <div class="form-group">
+                            <label for="new_group_name">Pit Group Name:</label>
+                            <input type="text" class="form-control" id="new_group_name">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="add-pitgroup" type="button" class="btn btn-primary" data-dismiss="modal">Add Group
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

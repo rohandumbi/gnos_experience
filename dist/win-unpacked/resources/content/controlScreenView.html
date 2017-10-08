@@ -1,0 +1,150 @@
+<div id="controlsScreenView" class="bootstrap-iso">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <form id="controlScreenForm" method="post">
+                    <div class="form-group ">
+                        <label class="control-label ">
+                            Select the equations to be included
+                        </label>
+                        <div id="equations" class="">
+                            <!--<div style="visibility:hidden" class="checkbox">
+                                <label class="checkbox">
+                                    <input name="checkbox" type="checkbox" checked="checked"
+                                           value="PROCESS_CONSTRAINT"/>
+                                    Process Constraint
+                                </label>
+                            </div>
+                            <div style="visibility:hidden" class="checkbox">
+                                <label class="checkbox">
+                                    <input name="checkbox" type="checkbox" checked="checked" value="BENCH_CONSTRAINT"/>
+                                    Bench Constraint
+                                </label>
+                            </div>-->
+                            <div class="checkbox">
+                                <label class="checkbox">
+                                    <input name="checkbox" type="checkbox" checked="checked" value="GRADE_CONSTRAINT"/>
+                                    Grade Constraint
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label class="checkbox">
+                                    <input name="checkbox" type="checkbox" checked="checked" value="BENCH_PROPORTION"/>
+                                    Bench Proportion
+                                </label>
+                            </div>
+                            <!--<div style="visibility:hidden" class="checkbox">
+                                <label class="checkbox">
+                                    <input name="checkbox" type="checkbox" checked="checked" value="DUMP_CAPACITIES"/>
+                                    Dump Capacities
+                                </label>
+                            </div>
+                            <div style="visibility:hidden" class="checkbox">
+                                <label class="checkbox">
+                                    <input name="checkbox" type="checkbox" checked="checked" value="DUMP_DEPENDENCY"/>
+                                    Dump Dependency
+                                </label>
+                            </div>-->
+                            <div class="checkbox">
+                                <label class="checkbox">
+                                    <input name="checkbox" type="checkbox" checked="checked" value="CAPEX"/>
+                                    Capex
+                                </label>
+                            </div>
+                            <!--<div style="visibility:hidden" class="checkbox">
+                                <label class="checkbox">
+                                    <input name="checkbox" type="checkbox" checked="checked" value="PIT_DEPENDENCY"/>
+                                    Pit Dependency
+                                </label>
+                            </div>
+                            <div style="visibility:hidden" class="checkbox">
+                                <label class="checkbox">
+                                    <input name="checkbox" type="checkbox" checked="checked" value="BOUNDARY_VARIABLES"/>
+                                    Boundary Variable
+                                </label>
+                            </div>-->
+                        </div>
+                    </div>
+                    <div id="swOptions" class="form-group">
+                        <label class="control-label requiredField" for="radio">
+                            Mode of running scheduler
+                            <span class="asteriskField">*</span>
+                        </label>
+                        <div class="">
+                            <label class="radio-inline">
+                                <input id="globalBtn" type="radio" name="modeoption" value="1" checked="checked"/>
+                                Global
+                            </label>
+                            <label class="radio-inline">
+                                <input id="slidingBtn" name="modeoption" type="radio" value="2"/>
+                                Sliding Window
+                            </label>
+                            <span class="help-block" id="hint_radio">
+                                Please select if you want to run the scheduler in Global mode or Sliding Window mode
+		                    </span>
+                        </div>
+                        <div class="checkbox">
+                            <label class="checkbox">
+                                <input id="reclaimoption" name="checkbox" type="checkbox" value="isReclaim"/>
+                                <b>Reclaim</b>
+                            </label>
+                        </div>
+                        <label class="control-label requiredField" for="period">
+                            Period To
+                            <span class="asteriskField">*</span>
+                        </label>
+                        <div class="input-group col-md-3 col-sm-3 col-xs-12">
+                            <!--<input class="form-control" id="period" name="text" type="text"/>-->
+                            <select id="period" class="form-control">
+                                <% var counter = timePeriod %>
+                                <% for(var i=1; i<= counter; i++) { %>
+                                <option value="<%= (counter - (i - 1))%>"><%= (startYear + (counter - i)) %>
+                                </option>
+                                <% } %>
+                            </select>
+                            <div class="input-group-addon">
+                                <i class="glyphicon glyphicon-calendar">
+                                </i>
+                            </div>
+                        </div>
+                        <label class="control-label requiredField" for="period">
+                            GAP
+                            <span class="asteriskField">*</span>
+                        </label>
+                        <div class="input-group col-md-3 col-sm-3 col-xs-12">
+                            <input class="form-control" id="gap" name="text" type="text"/>
+                            <div class="input-group-addon">
+                                <i class="glyphicon glyphicon-resize-horizontal">
+                                </i>
+                            </div>
+                        </div>
+                        <label class="control-label requiredField" for="window">
+                            Window
+                        </label>
+                        <div class="input-group col-md-3 col-sm-3 col-xs-12">
+                            <input class="form-control" id="window" name="window" type="text" disabled="true"/>
+                            <div class="input-group-addon">
+                                <i class="glyphicon glyphicon-signal">
+                                </i>
+                            </div>
+                        </div>
+                        <label class="control-label " for="step-size">
+                            Step Size
+                        </label>
+                        <div class="input-group col-md-3 col-sm-3 col-xs-12">
+                            <input class="form-control" id="step-size" name="text2" type="text" disabled="true"/>
+                            <div class="input-group-addon">
+                                <i class="glyphicon glyphicon-align-right">
+                                </i>
+                            </div>
+                        </div>
+                        <br/>
+                        <div>
+                            <button id="run" class="btn btn-primary " name="submit" type="submit">RUN</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
