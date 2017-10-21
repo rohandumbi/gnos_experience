@@ -47,21 +47,19 @@ export class ControlScreenView extends View{
 			dataObj.mode = mode;
 			dataObj.isReclaim = isReclaim;
 			dataObj.enableEquations = {};
-			$('#equations input:checkbox:checked').each(function(){
-				dataObj.enableEquations[$(this).val()] = true;
+            that.$el.find('#equations input:checkbox').each(function () {
+                dataObj.enableEquations[$(this).val()] = $(this).is(':checked');
+                ;
             });
-            dataObj.enableEquations["PROCESS_CONSTRAINT"] = true;
+            /*dataObj.enableEquations["PROCESS_CONSTRAINT"] = true;
             dataObj.enableEquations["BENCH_CONSTRAINT"] = true;
             dataObj.enableEquations["DUMP_CAPACITIES"] = true;
             dataObj.enableEquations["DUMP_DEPENDENCY"] = true;
             dataObj.enableEquations["PIT_DEPENDENCY"] = true;
-            dataObj.enableEquations["BOUNDARY_VARIABLES"] = true;
+             dataObj.enableEquations["BOUNDARY_VARIABLES"] = true;*/
 
             dataObj.period = that.$el.find('#period').val();
             var gapValue = that.$el.find('#gap').val();
-            /*if (!gapValue) {
-                gapValue = 0;
-            }*/
             var intGap = parseInt(gapValue, 10);
             if(!gapValue || intGap <= 0 || intGap> 100){
                 alert("The GAP value must be greater than 0 and less than 100");
