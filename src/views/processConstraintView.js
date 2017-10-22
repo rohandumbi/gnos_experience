@@ -357,9 +357,13 @@ export class ProcessConstraintView extends View{
 
     copyToClipboard() {
         alert('Copy to clipboard');
-        var selectedRows = this.$el.find("#datatype-grid-basic").bootgrid('getSelectedRows');
-        console.log(selectedRows);
-        this.$el.find("#datatype-grid-basic").bootgrid('getRowData', '3');
+        var that = this;
+        var selectedRowIds = this.$el.find("#datatype-grid-basic").bootgrid('getSelectedRows');//row ids are constraint ids
+        console.log(selectedRowIds);
+        selectedRowIds.forEach(function (selectedRowId) {
+            var processConstraint = that.getConstraintById(parseInt(selectedRowId, 10));
+            console.log(processConstraint);
+        });
     }
 
     pasteFromClipboard() {
@@ -370,7 +374,6 @@ export class ProcessConstraintView extends View{
         var constraintId = $row.closest('tr').data('row-id');
         var year = $row.data('year');
         var value = $row.val();
-        //var processConstraint = this.processConstraints[index];
         var processConstraint = this.getConstraintById(constraintId);
         processConstraint.constraintData[year] = parseFloat(value);
         console.log(processConstraint);
@@ -380,7 +383,6 @@ export class ProcessConstraintView extends View{
     updateInUse($row) {
         var constraintId = $row.closest('tr').data('row-id');
         var inUse = $row.is(':checked');
-        //var processConstraint = this.processConstraints[index];
         var processConstraint = this.getConstraintById(constraintId);
         processConstraint['inUse'] = inUse;
         console.log(processConstraint);
@@ -389,7 +391,6 @@ export class ProcessConstraintView extends View{
 
     updateGrouping($grouping) {
         var constraintId = $grouping.closest('tr').data('row-id');
-        //var processConstraint = this.processConstraints[index];
         var processConstraint = this.getConstraintById(constraintId);
         processConstraint['selectionType'] = $grouping.find('option:checked').data('grouping-type');
         processConstraint['selector_name'] = $grouping.find('option:checked').data('grouping-name');
@@ -399,7 +400,6 @@ export class ProcessConstraintView extends View{
 
     updateCoefficient($coefficient) {
         var constraintId = $coefficient.closest('tr').data('row-id');
-        //var processConstraint = this.processConstraints[index];
         var processConstraint = this.getConstraintById(constraintId);
         processConstraint['coefficientType'] = $coefficient.find('option:checked').data('coefficient-type');
         processConstraint['coefficient_name'] = $coefficient.find('option:checked').data('coefficient-name');
@@ -408,8 +408,7 @@ export class ProcessConstraintView extends View{
     }
 
     updateIsMax($isMax) {
-        var constraintId = $coefficient.closest('tr').data('row-id');
-        //var processConstraint = this.processConstraints[index];
+        var constraintId = $isMax.closest('tr').data('row-id');
         var processConstraint = this.getConstraintById(constraintId);
         var isMax = ($isMax.find('option:checked').data('is-max').toString() === "true");
         processConstraint['isMax'] = isMax;
