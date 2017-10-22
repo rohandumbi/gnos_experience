@@ -358,9 +358,9 @@ export class ProcessConstraintView extends View{
     }
 
     copyToClipboard() {
-        var excelHeader = 'Id,Coefficient Type,Expression,In Use,Group Type,Grouping,Max/Min';
+        var excelHeader = 'Id\tCoefficient Type\tExpression\tIn Use\tGroup Type\tGrouping\tMax/Min';
         for (var i = 0; i < this.scenario.timePeriod; i++) {
-            excelHeader += ',' + parseInt(this.scenario.startYear + i);
+            excelHeader += '\t' + parseInt(this.scenario.startYear + i);
         }
         var excelData = '';
         var excelRows = '';

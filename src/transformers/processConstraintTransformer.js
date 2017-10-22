@@ -11,17 +11,17 @@ export class ProcessConstraintTransformer {
     }
 
     transformToExcelRow(constraintObject) {
-        var excelRow = constraintObject[this.ID_IDENTIFIER] + ','
-            + constraintObject[this.EXPRESSION_TYPE_IDENTIFIER] + ','
-            + constraintObject[this.EXPRESSION_IDENTIFIER] + ','
-            + constraintObject[this.INUSE_IDENTIFIER] + ','
-            + constraintObject[this.GROUP_TYPE_IDENTIFIER] + ','
-            + constraintObject[this.GROUP_IDENTIFIER] + ','
+        var excelRow = constraintObject[this.ID_IDENTIFIER] + '\t'
+            + constraintObject[this.EXPRESSION_TYPE_IDENTIFIER] + '\t'
+            + constraintObject[this.EXPRESSION_IDENTIFIER] + '\t'
+            + constraintObject[this.INUSE_IDENTIFIER] + '\t'
+            + constraintObject[this.GROUP_TYPE_IDENTIFIER] + '\t'
+            + constraintObject[this.GROUP_IDENTIFIER] + '\t'
             + constraintObject[this.MAX_MIN_IDENTIFIER];
 
         for (var property in constraintObject[this.CONSTRAINT_DATA_IDENTIFIER]) {
             if (constraintObject[this.CONSTRAINT_DATA_IDENTIFIER].hasOwnProperty(property)) {
-                excelRow += ',' + constraintObject[this.CONSTRAINT_DATA_IDENTIFIER][property];
+                excelRow += '\t' + constraintObject[this.CONSTRAINT_DATA_IDENTIFIER][property];
             }
         }
         return excelRow;
