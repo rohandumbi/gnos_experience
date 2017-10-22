@@ -324,14 +324,22 @@ export class ProcessConstraintView extends View{
              that.loadScenario($(this).data("row-id"));
              })*/
         });
-        var $addButton = $('<button type="button" class="btn btn-default" data-toggle="modal"></button>');
+        var $addButton = $('<button type="button" title="Add Row" class="btn btn-default" data-toggle="modal"></button>');
         $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
 
-        var $removeButton = $('<button type="button" class="btn btn-default"></button>');
+        var $removeButton = $('<button type="button" title="Delete" class="btn btn-default"></button>');
         $removeButton.append('<span class="glyphicon glyphicon-trash"></span>');
+
+        var $copyButton = $('<button type="button" title="Copy" class="btn btn-default" data-toggle="modal"></button>');
+        $copyButton.append('<span class="glyphicon glyphicon-copy"></span>');
+
+        var $pasteButton = $('<button type="button" title="Paste" class="btn btn-default" data-toggle="modal"></button>');
+        $pasteButton.append('<span class="glyphicon glyphicon-paste"></span>');
 
         this.$el.find(".actionBar").append($addButton);
         this.$el.find(".actionBar").append($removeButton);
+        this.$el.find(".actionBar").append($copyButton);
+        this.$el.find(".actionBar").append($pasteButton);
 
         $removeButton.click(function(){
             that.deleteRows();
@@ -339,6 +347,23 @@ export class ProcessConstraintView extends View{
         $addButton.click(function () {
             that.addRowToGrid();
         });
+        $copyButton.click(function (e) {
+            that.copyToClipboard(e);
+        });
+        $pasteButton.click(function (e) {
+            that.pasteFromClipboard(e);
+        });
+    }
+
+    copyToClipboard() {
+        alert('Copy to clipboard');
+        var selectedRows = this.$el.find("#datatype-grid-basic").bootgrid('getSelectedRows');
+        console.log(selectedRows);
+        this.$el.find("#datatype-grid-basic").bootgrid('getRowData', '3');
+    }
+
+    pasteFromClipboard() {
+        alert('Paste from clipboard');
     }
 
     updateValues($row) {

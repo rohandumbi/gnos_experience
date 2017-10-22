@@ -51,13 +51,6 @@ export class ControlScreenView extends View{
                 dataObj.enableEquations[$(this).val()] = $(this).is(':checked');
                 ;
             });
-            /*dataObj.enableEquations["PROCESS_CONSTRAINT"] = true;
-            dataObj.enableEquations["BENCH_CONSTRAINT"] = true;
-            dataObj.enableEquations["DUMP_CAPACITIES"] = true;
-            dataObj.enableEquations["DUMP_DEPENDENCY"] = true;
-            dataObj.enableEquations["PIT_DEPENDENCY"] = true;
-             dataObj.enableEquations["BOUNDARY_VARIABLES"] = true;*/
-
             dataObj.period = that.$el.find('#period').val();
             var gapValue = that.$el.find('#gap').val();
             var intGap = parseInt(gapValue, 10);
