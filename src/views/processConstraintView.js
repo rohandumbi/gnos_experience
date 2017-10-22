@@ -8,6 +8,7 @@ import {ExpressionModel} from '../models/expressionModel';
 import {UnitModel} from '../models/unitModel';
 import {ProductModel} from '../models/productModel';
 import {ProductJoinModel} from '../models/productJoinModel';
+import {ProcessConstraintTransformer} from '../transformers/processConstraintTransformer';
 
 export class ProcessConstraintView extends View{
 
@@ -25,6 +26,7 @@ export class ProcessConstraintView extends View{
         this.productModel = new ProductModel({projectId: this.projectId});
         this.productJoinModel = new ProductJoinModel({projectId: this.projectId});
         this.unitModel = new UnitModel({projectId: this.projectId});
+        this.transformer = new ProcessConstraintTransformer();
     }
 
     getHtml() {
@@ -356,14 +358,26 @@ export class ProcessConstraintView extends View{
     }
 
     copyToClipboard() {
-        alert('Copy to clipboard');
+        var excelHeader = 'Id,Coefficient Type,Expression,In Use,Group Type,Grouping,Max/Min';
+        for (var i = 0; i < this.scenario.timePeriod; i++) {
+            excelHeader += ',' + parseInt(this.scenario.startYear + i);
+        }
+        var excelData = '';
+        var excelRows = '';
         var that = this;
         var selectedRowIds = this.$el.find("#datatype-grid-basic").bootgrid('getSelectedRows');//row ids are constraint ids
         console.log(selectedRowIds);
         selectedRowIds.forEach(function (selectedRowId) {
             var processConstraint = that.getConstraintById(parseInt(selectedRowId, 10));
-            console.log(processConstraint);
+            excelRows += that.transformer.transformToExcelRow(processConstraint) + '\n';
         });
+        console.log(excelHeader + '\n' + excelRows);
+        excelData = excelHeader + '\n' + excelRows;
+        var $temp = $("<textarea>");
+        $("body").append($temp);
+        $temp.val(excelData).select();
+        document.execCommand("copy");
+        $temp.remove();
     }
 
     pasteFromClipboard() {
