@@ -590,6 +590,9 @@ export class ReportView extends View {
         this.$el.find('#export-report').click(function (event) {
             that.exportReportGraph();
         });
+        this.$el.find('#export-capex').click(function (event) {
+            that.exportCapex();
+        });
         this.$el.find('#datatype-selector').change(function (event) {
             var dataType = $(this).find(':selected').data('datatype');
             switch (dataType) {
@@ -641,6 +644,31 @@ export class ReportView extends View {
             var link = document.createElement('a');
             link.href = window.URL.createObjectURL(blob);
             link.download = "Report_" + new Date() + ".csv";
+            link.click();
+        };
+
+        req.send(JSON.stringify(body));
+    }
+
+    exportCapex() {
+        var selectedScenarioIds = [];
+        this.$el.find('input:checkbox[name=scenario]:checked').each(function () {
+            selectedScenarioIds.push(parseInt($(this).val(), 10));
+        });
+        var body = {
+            "scenarioIds": selectedScenarioIds
+        }
+        var req = new XMLHttpRequest();
+        req.open("POST", 'http://localhost:4567/project/' + this.projectId + '/report/capex/csv', true);
+        req.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        req.responseType = "blob";
+
+        req.onload = function (event) {
+            var blob = req.response;
+            //console.log(blob.size);
+            var link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = "Capex_Report_" + new Date() + ".csv";
             link.click();
         };
 

@@ -333,10 +333,10 @@ export class ProcessConstraintView extends View{
         $removeButton.append('<span class="glyphicon glyphicon-trash"></span>');
 
         var $copyButton = $('<button type="button" title="Copy" class="btn btn-default" data-toggle="modal"></button>');
-        $copyButton.append('<span class="glyphicon glyphicon-copy"></span>');
+        //$copyButton.append('<span class="glyphicon glyphicon-copy"></span>');
 
         var $pasteButton = $('<button type="button" title="Paste" class="btn btn-default" data-toggle="modal"></button>');
-        $pasteButton.append('<span class="glyphicon glyphicon-paste"></span>');
+        //$pasteButton.append('<span class="glyphicon glyphicon-paste"></span>');
 
         this.$el.find(".actionBar").append($addButton);
         this.$el.find(".actionBar").append($removeButton);
