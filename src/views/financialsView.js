@@ -57,7 +57,10 @@ export class FinancialsView extends View {
             alert('Select a scenario first from Scenario Definition');
             return;
         }
-        this.fixedCostDefinitionView = new FixedCostDefinitionView({scenario: this.scenario});
+        this.fixedCostDefinitionView = new FixedCostDefinitionView({
+            projectId: this.projectId,
+            scenario: this.scenario
+        });
         this.fixedCostDefinitionView.render();
         this.$el.find("#views").html(this.fixedCostDefinitionView.$el);
     }

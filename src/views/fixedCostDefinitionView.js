@@ -1,13 +1,20 @@
 import { View } from '../core/view';
 import { FixedCostModel } from '../models/fixedCostModel';
+import {PitModel} from '../models/pitModel';
+import {PitGroupModel} from '../models/pitGroupModel';
+import {StockpileModel} from '../models/stockpileModel';
 
 export class FixedCostDefinitionView extends View{
 
     constructor(options) {
         super();
+        this.projectId = options.projectId;
         this.scenario = options.scenario;
         if (!this.scenario) alert('select a scenario first');
         this.fixedCostModel = new FixedCostModel({scenarioId: this.scenario.id});
+        this.pitModel = new PitModel({projectId: this.projectId});
+        this.pitGroupModel = new PitGroupModel({projectId: this.projectId});
+        this.stockpileModel = new StockpileModel({projectId: this.projectId})
         this.costHeadNames = ['Ore mining cost', 'Waste mining cost', 'Stockpile cost', 'Stockpile reclaiming cost', 'Truck hour cost'];
         this.costHeads = [0, 1, 2, 3, 4];
     }
@@ -40,12 +47,48 @@ export class FixedCostDefinitionView extends View{
         });
     }
 
+    fetchPits() {
+        this.pitModel.fetch({
+            success: (data)=> {
+                this.pits = data;
+                this.fetchPitGroups();
+            },
+            error: ()=> {
+                alert('Error fetching pits.');
+            }
+        });
+    }
+
+    fetchPitGroups() {
+        this.pitGroupModel.fetch({
+            success: (data)=> {
+                this.pitGroups = data;
+                this.fetchStockpiles();
+            },
+            error: ()=> {
+                alert('Error fetching pits.');
+            }
+        });
+    }
+
+    fetchStockpiles() {
+        this.stockpileModel.fetch({
+            success: (data)=> {
+                this.stockpiles = data;
+                this.fetchFixedCosts();
+            },
+            error: ()=> {
+                alert('Error fetching pits.');
+            }
+        });
+    }
+
     onDomLoaded() {
         var that = this;
         if (this.scenario.timePeriod > 4) {
             this.$el.find("#datatype-grid-basic").addClass('long-grid');
         }
-        this.fetchFixedCosts();
+        this.fetchPits();
     }
 
     filterMissingFixedCosts() {
@@ -72,6 +115,7 @@ export class FixedCostDefinitionView extends View{
             row += (
                 '<tr>' +
                 '<td>' + this.costHeadNames[fixedCost.costHead] + '</td>' +
+                '<td>' + fixedCost.filterName + '</td>' +
                 '<td>' + true + '</td>'
             )
             var scenarioStartYear = this.scenario.startYear;
@@ -91,15 +135,42 @@ export class FixedCostDefinitionView extends View{
             rowSelect: true,
             keepSelection: false,
             formatters: {
-                "commands": function (column, row) {
+                "commands": (column, row) => {
                     return "<button type=\"button\" class=\"btn btn-xs btn-default command-edit glyphicon glyphicon-edit copy-forward\" data-row-id=\"" + row.id + "\"><span class=\"fa fa-pencil\"></span></button> ";
                 },
-                "value": function(column, row){
+                "value": (column, row) => {
                     var yearlyValue = row[column.id] || row.costData[column.id];
                     return (
                         '<input style="width:80px" class="cost" data-year="' + column.id + '" type="text" value="' + yearlyValue + '"' + '>'
                     );
-                }
+                },
+                "filter": (column, row) => {
+                    if (row.name === 'Truck hour cost') {
+                        return '<span></span>'
+                    } else {
+                        var filterName = row.filterName;
+                        var tableRow = '';
+                        tableRow = (
+                            '<select class="filter" value="test" style="width:100%">' +
+                            '<option selected disabled hidden>' + filterName + '</option>'
+                        );
+                        tableRow += '<option data-filtertype="0" >' + 'ALL' + '</option>';
+                        if (row.name === 'Ore mining cost' || row.name === 'Waste mining cost') {
+                            this.pits.forEach(function (pit) {
+                                tableRow += '<option data-filtertype="1" data-pit-no="' + pit.pitNo + '">' + pit.pitName + '</option>';
+                            });
+                            this.pitGroups.forEach(function (pitGroup) {
+                                tableRow += '<option data-filtertype="2" data-pitgroup-no="' + pitGroup.pitGroupNumber + '">' + pitGroup.name + '</option>';
+                            });
+                        } else if (row.name === 'Stockpile cost' || row.name === 'Stockpile reclaiming cost') {
+                            this.stockpiles.forEach(function (stockpile) {
+                                tableRow += '<option data-filtertype="3" data-stockpile-no="' + stockpile.stockpileNumber + '">' + stockpile.name + '</option>';
+                            });
+                        }
+                        tableRow += '</select>';
+                        return tableRow;
+                    }
+                },
             }
         }).on("loaded.rs.jquery.bootgrid", function()
         {
