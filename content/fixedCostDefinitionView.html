@@ -9,7 +9,9 @@
     <table id="datatype-grid-basic" class="table table-condensed table-hover table-striped">
         <thead>
         <tr>
+            <th data-identifier="true" data-formatter="id" data-column-id="costId" data-width="5"></th>
             <th data-column-id="name">Category</th>
+            <th style="width:70px" data-column-id="inUse" data-formatter="inUse" data-sortable="false">In Use</th>
             <th data-column-id="filter" data-formatter="filter">Filter</th>
             <th data-column-id="commands" data-formatter="commands" data-sortable="false">Commands</th>
             <% var counter = timePeriod %>

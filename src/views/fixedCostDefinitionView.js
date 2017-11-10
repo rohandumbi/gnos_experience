@@ -38,7 +38,7 @@ export class FixedCostDefinitionView extends View{
         this.fixedCostModel.fetch({
             success: function (data) {
                 that.fixedCostData = data;
-                that.filterMissingFixedCosts();
+                //that.filterMissingFixedCosts();
                 that.initializeGrid(data);
             },
             error: function (data) {
@@ -107,6 +107,17 @@ export class FixedCostDefinitionView extends View{
         });
     }
 
+    getCostById(id) {
+        var cost;
+        this.fixedCostData.forEach(function (fixedCost) {
+            if (fixedCost.id === id) {
+                cost = fixedCost;
+                return;
+            }
+        });
+        return cost;
+    }
+
     initializeGrid(fixedCostData) {
         var that = this;
         var row = '';
@@ -114,8 +125,10 @@ export class FixedCostDefinitionView extends View{
             var fixedCost = fixedCostData[i];
             row += (
                 '<tr>' +
-                '<td>' + this.costHeadNames[fixedCost.costHead] + '</td>' +
-                '<td>' + fixedCost.filterName + '</td>' +
+                '<td>' + fixedCost.id + '</td>' +
+                '<td>' + this.costHeadNames[fixedCost.costType] + '</td>' +
+                '<td>' + fixedCost.inUse + '</td>' +
+                '<td>' + fixedCost.selectorName + '</td>' +
                 '<td>' + true + '</td>'
             )
             var scenarioStartYear = this.scenario.startYear;
@@ -135,6 +148,9 @@ export class FixedCostDefinitionView extends View{
             rowSelect: true,
             keepSelection: false,
             formatters: {
+                "id": (column, row) => {
+                    return "<span data-cpst-id='" + row.costId + "'></span>"
+                },
                 "commands": (column, row) => {
                     return "<button type=\"button\" class=\"btn btn-xs btn-default command-edit glyphicon glyphicon-edit copy-forward\" data-row-id=\"" + row.id + "\"><span class=\"fa fa-pencil\"></span></button> ";
                 },
@@ -144,25 +160,46 @@ export class FixedCostDefinitionView extends View{
                         '<input style="width:80px" class="cost" data-year="' + column.id + '" type="text" value="' + yearlyValue + '"' + '>'
                     );
                 },
+                "inUse": (column, row) => {
+                    var cost = this.getCostById(parseInt(row.costId, 10));
+                    var isDefaultRow = cost.isDefault;
+                    if (row.inUse.toString() === 'true') {
+                        if (isDefaultRow) {
+                            return (
+                                '<input class="use" type="checkbox" value="' + row.inUse + '"' + 'checked disabled >'
+                            )
+                        } else {
+                            return (
+                                '<input class="use" type="checkbox" value="' + row.inUse + '"' + 'checked  >'
+                            )
+                        }
+                    } else {
+                        return (
+                            '<input class="use" type="checkbox" value="' + row.inUse + '"' + '>'
+                        )
+                    }
+                },
                 "filter": (column, row) => {
-                    if (row.name === 'Truck hour cost') {
+                    var cost = this.getCostById(parseInt(row.costId, 10));
+                    var isDefaultRow = cost.isDefault;
+                    if (isDefaultRow) {
                         return '<span></span>'
                     } else {
-                        var filterName = row.filterName;
+                        var filterName = row.filter;
                         var tableRow = '';
                         tableRow = (
                             '<select class="filter" value="test" style="width:100%">' +
                             '<option selected disabled hidden>' + filterName + '</option>'
                         );
-                        tableRow += '<option data-filtertype="0" >' + 'ALL' + '</option>';
-                        if (row.name === 'Ore mining cost' || row.name === 'Waste mining cost') {
+                        /*tableRow += '<option data-filtertype="-1" >' + 'ALL' + '</option>';*/
+                        if (cost.costType === 0 || cost.costType === 1) {
                             this.pits.forEach(function (pit) {
                                 tableRow += '<option data-filtertype="1" data-pit-no="' + pit.pitNo + '">' + pit.pitName + '</option>';
                             });
                             this.pitGroups.forEach(function (pitGroup) {
                                 tableRow += '<option data-filtertype="2" data-pitgroup-no="' + pitGroup.pitGroupNumber + '">' + pitGroup.name + '</option>';
                             });
-                        } else if (row.name === 'Stockpile cost' || row.name === 'Stockpile reclaiming cost') {
+                        } else if (cost.costType === 2 || cost.costType === 3) {
                             this.stockpiles.forEach(function (stockpile) {
                                 tableRow += '<option data-filtertype="3" data-stockpile-no="' + stockpile.stockpileNumber + '">' + stockpile.name + '</option>';
                             });
@@ -178,11 +215,11 @@ export class FixedCostDefinitionView extends View{
             that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
             that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
 
-            if (!that.missingRowsAdded) {
+            /*if (!that.missingRowsAdded) {
                 console.log('missing cost heads: ' + that.missingCostHeads);
                 that.addMissingRows();
                 that.missingRowsAdded = true;
-            }
+             }*/
 
             that.grid.find('.copy-forward').click(function (event) {
                 var $values = $(this).closest('tr').find('.cost');
@@ -195,7 +232,7 @@ export class FixedCostDefinitionView extends View{
             that.grid.find('.cost').change(function (e) {
                 //alert('update year of opex index: ' + $(this).data('year') + ':' + $(this).closest('tr').data('row-id') + ':' + $(this).val());
                 that.updateCostData({
-                    index: $(this).closest('tr').data('row-id'),
+                    id: $(this).closest('tr').data('row-id'),
                     year: $(this).data('year'),
                     value: $(this).val()
                 });
@@ -203,7 +240,7 @@ export class FixedCostDefinitionView extends View{
         });
     }
 
-    addMissingRows() {
+    /*addMissingRows() {
         var that = this;
         this.missingCostHeads.forEach(function (missingCostHead) {
             var object = {};
@@ -223,7 +260,7 @@ export class FixedCostDefinitionView extends View{
                 dataObject: object,
                 success: function (data) {
                     //alert('Successfully added fixed cost.');
-                    data.name = that.costHeadNames[data.costHead];
+     data.name = that.costHeadNames[data.costType];
                     that.fixedCostData.push(data);
                     that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
                 },
@@ -232,7 +269,7 @@ export class FixedCostDefinitionView extends View{
                 }
             });
         });
-    }
+     }*/
 
     loadScenario(scenarioName) {
         this.$el.find('#scenario_name').val(scenarioName);
@@ -240,7 +277,7 @@ export class FixedCostDefinitionView extends View{
 
     updateCostData(options) {
         var that = this;
-        var fixedCostData = this.fixedCostData[options.index];
+        var fixedCostData = this.getCostById(options.id);
         fixedCostData.costData[options.year.toString()] = parseFloat(options.value);
         console.log(fixedCostData);
         this.fixedCostModel.update({
