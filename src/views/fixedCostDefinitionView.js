@@ -149,7 +149,7 @@ export class FixedCostDefinitionView extends View{
             keepSelection: false,
             formatters: {
                 "id": (column, row) => {
-                    return "<span data-cpst-id='" + row.costId + "'></span>"
+                    return "<span data-cost-id='" + row.costId + "'></span>"
                 },
                 "commands": (column, row) => {
                     return "<button type=\"button\" class=\"btn btn-xs btn-default command-edit glyphicon glyphicon-edit copy-forward\" data-row-id=\"" + row.id + "\"><span class=\"fa fa-pencil\"></span></button> ";
