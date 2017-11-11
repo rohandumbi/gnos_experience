@@ -164,7 +164,7 @@ export class FixedCostDefinitionView extends View{
                     var cost = this.getCostById(parseInt(row.costId, 10));
                     var isDefaultRow = cost.isDefault;
                     if (row.inUse.toString() === 'true') {
-                        if (isDefaultRow) {
+                        if (isDefaultRow && !(cost.costType === 4)) {
                             return (
                                 '<input class="use" type="checkbox" value="' + row.inUse + '"' + 'checked disabled >'
                             )
@@ -209,32 +209,39 @@ export class FixedCostDefinitionView extends View{
                     }
                 },
             }
-        }).on("loaded.rs.jquery.bootgrid", function()
+        }).on("loaded.rs.jquery.bootgrid", ()=>
         {
             /* Executes after data is loaded and rendered */
-            that.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
-            that.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
+            this.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
+            this.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
 
             /*if (!that.missingRowsAdded) {
                 console.log('missing cost heads: ' + that.missingCostHeads);
                 that.addMissingRows();
                 that.missingRowsAdded = true;
              }*/
+            this.grid.find(".use").change((e) => {
+                var costInUse = $(e.currentTarget).is(':checked');
+                that.updateInUse({
+                    id: $(e.currentTarget).closest('tr').data('row-id'),
+                    inUse: costInUse
+                });
+            });
 
-            that.grid.find('.copy-forward').click(function (event) {
-                var $values = $(this).closest('tr').find('.cost');
+            this.grid.find('.copy-forward').click((e) => {
+                var $values = $(e.currentTarget).closest('tr').find('.cost');
                 var firstValue = $values.first().val();
                 console.log('First value: ' + $values[0]);
                 $values.val(firstValue);
                 $values.trigger('change');
             });
 
-            that.grid.find('.cost').change(function (e) {
+            this.grid.find('.cost').change((e)=> {
                 //alert('update year of opex index: ' + $(this).data('year') + ':' + $(this).closest('tr').data('row-id') + ':' + $(this).val());
-                that.updateCostData({
-                    id: $(this).closest('tr').data('row-id'),
-                    year: $(this).data('year'),
-                    value: $(this).val()
+                this.updateCostData({
+                    id: $(e.currentTarget).closest('tr').data('row-id'),
+                    year: $(e.currentTarget).data('year'),
+                    value: $(e.currentTarget).val()
                 });
             });
         });
@@ -275,18 +282,26 @@ export class FixedCostDefinitionView extends View{
         this.$el.find('#scenario_name').val(scenarioName);
     }
 
+    updateInUse(options) {
+        var cost = this.getCostById(options.id);
+        cost['inUse'] = options.inUse;
+        this.updateCost(cost);
+    }
+
     updateCostData(options) {
-        var that = this;
-        var fixedCostData = this.getCostById(options.id);
-        fixedCostData.costData[options.year.toString()] = parseFloat(options.value);
-        console.log(fixedCostData);
+        var cost = this.getCostById(options.id);
+        cost.costData[options.year.toString()] = parseFloat(options.value);
+        this.updateCost(cost);
+    }
+
+    updateCost(cost) {
         this.fixedCostModel.update({
-            dataObject: fixedCostData,
-            success: function (data) {
+            dataObject: cost,
+            success: (data) => {
                 //alert('Successfully updated.');
                 //that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
             },
-            error: function (data) {
+            error: (data) => {
                 alert('failed update' + data);
             }
         });
