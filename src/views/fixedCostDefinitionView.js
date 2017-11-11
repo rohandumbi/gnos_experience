@@ -89,9 +89,30 @@ export class FixedCostDefinitionView extends View{
             this.$el.find("#datatype-grid-basic").addClass('long-grid');
         }
         this.fetchPits();
+        this.$el.find('#newCostType').change((event) => {
+            var $selectedCostType = this.$el.find('select#newCostType option:checked');
+            var costType = parseInt($selectedCostType.data('costtype'), 10);
+            var newFilterOptions = '';
+            if (costType === 0 || costType === 1) {
+                this.pits.forEach(function (pit) {
+                    newFilterOptions += '<option data-filtertype="1" data-pit-no="' + pit.pitNo + '">' + pit.pitName + '</option>';
+                });
+                this.pitGroups.forEach(function (pitGroup) {
+                    newFilterOptions += '<option data-filtertype="2" data-pitgroup-no="' + pitGroup.pitGroupNumber + '">' + pitGroup.name + '</option>';
+                });
+            } else if (costType === 2 || costType === 3) {
+                this.stockpiles.forEach(function (stockpile) {
+                    newFilterOptions += '<option data-filtertype="3" data-stockpile-no="' + stockpile.stockpileNumber + '">' + stockpile.name + '</option>';
+                });
+            }
+            this.$el.find('#newFilter').html(newFilterOptions);
+        });
+        this.$el.find('#addCostButton').click((e) => {
+            this.addCostToGrid(e);
+        });
     }
 
-    filterMissingFixedCosts() {
+    /*filterMissingFixedCosts() {
         var that = this;
         this.missingCostHeads = [];
         this.costHeads.forEach(function (costHead) {
@@ -105,7 +126,7 @@ export class FixedCostDefinitionView extends View{
                 that.missingCostHeads.push(costHead);
             }
         });
-    }
+     }*/
 
     getCostById(id) {
         var cost;
@@ -155,7 +176,8 @@ export class FixedCostDefinitionView extends View{
                     return "<button type=\"button\" class=\"btn btn-xs btn-default command-edit glyphicon glyphicon-edit copy-forward\" data-row-id=\"" + row.id + "\"><span class=\"fa fa-pencil\"></span></button> ";
                 },
                 "value": (column, row) => {
-                    var yearlyValue = row[column.id] || row.costData[column.id];
+                    //var yearlyValue = row[column.id] || row.costData[column.id];
+                    var yearlyValue = row[column.id];
                     return (
                         '<input style="width:80px" class="cost" data-year="' + column.id + '" type="text" value="' + yearlyValue + '"' + '>'
                     );
@@ -244,22 +266,18 @@ export class FixedCostDefinitionView extends View{
                     value: $(e.currentTarget).val()
                 });
             });
+        });
+        var $addButton = $('<button id="addCost" type="button" class="btn btn-default" data-toggle="modal" data-target="#newCostModal"></button>');
+        $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
 
-            var $addButton = $('<button id="addCost" type="button" class="btn btn-default" data-toggle="modal" data-target="#newCostModal"></button>');
-            $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
+        var $removeButton = $('<button type="button" class="btn btn-default"></button>');
+        $removeButton.append('<span class="glyphicon glyphicon-trash"></span>');
 
-            var $removeButton = $('<button type="button" class="btn btn-default"></button>');
-            $removeButton.append('<span class="glyphicon glyphicon-trash"></span>');
+        this.$el.find(".actionBar").append($addButton);
+        this.$el.find(".actionBar").append($removeButton);
 
-            this.$el.find(".actionBar").append($addButton);
-            this.$el.find(".actionBar").append($removeButton);
-
-            $removeButton.click((e) => {
-                this.deleteRows(e);
-            });
-            this.$el.find('#addCostButton').click((e) => {
-                this.addCostToGrid(e);
-            });
+        $removeButton.click((e) => {
+            this.deleteRows(e);
         });
     }
 
@@ -267,8 +285,56 @@ export class FixedCostDefinitionView extends View{
         alert('TODO: delete selected rows');
     }
 
-    addCostToGrid() {
-        alert('TODO: add cost to grid');
+    addCostToGrid(e) {
+        var costType = this.$el.find('select#newCostType option:checked').data('costtype');
+        var filterType = this.$el.find('select#newFilter option:checked').data('filtertype');
+        var filterName = this.$el.find('select#newFilter option:checked').val();
+        if (costType === undefined) {
+            alert('Please select the cost type.');
+            return;
+        }
+        if ((filterType === undefined) || !filterName) {
+            alert('Please select the filter.');
+            return;
+        }
+        var newCost = {};
+        var costData = {};
+        newCost['costType'] = costType;
+        newCost['selectionType'] = filterType;
+        newCost['selectorName'] = filterName;
+        newCost['inUse'] = true;
+        newCost['isDefault'] = false;
+        var startYear = this.scenario.startYear;
+        var presentYear = startYear + this.scenario.timePeriod;
+
+        for (var i = 0; i < this.scenario.timePeriod; i++) {
+            presentYear = startYear + i;
+            costData[presentYear.toString()] = 0;
+        }
+        newCost['costData'] = costData;
+        this.addCost({
+            cost: newCost,
+            success: (data)=> {
+                var rowData = {};
+                rowData['costId'] = data.id;
+                rowData['name'] = this.costHeadNames[data.costType];
+                rowData['inUse'] = data.inUse;
+                rowData['filter'] = data.selectorName;
+                rowData['commands'] = true;
+
+                var scenarioStartYear = this.scenario.startYear;
+                var scenarioTimePeriod = this.scenario.timePeriod;
+                var costData = data.costData;
+                for (var j = 0; j < scenarioTimePeriod; j++) {
+                    var presentYear = scenarioStartYear + j;
+                    //row += '<td>' + costData[presentYear.toString()] + '</td>';
+                    rowData[presentYear.toString()] = costData[presentYear.toString()];
+                }
+
+                this.$el.find("#datatype-grid-basic").bootgrid("append", [rowData]);
+                this.fixedCostData.push(data);
+            }
+        });
     }
 
     /*addMissingRows() {
