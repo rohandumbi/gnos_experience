@@ -244,7 +244,31 @@ export class FixedCostDefinitionView extends View{
                     value: $(e.currentTarget).val()
                 });
             });
+
+            var $addButton = $('<button id="addCost" type="button" class="btn btn-default" data-toggle="modal"></button>');
+            $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
+
+            var $removeButton = $('<button type="button" class="btn btn-default"></button>');
+            $removeButton.append('<span class="glyphicon glyphicon-trash"></span>');
+
+            this.$el.find(".actionBar").append($addButton);
+            this.$el.find(".actionBar").append($removeButton);
+
+            $removeButton.click(() => {
+                this.deleteRows();
+            });
+            $addButton.click(() => {
+                this.addCostToGrid();
+            });
         });
+    }
+
+    deleteRows() {
+        alert('TODO: delete selected rows');
+    }
+
+    addCostToGrid() {
+        alert('TODO: add cost to grid');
     }
 
     /*addMissingRows() {
@@ -285,24 +309,43 @@ export class FixedCostDefinitionView extends View{
     updateInUse(options) {
         var cost = this.getCostById(options.id);
         cost['inUse'] = options.inUse;
-        this.updateCost(cost);
+        this.updateCost({cost: cost});
     }
 
     updateCostData(options) {
         var cost = this.getCostById(options.id);
         cost.costData[options.year.toString()] = parseFloat(options.value);
-        this.updateCost(cost);
+        this.updateCost({cost: cost});
     }
 
-    updateCost(cost) {
+    updateCost(options) {
         this.fixedCostModel.update({
-            dataObject: cost,
+            dataObject: options.cost,
             success: (data) => {
+                if (options.success) {
+                    options.success(data);
+                }
                 //alert('Successfully updated.');
                 //that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
             },
             error: (data) => {
                 alert('failed update' + data);
+            }
+        });
+    }
+
+    addCost(options) {
+        this.fixedCostModel.add({
+            dataObject: options.cost,
+            success: (data) => {
+                //alert('Successfully added fixed cost.');
+                //this.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
+                if (options.success) {
+                    options.success(data);
+                }
+            },
+            error: (data) => {
+                alert('Error creating new fixed cost data.');
             }
         });
     }
