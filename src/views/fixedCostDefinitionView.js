@@ -244,9 +244,19 @@ export class FixedCostDefinitionView extends View{
              }*/
             this.grid.find(".use").change((e) => {
                 var costInUse = $(e.currentTarget).is(':checked');
-                that.updateInUse({
+                this.updateInUse({
                     id: $(e.currentTarget).closest('tr').data('row-id'),
                     inUse: costInUse
+                });
+            });
+
+            this.grid.find(".filter").change((e) => {
+                var selectorName = $(e.currentTarget).find(":selected").val();
+                var selectionType = $(e.currentTarget).find(":selected").data('filtertype');
+                this.updateFilter({
+                    id: $(e.currentTarget).closest('tr').data('row-id'),
+                    selectorName: selectorName,
+                    selectionType: selectionType
                 });
             });
 
@@ -282,7 +292,25 @@ export class FixedCostDefinitionView extends View{
     }
 
     deleteRows() {
-        alert('TODO: delete selected rows');
+        var selectedRowIds = this.$el.find("#datatype-grid-basic").bootgrid("getSelectedRows");
+        var that = this;
+        selectedRowIds.forEach((selectedRowId) => {
+            var cost = this.getCostById(parseInt(selectedRowId, 10));
+            if (cost.isDefault) {
+                return;//do not delete default costs
+            }
+            this.fixedCostModel.delete({
+                url: 'http://localhost:4567/fixedcost',
+                id: selectedRowId,
+                success: function (data) {
+                    //alert('Successfully deleted dependencies.');
+                },
+                error: function (data) {
+                    alert('Failed to delete dependencies.');
+                }
+            });
+        });
+        this.$el.find("#datatype-grid-basic").bootgrid("remove");
     }
 
     addCostToGrid(e) {
@@ -384,6 +412,13 @@ export class FixedCostDefinitionView extends View{
         this.updateCost({cost: cost});
     }
 
+    updateFilter(options) {
+        var cost = this.getCostById(options.id);
+        cost['selectorName'] = options.selectorName;
+        cost['selectionType'] = options.selectionType;
+        this.updateCost({cost: cost});
+    }
+
     updateCost(options) {
         this.fixedCostModel.update({
             dataObject: options.cost,
@@ -391,8 +426,6 @@ export class FixedCostDefinitionView extends View{
                 if (options.success) {
                     options.success(data);
                 }
-                //alert('Successfully updated.');
-                //that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
             },
             error: (data) => {
                 alert('failed update' + data);
