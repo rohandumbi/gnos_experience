@@ -245,7 +245,7 @@ export class FixedCostDefinitionView extends View{
                 });
             });
 
-            var $addButton = $('<button id="addCost" type="button" class="btn btn-default" data-toggle="modal"></button>');
+            var $addButton = $('<button id="addCost" type="button" class="btn btn-default" data-toggle="modal" data-target="#newCostModal"></button>');
             $addButton.append('<span class="glyphicon glyphicon-plus"></span>');
 
             var $removeButton = $('<button type="button" class="btn btn-default"></button>');
@@ -254,11 +254,11 @@ export class FixedCostDefinitionView extends View{
             this.$el.find(".actionBar").append($addButton);
             this.$el.find(".actionBar").append($removeButton);
 
-            $removeButton.click(() => {
-                this.deleteRows();
+            $removeButton.click((e) => {
+                this.deleteRows(e);
             });
-            $addButton.click(() => {
-                this.addCostToGrid();
+            this.$el.find('#addCostButton').click((e) => {
+                this.addCostToGrid(e);
             });
         });
     }
