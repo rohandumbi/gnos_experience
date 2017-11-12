@@ -17,6 +17,12 @@ export class FixedCostDefinitionView extends View{
         this.stockpileModel = new StockpileModel({projectId: this.projectId})
         this.costHeadNames = ['Ore mining cost', 'Waste mining cost', 'Stockpile cost', 'Stockpile reclaiming cost', 'Truck hour cost'];
         this.costHeads = [0, 1, 2, 3, 4];
+        this.currentPageCount = 1;
+        this.selectedRowIds = [];
+    }
+
+    removeFromSelectedRowsArray(rowId) {
+
     }
 
     getHtml() {
@@ -112,22 +118,6 @@ export class FixedCostDefinitionView extends View{
         });
     }
 
-    /*filterMissingFixedCosts() {
-        var that = this;
-        this.missingCostHeads = [];
-        this.costHeads.forEach(function (costHead) {
-            var present = false;
-            that.fixedCostData.forEach(function (fixedCost) {
-                if (fixedCost.costHead === costHead) {
-                    present = true;
-                }
-            })
-            if (!present) {
-                that.missingCostHeads.push(costHead);
-            }
-        });
-     }*/
-
     getCostById(id) {
         var cost;
         this.fixedCostData.forEach(function (fixedCost) {
@@ -140,34 +130,30 @@ export class FixedCostDefinitionView extends View{
     }
 
     initializeGrid(fixedCostData) {
-        var that = this;
-        var row = '';
-        for (var i = 0; i < fixedCostData.length; i++) {
-            var fixedCost = fixedCostData[i];
-            row += (
-                '<tr>' +
-                '<td>' + fixedCost.id + '</td>' +
-                '<td>' + this.costHeadNames[fixedCost.costType] + '</td>' +
-                '<td>' + fixedCost.inUse + '</td>' +
-                '<td>' + fixedCost.selectorName + '</td>' +
-                '<td>' + true + '</td>'
-            )
-            var scenarioStartYear = this.scenario.startYear;
-            var scenarioTimePeriod = this.scenario.timePeriod;
-            var costData = fixedCost.costData;
-            for (var j = 0; j < scenarioTimePeriod; j++) {
-                var presentYear = scenarioStartYear + j;
-                row += '<td>' + costData[presentYear.toString()] + '</td>';
-            }
-            row += '</tr>';
-        }
-        this.$el.find("#tableBody").append($(row));
         this.grid = this.$el.find("#datatype-grid-basic").bootgrid({
+            ajax: true,
+            ajaxSettings: {
+                method: "GET",
+                dataFilter: (data)=> {
+                    var jsonData = JSON.parse(data);
+                    var formattedRowData = [];
+                    jsonData.forEach((cost)=> {
+                        formattedRowData.push(this.mapCostToTableData(cost));
+                    });
+                    var returnedData = {};
+                    returnedData.current = this.currentPageCount;
+                    returnedData.rowCount = 15;
+                    returnedData.rows = formattedRowData;
+                    returnedData.total = formattedRowData.length;
+                    return JSON.stringify(returnedData);
+                }
+            },
+            url: "http://localhost:4567/scenario/" + this.scenario.id + "/fixedcosts",
             rowCount: [15, 10, 20, 25],
             selection: true,
             multiSelect: true,
             rowSelect: true,
-            keepSelection: false,
+            keepSelection: true,
             formatters: {
                 "id": (column, row) => {
                     return "<span data-cost-id='" + row.costId + "'></span>"
@@ -235,6 +221,7 @@ export class FixedCostDefinitionView extends View{
         {
             /* Executes after data is loaded and rendered */
             this.$el.find(".fa-search").addClass('glyphicon glyphicon-search');
+            this.$el.find(".fa-refresh").addClass('glyphicon glyphicon-refresh');
             this.$el.find(".fa-th-list").addClass('glyphicon glyphicon-th-list');
 
             /*if (!that.missingRowsAdded) {
@@ -248,6 +235,17 @@ export class FixedCostDefinitionView extends View{
                     id: $(e.currentTarget).closest('tr').data('row-id'),
                     inUse: costInUse
                 });
+            });
+
+            this.grid.find(".select-box").change((e) => {
+                var isSelected = $(e.currentTarget).is(':checked');
+                var costId = $(e.currentTarget).closest('tr').data('row-id');
+                if (isSelected) {
+                    this.selectedRowIds.push(costId);
+                } else {
+                    var index = this.selectedRowIds.indexOf(costId);
+                    this.selectedRowIds.splice(index, 1);
+                }
             });
 
             this.grid.find(".filter").change((e) => {
@@ -292,25 +290,35 @@ export class FixedCostDefinitionView extends View{
     }
 
     deleteRows() {
-        var selectedRowIds = this.$el.find("#datatype-grid-basic").bootgrid("getSelectedRows");
-        var that = this;
-        selectedRowIds.forEach((selectedRowId) => {
-            var cost = this.getCostById(parseInt(selectedRowId, 10));
-            if (cost.isDefault) {
-                return;//do not delete default costs
-            }
-            this.fixedCostModel.delete({
-                url: 'http://localhost:4567/fixedcost',
-                id: selectedRowId,
-                success: function (data) {
-                    //alert('Successfully deleted dependencies.');
-                },
-                error: function (data) {
-                    alert('Failed to delete dependencies.');
+        if (this.selectedRowIds.length > 0) {
+            var deletedRowsCount = 0;
+            this.selectedRowIds.forEach((selectedRowId)=> {
+                var cost = this.getCostById(parseInt(selectedRowId, 10));
+                if (cost.isDefault) {
+                    deletedRowsCount++;
+                    if (deletedRowsCount === this.selectedRowIds.length) {
+                        this.p
+                        this.$el.find("#datatype-grid-basic").bootgrid("reload");
+                        this.selectedRowIds = [];
+                    }
+                } else {
+                    this.fixedCostModel.delete({
+                        url: 'http://localhost:4567/fixedcost',
+                        id: selectedRowId,
+                        success: (data)=> {
+                            deletedRowsCount++;
+                            if (deletedRowsCount === this.selectedRowIds.length) {
+                                this.$el.find("#datatype-grid-basic").bootgrid("reload");
+                                this.selectedRowIds = [];
+                            }
+                        },
+                        error: (data)=> {
+                            alert('Failed to delete dependencies.');
+                        }
+                    });
                 }
             });
-        });
-        this.$el.find("#datatype-grid-basic").bootgrid("remove");
+        }
     }
 
     addCostToGrid(e) {
@@ -343,26 +351,29 @@ export class FixedCostDefinitionView extends View{
         this.addCost({
             cost: newCost,
             success: (data)=> {
-                var rowData = {};
-                rowData['costId'] = data.id;
-                rowData['name'] = this.costHeadNames[data.costType];
-                rowData['inUse'] = data.inUse;
-                rowData['filter'] = data.selectorName;
-                rowData['commands'] = true;
-
-                var scenarioStartYear = this.scenario.startYear;
-                var scenarioTimePeriod = this.scenario.timePeriod;
-                var costData = data.costData;
-                for (var j = 0; j < scenarioTimePeriod; j++) {
-                    var presentYear = scenarioStartYear + j;
-                    //row += '<td>' + costData[presentYear.toString()] + '</td>';
-                    rowData[presentYear.toString()] = costData[presentYear.toString()];
-                }
-
-                this.$el.find("#datatype-grid-basic").bootgrid("append", [rowData]);
+                var rowData = this.mapCostToTableData(data);
                 this.fixedCostData.push(data);
+                this.$el.find("#datatype-grid-basic").bootgrid("reload");
             }
         });
+    }
+
+    mapCostToTableData(cost) {
+        var rowData = {};
+        rowData['costId'] = cost.id;
+        rowData['name'] = this.costHeadNames[cost.costType];
+        rowData['inUse'] = cost.inUse;
+        rowData['filter'] = cost.selectorName;
+        rowData['commands'] = true;
+        var scenarioStartYear = this.scenario.startYear;
+        var scenarioTimePeriod = this.scenario.timePeriod;
+        var costData = cost.costData;
+        for (var j = 0; j < scenarioTimePeriod; j++) {
+            var presentYear = scenarioStartYear + j;
+            //row += '<td>' + costData[presentYear.toString()] + '</td>';
+            rowData[presentYear.toString()] = costData[presentYear.toString()];
+        }
+        return rowData;
     }
 
     /*addMissingRows() {
