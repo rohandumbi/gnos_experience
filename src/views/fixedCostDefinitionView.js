@@ -48,7 +48,7 @@ export class FixedCostDefinitionView extends View{
                 that.initializeGrid(data);
             },
             error: function (data) {
-                alert('Failed to get fixed costs.');
+                alert(data.message);
             }
         });
     }
@@ -59,8 +59,8 @@ export class FixedCostDefinitionView extends View{
                 this.pits = data;
                 this.fetchPitGroups();
             },
-            error: ()=> {
-                alert('Error fetching pits.');
+            error: (data)=> {
+                alert(data.message);
             }
         });
     }
@@ -71,8 +71,8 @@ export class FixedCostDefinitionView extends View{
                 this.pitGroups = data;
                 this.fetchStockpiles();
             },
-            error: ()=> {
-                alert('Error fetching pits.');
+            error: (data)=> {
+                alert(data.message);
             }
         });
     }
@@ -83,8 +83,8 @@ export class FixedCostDefinitionView extends View{
                 this.stockpiles = data;
                 this.fetchFixedCosts();
             },
-            error: ()=> {
-                alert('Error fetching pits.');
+            error: (data)=> {
+                alert(data.message);
             }
         });
     }
@@ -137,6 +137,7 @@ export class FixedCostDefinitionView extends View{
                 dataFilter: (data)=> {
                     var jsonData = JSON.parse(data);
                     var formattedRowData = [];
+                    this.fixedCostData = jsonData;
                     jsonData.forEach((cost)=> {
                         formattedRowData.push(this.mapCostToTableData(cost));
                     });
@@ -313,7 +314,7 @@ export class FixedCostDefinitionView extends View{
                             }
                         },
                         error: (data)=> {
-                            alert('Failed to delete dependencies.');
+                            alert(data.message);
                         }
                     });
                 }
@@ -376,37 +377,6 @@ export class FixedCostDefinitionView extends View{
         return rowData;
     }
 
-    /*addMissingRows() {
-        var that = this;
-        this.missingCostHeads.forEach(function (missingCostHead) {
-            var object = {};
-            object['costHead'] = missingCostHead;
-            //object['mappingType'] = 1;
-            //object['mappedFieldName'] = that.fields[0].name;
-            var costData = {};
-            var startYear = that.scenario.startYear;
-            var presentYear = startYear + that.scenario.timePeriod;
-
-            for (var i = 0; i < that.scenario.timePeriod; i++) {
-                presentYear = startYear + i;
-                costData[presentYear.toString()] = 0;
-            }
-            object['costData'] = costData;
-            that.fixedCostModel.add({
-                dataObject: object,
-                success: function (data) {
-                    //alert('Successfully added fixed cost.');
-     data.name = that.costHeadNames[data.costType];
-                    that.fixedCostData.push(data);
-                    that.$el.find("#datatype-grid-basic").bootgrid("append", [data]);
-                },
-                error: function () {
-                    alert('Error creating new fixed cost data.');
-                }
-            });
-        });
-     }*/
-
     loadScenario(scenarioName) {
         this.$el.find('#scenario_name').val(scenarioName);
     }
@@ -439,7 +409,7 @@ export class FixedCostDefinitionView extends View{
                 }
             },
             error: (data) => {
-                alert('failed update' + data);
+                alert(data.message);
             }
         });
     }
@@ -455,7 +425,7 @@ export class FixedCostDefinitionView extends View{
                 }
             },
             error: (data) => {
-                alert('Error creating new fixed cost data.');
+                alert(data.message);
             }
         });
     }

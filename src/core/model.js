@@ -20,12 +20,12 @@ export class Model {
                 if (xhr.status === 0) {
                     alert('Service not available ');
                 } else {
-                    alert(textStatus + ": " + xhr.responseText);
+                    if (options.error) {
+                        options.error(xhr.responseJSON, xhr, textStatus, errorThrown);
+                    } else {
+                        alert(textStatus + ": " + xhr.responseText);
+                    }
                 }
-                //commented out for the time being
-                /*if(options.error){
-                 options.error(xhr, textStatus, errorThrown);
-                 }*/
             },
             statusCode: {
                 401: function (xhr, textStatus, errorThrown) {
@@ -57,7 +57,11 @@ export class Model {
                 if (xhr.status === 0) {
                     alert('Service not available ');
                 } else {
-                    alert(textStatus + ": " + xhr.responseText);
+                    if (options.error) {
+                        options.error(xhr.responseJSON, xhr, textStatus, errorThrown);
+                    } else {
+                        alert(textStatus + ": " + xhr.responseText);
+                    }
                 }
                 //commented out for the time being
                 /*if(options.error){
@@ -98,7 +102,11 @@ export class Model {
                 if (xhr.status === 0) {
                     alert('Service not available ');
                 } else {
-                    alert(textStatus + ": " + xhr.responseText);
+                    if (options.error) {
+                        options.error(xhr.responseJSON, xhr, textStatus, errorThrown);
+                    } else {
+                        alert(textStatus + ": " + JSON.parse(xhr).responseText.message);
+                    }
                 }
                 //commented out for the time being
                 /*if(options.error){
@@ -132,12 +140,13 @@ export class Model {
                 if (xhr.status === 0) {
                     alert('Service not available ');
                 } else {
-                    alert(textStatus + ": " + xhr.responseText);
+                    if (options.error) {
+                        options.error(xhr.responseJSON, xhr, textStatus, errorThrown);
+                    } else {
+                        alert(textStatus + ": " + xhr.responseText);
+                    }
                 }
-                //commented out for the time being
-                /*if(options.error){
-                 options.error(xhr, textStatus, errorThrown);
-                 }*/
+
             },
             statusCode: {
                 401: function (xhr, textStatus, errorThrown) {
