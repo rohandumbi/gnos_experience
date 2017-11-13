@@ -9,7 +9,10 @@
     <table id="datatype-grid-basic" class="table table-condensed table-hover table-striped">
         <thead>
         <tr>
+            <th data-identifier="true" data-formatter="id" data-column-id="costId" data-width="5"></th>
             <th data-column-id="name">Category</th>
+            <th style="width:70px" data-column-id="inUse" data-formatter="inUse" data-sortable="false">In Use</th>
+            <th data-column-id="filter" data-formatter="filter">Filter</th>
             <th data-column-id="commands" data-formatter="commands" data-sortable="false">Commands</th>
             <% var counter = timePeriod %>
             <% for(var i=0; i< counter; i++) { %>
@@ -22,37 +25,39 @@
         <tbody id="tableBody">
         </tbody>
     </table>
-    <!--Modal Dialog for model definition-->
-    <div class="modal fade" id="modelDefinitionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+
+<!--Modal Dialog for new cost definition-->
+<div class="modal fade" id="newCostModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Scenario Definition</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Add cost</h4>
                 </div>
                 <div class="modal-body">
                     <form class="form">
-                        <div class="form-group">
-                            <label for="new_scenario_name">Scenario Name:</label>
-                            <input type="text" class="form-control" id="new_scenario_name">
+                        <div id="costList" class="form-group">
+                            <label>Select cost:</label>
+                            <select id="newCostType" class="new-cost-name form-control">
+                                <option selected disabled hidden></option>
+                                <option data-costtype="0">Ore mining cost</option>
+                                <option data-costtype="1">Waste mining cost</option>
+                                <option data-costtype="2">Stockpile cost</option>
+                                <option data-costtype="3">Stockpile reclaiming cost</option>
+                            </select>
                         </div>
-                        <div class="form-group">
-                            <label for="start_year">Start Year:</label>
-                            <input type="text" class="form-control" id="start_year">
-                        </div>
-                        <div class="form-group">
-                            <label for="time_period">Time Period:</label>
-                            <input type="text" class="form-control" id="time_period">
-                        </div>
-                        <div class="form-group">
-                            <label for="discount_factor">Discount Factor:</label>
-                            <input type="text" class="form-control" id="discount_factor">
+                        <div id="filterList" class="form-group">
+                            <label>Select filter:</label>
+                            <select id="newFilter" class="new-cost-name form-control">
+                                <option selected disabled hidden></option>
+                            </select>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button id="addScenario" type="button" class="btn btn-primary" data-dismiss="modal">Add model</button>
+                    <button id="addCostButton" type="button" class="btn btn-primary" data-dismiss="modal">Add</button>
                 </div>
             </div>
         </div>
