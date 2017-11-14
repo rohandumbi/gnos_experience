@@ -34,7 +34,7 @@
                 <button data-toggle="modal" data-target="#productModal" type="button" class="btn btn-primary">Create
                     Product
                 </button>
-                <button data-toggle="modal" data-target="#productJoinModal" type="button" class="btn btn-primary">Create
+                <button data-toggle="modal" id="btnCreateProductJoin" type="button" class="btn btn-primary">Create
                     Product Join
                 </button>
                 <button id="btn-zoomin" type="button" class="btn btn-warning">Zoom In</button>
@@ -100,11 +100,15 @@
                     <h4 class="modal-title" id="myProductLabel">Product Join Definition</h4>
                 </div>
                 <div class="modal-body">
-                    <form class="form-inline">
+                    <form class="form">
                         <form class="form">
                             <div class="form-group">
                                 <label for="product_join_name">Product Join Name:</label>
                                 <input type="text" class="form-control" id="product_join_name">
+                            </div>
+                            <div class="form-group">
+                                <label for="productJoinModalProductList">List of Products:</label>
+                                <div id="productJoinModalProductList" style="max-height: 400px; overflow:auto"></div>
                             </div>
                             <br/>
                         </form>

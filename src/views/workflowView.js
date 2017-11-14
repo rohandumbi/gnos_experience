@@ -1075,6 +1075,14 @@ export class WorkflowView extends View{
                 that.system.parameters({friction: 0.5})
             }
         });
+        this.$el.find('#btnCreateProductJoin').click((event) => {
+            var productList = '';
+            this.products.forEach((product)=> {
+                productList += '<div class="checkbox"><label><input type="checkbox" value="' + product.name + '">' + product.name + '</label></div>'
+            });
+            this.$el.find('#productJoinModalProductList').html(productList)
+            this.$el.find('#productJoinModal').modal();
+        });
     }
 
     addProcessJoin() {
@@ -1106,6 +1114,38 @@ export class WorkflowView extends View{
                 that.productJoins.push(data);
                 that.addProductJoinsToGraph([data]);
                 that.$el.find('#product_join_name').val('');
+                var checkedProducts = that.$el.find('#productJoinModalProductList').find('input:checked');
+                checkedProducts.each((index, checkedProduct)=> {
+                    var checkedProductName = $(checkedProduct).val();
+                    that.addProductToProductJoin({
+                        productJoinName: newProductJoin.name,
+                        productName: checkedProductName
+                    })
+                });
+            }
+        });
+    }
+
+    addProductToProductJoin(options) {
+        var productJoinName = options.productJoinName;
+        var productName = options.productName;
+        var updatedProductJoin = {}
+        updatedProductJoin['name'] = productJoinName;
+        updatedProductJoin['childType'] = 1;
+        updatedProductJoin['child'] = productName;
+        this.productJoinModel.add({
+            dataObject: updatedProductJoin,
+            success: (data) => {
+                var productNode = this.system.getNode(productName);
+                var productJoinNode = this.system.getNode(productJoinName);
+                this.system.addEdge(productNode, productJoinNode, {
+                    directed: true,
+                    weight: 1,
+                    color: '#333333'
+                });
+            },
+            error: function (data) {
+                alert('Error adding product to join');
             }
         });
     }
