@@ -1,13 +1,14 @@
 import {View} from '../core/view';
 import {ProcessModel} from '../models/processModel';
 import {GnosModel} from '../models/gnosModel';
-import {ProcessTreeNodeModel} from '../models/processTreeNodeModel'
-import {ProcessJoinModel} from '../models/processJoinModel'
-import {ProductModel} from '../models/productModel'
-import {ProductJoinModel} from '../models/productJoinModel'
-import {ExpressionModel} from '../models/expressionModel'
-import {UnitModel} from '../models/unitModel'
-import {ProductGradeModel} from '../models/productGradeModel'
+import {ProcessTreeNodeModel} from '../models/processTreeNodeModel';
+import {ProcessJoinModel} from '../models/processJoinModel';
+import {ProductModel} from '../models/productModel';
+import {ProductJoinModel} from '../models/productJoinModel';
+import {ExpressionModel} from '../models/expressionModel';
+import {UnitModel} from '../models/unitModel';
+import {ProductGradeModel} from '../models/productGradeModel';
+import {MultiProductOverlay} from '../overlays/multiProductOverlay';
 
 export class WorkflowView extends View{
 
@@ -22,6 +23,7 @@ export class WorkflowView extends View{
         this.productJoinModel = new ProductJoinModel({projectId: options.projectId});
         this.expressionModel = new ExpressionModel({projectId: options.projectId});
         this.unitModel = new UnitModel({projectId: options.projectId});
+        this.multiProductOverlay = new MultiProductOverlay();
         this.scaleFactor = 1;
         //this.productGradeModel = new ProductGradeModel({})
     }
@@ -1082,6 +1084,9 @@ export class WorkflowView extends View{
             });
             this.$el.find('#productJoinModalProductList').html(productList)
             this.$el.find('#productJoinModal').modal();
+        });
+        this.$el.find('#createMultiProduct').click((event)=> {
+            this.multiProductOverlay.show();
         });
     }
 

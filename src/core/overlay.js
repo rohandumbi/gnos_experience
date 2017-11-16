@@ -5,9 +5,26 @@ export class Overlay {
             throw 'content url not provided';
         }
         this._callbacks = {};
-        this.$el = $('<div class="gnos-overlay"><a href="javascript:void(0)" class="closebtn">&times;</a><div class="gnos-overlay-content"></div></div>');
-        this.$el.click(this.close);
         this.contentUrl = options.contentUrl;
+        this.$el = $(`<div class="modal animated bounceIn fade" id="multiProductModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                        <div class="modal-dialog" style="width:100%;height:100%;position:fixed;" role="document">
+                            <div class="modal-content" style="height:95%;">
+                                <div class="modal-header" style="height:5%;">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    <h4 class="modal-title"></h4>
+                                </div>
+                                <div class="modal-body" style="height:85%;"></div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary" data-dismiss="modal">Done</button>
+                                </div>
+                            </div>
+                        </div>
+                       </div>`);
+        this.$el.find('.modal-title').html(options.title);
+
     }
 
     show(model) {
@@ -16,8 +33,9 @@ export class Overlay {
                 var _ = require('underscore');
                 var template = _.template(html);
                 var $template = $(template(model));
-                this.$el.find('.gnos-overlay-content').html($template);
-                this.$el.width('100%');
+                $('body').append(this.$el);
+                this.$el.find('.modal-body').html($template);
+                this.$el.modal();
                 this.onDomLoaded();
 
             })
@@ -28,11 +46,12 @@ export class Overlay {
 
     close(event) {
         alert('should close');
-        this.$el.width('100%');
+        /*this.$el.width('0%');
+         this.$el.remove();*/
     }
 
     getHtml() {
-        var promise = new Promise(function (resolve, reject) {
+        var promise = new Promise((resolve, reject) => {
             $.get(this.contentUrl, function (data) {
                 resolve(data);
             })
