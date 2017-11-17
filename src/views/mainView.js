@@ -28,6 +28,7 @@ export class MainView extends View{
         super();
         this.projectId = options.projectId;
         this.project = options.project;
+        this.projectName = this.project.name;
         //this.initializeSideNavView();
         //this.initializeContentView();
     }
@@ -297,6 +298,7 @@ export class MainView extends View{
 
     onDomLoaded() {
         this.initializeSideNavView();
+        this.$el.find('.project-name').html('Project: ' + this.projectName);
         this.bindEvents();
     }
 

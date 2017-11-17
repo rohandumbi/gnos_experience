@@ -468,9 +468,9 @@ export class WorkflowView extends View{
                 var position = that.getStoredNodePosition(node.name);
                 if (position) {
                     var node = that.system.getNode(node.name);
-                    var pos = $(canvas).offset();
+                    /*var pos = $(canvas).offset();
                     var s = arbor.Point(position.x - pos.left, position.x - pos.top);
-                    var p = that.system.fromScreen(s);
+                     var p = that.system.fromScreen(s);*/
                     node.p = position.screenPosition;
                 }
             });
