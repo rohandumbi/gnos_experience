@@ -315,6 +315,10 @@ body {
   float: right;
   margin-left: 0px;
 }
+
+#mainView .project-name {
+    color: #ffffff;
+}
 #mainView .help-menu a {
     padding: 10px 15px 10px 15px;
 }
@@ -325,11 +329,9 @@ body {
   margin-top: 10px;
   background-color: #2b2e3b;
 }
-
 #mainView .navbar .glyphicon {
     color: #ffffff;
 }
-
 #mainView .navbar .glyphicon:hover {
     color: #777;
 }

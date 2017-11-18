@@ -6,10 +6,10 @@ export class Overlay {
         }
         this._callbacks = {};
         this.contentUrl = options.contentUrl;
-        this.$el = $(`<div class="modal animated bounceIn fade" id="multiProductModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                        <div class="modal-dialog" style="width:100%;height:100%;position:fixed;" role="document">
-                            <div class="modal-content" style="height:95%;">
-                                <div class="modal-header" style="height:5%;">
+        this.$el = $(`<div class="modal animated bounceIn fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>

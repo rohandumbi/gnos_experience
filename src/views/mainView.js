@@ -1,4 +1,5 @@
 import { View } from '../core/view';
+import {Overlay} from '../core/overlay';
 import { SideNavView } from './sideNavView';
 import {ProjectDefinitionView} from './projectDefinitionView';
 import { DataMappingView } from './dataMappingView';
@@ -316,5 +317,17 @@ export class MainView extends View{
         this.sideNavView.on('selected:category', (options)=>{
             this.initializeContentView(options.$category);
         }, this);
+        this.$el.find('.help').click((event) => {
+            this.helpOverlay = new Overlay({title: 'Help', contentUrl: '../content/help.html'});
+            this.helpOverlay.show();
+        });
+        this.$el.find('.terms').click((event) => {
+            this.termsOverlay = new Overlay({title: 'Terms and conditions', contentUrl: '../content/terms.html'});
+            this.termsOverlay.show();
+        });
+        this.$el.find('.about').click((event) => {
+            this.aboutOverlay = new Overlay({title: 'About', contentUrl: '../content/about.html'});
+            this.aboutOverlay.show();
+        });
     }
 }
