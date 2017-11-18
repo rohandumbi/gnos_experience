@@ -18,7 +18,7 @@ export class Overlay {
                                 <div class="modal-body" style="height:85%;"></div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-default btn-close" data-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-primary btn-submit" data-dismiss="modal">Done</button>
+                                    <button type="button" class="btn btn-primary btn-submit">Done</button>
                                 </div>
                             </div>
                         </div>
@@ -42,6 +42,10 @@ export class Overlay {
             .catch((err)=> {
                 throw 'count not retrieve: ' + this.contentUrl;
             });
+    }
+
+    close() {
+        this.$el.modal('hide');
     }
 
     getHtml() {

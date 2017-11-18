@@ -178,21 +178,6 @@ export class DashBoardView extends View{
                 this.trigger('export:project');
             });
             this.exportProjectOverlay.show();
-            /*var req = new XMLHttpRequest();
-            req.open("GET", 'http://localhost:4567/projects/' + projectId + '/export', true);
-            req.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-            req.responseType = "blob";
-
-            req.onload = function (event) {
-             var project =
-                var blob = req.response;
-                var link = document.createElement('a');
-                link.href = window.URL.createObjectURL(blob);
-                link.download = project.name + ".data";
-                link.click();
-                that.trigger('export:project');
-            };
-             req.send();*/
         });
         this.$el.find('.deleteProjectBtn').click(function () {
             //that.trigger('open:project', {projectId: $(this).data('projectid')})

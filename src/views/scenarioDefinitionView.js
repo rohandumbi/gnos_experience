@@ -1,5 +1,6 @@
 import { View } from '../core/view';
 import { ScenarioCollection } from '../models/scenarioCollection';
+import {CopyScenarioOverlay} from '../overlays/copyScenarioOverlay'
 
 export class ScenarioDefinitionView extends View{
 
@@ -162,17 +163,12 @@ export class ScenarioDefinitionView extends View{
     }
 
     cloneScenario(scenarioId) {
-        var that = this;
-        this.model.add({
-            url: "http://localhost:4567/project/" + this.projectId + "/scenarios/" + scenarioId + "/copy",
-            dataObject: {},
-            success: function (data) {
-                that.trigger('reload');
-            },
-            error: function () {
-                alert('Error cloning scenario');
-            }
+        this.copyScenarioOverlay = new CopyScenarioOverlay({projectId: this.projectId, scenarioId: scenarioId});
+        this.copyScenarioOverlay.on('submitted', (event) => {
+            this.trigger('reload');
+            this.copyScenarioOverlay.close();
         });
+        this.copyScenarioOverlay.show();
     }
 
     updateScenarioName(options) {

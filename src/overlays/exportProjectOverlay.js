@@ -37,8 +37,13 @@ export class ExportProjectOverlay extends Overlay {
             link.href = window.URL.createObjectURL(blob);
             link.download = exportedName + ".data";
             link.click();
+            this.close();
             this.trigger('submitted');
         };
+        req.onerror = (data) => {
+            this.close();
+            alert(data);
+        }
         req.send()
     }
 }
