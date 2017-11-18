@@ -9,6 +9,7 @@ import {ExpressionModel} from '../models/expressionModel';
 import {UnitModel} from '../models/unitModel';
 import {ProductGradeModel} from '../models/productGradeModel';
 import {MultiProductOverlay} from '../overlays/multiProductOverlay';
+import {UIStateModel} from '../models/uiStateModel';
 
 export class WorkflowView extends View{
 
@@ -23,6 +24,7 @@ export class WorkflowView extends View{
         this.productJoinModel = new ProductJoinModel({projectId: options.projectId});
         this.expressionModel = new ExpressionModel({projectId: options.projectId});
         this.unitModel = new UnitModel({projectId: options.projectId});
+        this.uiStateModel = new UIStateModel({projectId: options.projectId});
         this.multiProductOverlay = new MultiProductOverlay();
         this.scaleFactor = 1;
         //this.productGradeModel = new ProductGradeModel({})
@@ -1054,10 +1056,14 @@ export class WorkflowView extends View{
         });
         this.$el.find('#save-graph').click(function (event) {
             var coordinateSystem = [];
+            var nodes = []
             that.system.eachNode(function (node, point) {
                 console.log('Node: ' + node.name + ' X:' + point.x + ' Y:' + point.y);
                 var object = {'name': node.name, 'x': point.x, 'y': point.y, screenPosition: node._p};
                 coordinateSystem.push(object);
+
+                var screenPositionObject = {name: node.name, xloc: node._p.x, yloc: node._p.y};
+                nodes.push(screenPositionObject);
             });
             if (typeof(Storage) !== "undefined") {
                 // Code for localStorage/sessionStorage.
@@ -1067,6 +1073,18 @@ export class WorkflowView extends View{
                 // Sorry! No Web Storage support..
                 console.log('storage absent');
             }
+            var stateObject = {projectId: that.projectId, nodes: nodes};
+            that.uiStateModel.add({
+                dataObject: stateObject,
+                success: (data) => {
+                    alert('Successfully saved state in DB.');
+                },
+                error: (error) => {
+                    alert('Error saving state in DB: ' + error.message);
+                }
+            });
+
+
         });
         this.$el.find('#switch').change(function (event) {
             //that.addProduct();
