@@ -315,11 +315,9 @@ body {
   float: right;
   margin-left: 0px;
 }
-
 #mainView .help-menu a {
     padding: 10px 15px 10px 15px;
 }
-
 #mainView .help-menu .glyphicon {
     font-size: 24px;
 }
@@ -328,11 +326,11 @@ body {
   background-color: #2b2e3b;
 }
 
-#mainView .glyphicon {
+#mainView .navbar .glyphicon {
     color: #ffffff;
 }
 
-#mainView .glyphicon:hover {
+#mainView .navbar .glyphicon:hover {
     color: #777;
 }
 #mainView .navbar {
