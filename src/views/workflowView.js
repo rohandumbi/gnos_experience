@@ -1062,7 +1062,7 @@ export class WorkflowView extends View{
                 var object = {'name': node.name, 'x': point.x, 'y': point.y, screenPosition: node._p};
                 coordinateSystem.push(object);
 
-                var screenPositionObject = {name: node.name, xloc: node._p.x, yloc: node._p.y};
+                var screenPositionObject = {nodeName: node.name, xLoc: node._p.x, yLoc: node._p.y};
                 nodes.push(screenPositionObject);
             });
             if (typeof(Storage) !== "undefined") {
