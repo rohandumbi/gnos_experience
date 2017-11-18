@@ -315,9 +315,25 @@ body {
   float: right;
   margin-left: 0px;
 }
+
+#mainView .help-menu a {
+    padding: 10px 15px 10px 15px;
+}
+
+#mainView .help-menu .glyphicon {
+    font-size: 24px;
+}
 #mainView #toggleBtn {
   margin-top: 10px;
   background-color: #2b2e3b;
+}
+
+#mainView .glyphicon {
+    color: #ffffff;
+}
+
+#mainView .glyphicon:hover {
+    color: #777;
 }
 #mainView .navbar {
   margin-bottom: 0px !important;
