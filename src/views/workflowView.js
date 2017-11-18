@@ -300,16 +300,28 @@ export class WorkflowView extends View{
         });
     }
 
+    fetchStoredCoordinates() {
+        this.uiStateModel.fetch({
+            success: (data)=> {
+                this.storedCoordinates = data;
+                this.initializeGraph();
+                this.bindDomEvents();
+            },
+            error: (error)=> {
+                alert(error.message);
+            }
+        });
+    }
+
     fetchProductJoins() {
         var that = this;
         this.productJoinModel.fetch({
-            success: function (data) {
-                that.productJoins = data;
-                that.initializeGraph(data);
-                that.bindDomEvents();
+            success: (data) => {
+                this.productJoins = data;
+                this.fetchStoredCoordinates();
             },
-            error: function (data) {
-                alert('Error fetching product joins');
+            error: (data) => {
+                alert('Error fetching product joins:' + error.message);
             }
         });
     }
@@ -430,10 +442,10 @@ export class WorkflowView extends View{
             return null;
         }
         this.storedCoordinates.forEach(function (storedNode) {
-            if (storedNode.name === nodeName) {
-                position['x'] = storedNode.x;
-                position['y'] = storedNode.y;
-                position['screenPosition'] = storedNode.screenPosition;
+            if (storedNode.nodeName === nodeName) {
+                position['x'] = storedNode.xLoc;
+                position['y'] = storedNode.yLoc;
+                position['screenPosition'] = {x: storedNode.xLoc, y: storedNode.yLoc};
             }
         });
         return position;
@@ -441,8 +453,6 @@ export class WorkflowView extends View{
 
     initializeGraph(nodeData) {
         var that = this;
-        var storedGraphNodes = localStorage.getItem('Coordinates-' + this.projectId);
-        this.storedCoordinates = JSON.parse(storedGraphNodes);
         console.log(this.storedCoordinates);
         var parentWidth = this.$el.find('#canvas-container').width();
         var parentHeight = this.$el.find('#canvas-container').height();
@@ -466,7 +476,6 @@ export class WorkflowView extends View{
 
         setTimeout(function () {
             that.system.eachNode(function (node, point) {
-                console.log('Node: ' + node.name + ' X:' + point.x + ' Y:' + point.y);
                 var position = that.getStoredNodePosition(node.name);
                 if (position) {
                     var node = that.system.getNode(node.name);
@@ -1058,21 +1067,9 @@ export class WorkflowView extends View{
             var coordinateSystem = [];
             var nodes = []
             that.system.eachNode(function (node, point) {
-                console.log('Node: ' + node.name + ' X:' + point.x + ' Y:' + point.y);
-                var object = {'name': node.name, 'x': point.x, 'y': point.y, screenPosition: node._p};
-                coordinateSystem.push(object);
-
                 var screenPositionObject = {nodeName: node.name, xLoc: node._p.x, yLoc: node._p.y};
                 nodes.push(screenPositionObject);
             });
-            if (typeof(Storage) !== "undefined") {
-                // Code for localStorage/sessionStorage.
-                console.log('storage present');
-                localStorage.setItem('Coordinates-' + that.projectId, JSON.stringify(coordinateSystem));
-            } else {
-                // Sorry! No Web Storage support..
-                console.log('storage absent');
-            }
             var stateObject = {projectId: that.projectId, nodes: nodes};
             that.uiStateModel.add({
                 dataObject: stateObject,
