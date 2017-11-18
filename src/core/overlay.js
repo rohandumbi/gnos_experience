@@ -17,8 +17,8 @@ export class Overlay {
                                 </div>
                                 <div class="modal-body" style="height:85%;"></div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-primary" data-dismiss="modal">Done</button>
+                                    <button type="button" class="btn btn-default btn-close" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary btn-submit" data-dismiss="modal">Done</button>
                                 </div>
                             </div>
                         </div>
@@ -44,12 +44,6 @@ export class Overlay {
             });
     }
 
-    close(event) {
-        alert('should close');
-        /*this.$el.width('0%');
-         this.$el.remove();*/
-    }
-
     getHtml() {
         var promise = new Promise((resolve, reject) => {
             $.get(this.contentUrl, function (data) {
@@ -61,6 +55,12 @@ export class Overlay {
 
 
     onDomLoaded() {
+        this.$el.find('.btn-close').click((e) => {
+            this.trigger('closed');
+        });
+        this.$el.find('.btn-submit').click((e) => {
+            this.trigger('submitted');
+        });
     }
 
     trigger(eventName, options) {

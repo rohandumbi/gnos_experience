@@ -1,6 +1,7 @@
 import { View } from '../core/view';
 import {ProjectModel} from '../models/projectModel';
-import {ProjectExportModel} from '../models/projectExportModel';
+import {ExportProjectOverlay} from '../overlays/exportProjectOverlay';
+
 export class DashBoardView extends View{
 
     constructor(options) {
@@ -169,15 +170,21 @@ export class DashBoardView extends View{
             var project = that.getProjectById(projectId);
             that.trigger('open:project', {projectId: projectId, project: project});
         });
-        this.$el.find('.exportProjectBtn').click(function () {
-            var projectId = $(this).data('projectid');
-            var req = new XMLHttpRequest();
+        this.$el.find('.exportProjectBtn').click((event) => {
+            var projectId = $(event.currentTarget).data('projectid');
+            var project = this.getProjectById(projectId);
+            this.exportProjectOverlay = new ExportProjectOverlay({project: project});
+            this.exportProjectOverlay.on('submitted', (data)=> {
+                this.trigger('export:project');
+            });
+            this.exportProjectOverlay.show();
+            /*var req = new XMLHttpRequest();
             req.open("GET", 'http://localhost:4567/projects/' + projectId + '/export', true);
             req.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
             req.responseType = "blob";
 
             req.onload = function (event) {
-                var project = that.getProjectById(projectId);
+             var project =
                 var blob = req.response;
                 var link = document.createElement('a');
                 link.href = window.URL.createObjectURL(blob);
@@ -185,7 +192,7 @@ export class DashBoardView extends View{
                 link.click();
                 that.trigger('export:project');
             };
-            req.send();
+             req.send();*/
         });
         this.$el.find('.deleteProjectBtn').click(function () {
             //that.trigger('open:project', {projectId: $(this).data('projectid')})
