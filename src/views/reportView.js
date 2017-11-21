@@ -49,16 +49,29 @@ export class ReportView extends View {
         this.ctx = this.$el.find('#myChart');
         var labels = [];
         var valueMap = {};
-        for (let key of Object.keys(reportData)) {
+        /*for (let key of Object.keys(reportData)) {
             labels.push(key);
             var yearlyDataArray = reportData[key];
+         yearlyDataArray.forEach(function (yearlyData) {
+         var name = yearlyData.name;
+         var mapEntry = valueMap[name];
+         if (!mapEntry) {//field is not present in map yet
+         valueMap[name] = {};
+         }
+         valueMap[name][key] = yearlyData.value;
+         });
+         }*/
+        for (let j = 0; j < this.scenarioTimePeriod; j++) {
+            labels.push(j + 1);
+            var yearlyDataArray = reportData[j + 1] || [];
+            var yearlyValue = reportData[j + 1] || 0;
             yearlyDataArray.forEach(function (yearlyData) {
                 var name = yearlyData.name;
                 var mapEntry = valueMap[name];
                 if (!mapEntry) {//field is not present in map yet
                     valueMap[name] = {};
                 }
-                valueMap[name][key] = yearlyData.value;
+                valueMap[name][j + 1] = yearlyData.value;
             });
         }
         console.log(valueMap);
@@ -178,12 +191,15 @@ export class ReportView extends View {
         this.ctx = this.$el.find('#myChart');
         var labels = [];
         var data = [];
-        for (let key of Object.keys(reportData)) {
+        /*for (let key of Object.keys(reportData)) {
             //labels.push(key);
             data.push(reportData[key])
-        }
+         }*/
+
         for (let j = 0; j < this.scenarioTimePeriod; j++) {
             labels.push(this.scenarioStartYear + j);
+            var yearlyValue = reportData[j + 1] || 0;
+            data.push(yearlyValue);
         }
 
         var barChartData = {
@@ -275,12 +291,14 @@ export class ReportView extends View {
         this.ctx = this.$el.find('#myChart');
         var labels = [];
         var data = [];
-        for (let key of Object.keys(reportData)) {
+        /*for (let key of Object.keys(reportData)) {
             //labels.push(key);
             data.push(reportData[key]);
-        }
+         }*/
         for (let j = 0; j < this.scenarioTimePeriod; j++) {
             labels.push(this.scenarioStartYear + j);
+            var yearlyValue = reportData[j + 1] || 0;
+            data.push(yearlyValue);
         }
         this.myChart = new Chart(this.ctx, {
             type: 'bar',
