@@ -11,5 +11,7 @@ Thumbs.db
 /app/**/*.map
 /app/stylesheets/main.css
 
+# ignore everything in 'dist' folder
+/dist
 
 /coverage
