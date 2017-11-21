@@ -26,6 +26,7 @@ export class DashBoardView extends View{
                         /*this.getNewProjectCard() +*/
                     '</div>' +
                 '</div>' +
+            '<div id="loading-indicator" class="loader" style="display:none;"></div>' +
             '</div>'
         );
         return new Promise(function(resolve, reject){
@@ -180,21 +181,24 @@ export class DashBoardView extends View{
             this.exportProjectOverlay.show();
         });
         this.$el.find('.deleteProjectBtn').click(function () {
-            //that.trigger('open:project', {projectId: $(this).data('projectid')})
             event.preventDefault();
+            that.$el.find("#loading-indicator").show();
             var projectId = $(this).data('projectid');
             that.projectModel.delete({
                 id: projectId,
                 success: function (data) {
+                    that.$el.find("#loading-indicator").hide();
                     that.trigger('reload');
                 },
                 error: function (data) {
+                    that.$el.find("#loading-indicator").hide();
                     alert("Could not delete: " + data);
                 }
             });
         });
         this.$el.find('#import').click(function (event) {
             event.preventDefault();
+            that.$el.find("#loading-indicator").show();
             var importedFileLocation = that.$el.find('#importedProjectFile')[0].files[0].path;
             var body = {
                 "filename": importedFileLocation
@@ -205,10 +209,15 @@ export class DashBoardView extends View{
             req.responseType = "blob";
 
             req.onload = function (event) {
+                that.$el.find("#loading-indicator").hide();
                 var blob = req.response;
                 //console.log(blob.size);
                 that.trigger('reload');
             };
+            req.onerror = ()=> {
+                this.$el.find("#loading-indicator").hide();
+                alert('Error importing data');
+            }
 
             req.send(JSON.stringify(body));
             console.log(importedFileLocation);

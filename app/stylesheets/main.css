@@ -289,6 +289,37 @@ p.caption {
   background-color: #2b2e3b;
   min-height: 100%;
 }
+#dashBoardView #loading-indicator {
+  z-index: 2000;
+  position: absolute;
+  left: 45%;
+  top: 45%;
+}
+#dashBoardView .loader {
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 120px;
+  height: 120px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
 #projectListPane {
   width: 50%;
   display: inline-block;
@@ -316,23 +347,23 @@ body {
   margin-left: 0px;
 }
 #mainView .project-name {
-    color: #ffffff;
+  color: #ffffff;
 }
 #mainView .help-menu a {
-    padding: 10px 15px 10px 15px;
+  padding: 10px 15px 10px 15px;
 }
 #mainView .help-menu .glyphicon {
-    font-size: 24px;
+  font-size: 24px;
 }
 #mainView #toggleBtn {
   margin-top: 10px;
   background-color: #2b2e3b;
 }
 #mainView .navbar .glyphicon {
-    color: #ffffff;
+  color: #ffffff;
 }
 #mainView .navbar .glyphicon:hover {
-    color: #777;
+  color: #777;
 }
 #mainView .navbar {
   margin-bottom: 0px !important;
@@ -721,7 +752,7 @@ body {
 }
 #controlsScreenView .form-group {
   border: 1px solid #337ab7;
-    /*border-radius: 20px;*/
+  /*border-radius: 20px;*/
   padding: 20px;
   background-color: #d9edf7;
 }
