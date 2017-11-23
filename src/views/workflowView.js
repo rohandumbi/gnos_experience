@@ -459,8 +459,8 @@ export class WorkflowView extends View{
         var $canvas = this.$el.find("#viewport");
 
         var canvas = document.querySelector('canvas');
-        canvas.width = parentWidth;
-        canvas.height = parentHeight;
+        canvas.width = parentWidth - 5;
+        canvas.height = parentHeight - 5;
         this.system = arbor.ParticleSystem({
             friction: 100,
             stiffness: -512,
