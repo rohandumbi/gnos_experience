@@ -12,9 +12,6 @@
     <div class="col-md-10" style="height:100%">
         <div class="panel panel-primary" style="height:100%">
             <div class="panel-heading">
-                <!--<div class="row-content">
-                    <h3 class="panel-title" style="display: inline-block;">Workflow Diagram</h3>
-                </div>-->
                 <div class="btn-group">
                     <button id="save-graph" data-toggle="modal" type="button" class="btn btn-success">Save State
                     </button>
@@ -36,23 +33,6 @@
                 <span class="label" style="background-color: #e1d5d2">PROCESS JOIN</span>
                 <span class="label" style="background-color: #a55540">PRODUCT</span>
                 <span class="label" style="background-color: #e79a58">PRODUCT JOIN</span>
-                <!--<div class="col-md-12 panel panel-primary">
-                    <h4 style="padding:5px; display: inline-block; background-color: red">
-                        <small style="color:white;">BLOCK</small>
-                    </h4>
-                    <h4 style="padding:5px; display: inline-block; background-color: #4b4a5a">
-                        <small style="color:white;">PROCESS</small>
-                    </h4>
-                    <h4 style="padding:5px; display: inline-block; background-color: #e1d5d2">
-                        <small style="color:white;">PROCESS JOIN</small>
-                    </h4>
-                    <h4 style="padding:5px; display: inline-block; background-color: #a55540">
-                        <small style="color:white;">PRODUCT</small>
-                    </h4>
-                    <h4 style="padding:5px; display: inline-block; background-color: #e79a58">
-                        <small style="color:white;">PRODUCT JOIN</small>
-                    </h4>
-                </div>-->
             </div>
             <div class="panel-body" style="height:95%; overflow: auto; padding:0px;">
                 <div id="canvas-container" style="height:99%; width:100%; overflow: auto">
@@ -61,58 +41,6 @@
             </div>
         </div>
     </div>
-    <!--<div class="row content" style="height:100%">
-        &lt;!&ndash;<div class="col-sm-1 sidenav">
-            <h4><small>MODELS</small></h4>
-            <hr>
-            <ul class="list-group">
-            </ul>
-        </div>&ndash;&gt;
-        <div class="col-sm-11" style="height:100%">
-            <h4 style="display: inline-block"><small>WORKFLOW DIAGRAM</small></h4>
-            <div style="display: inline-block" id="color-code">
-                <h4 style="padding:5px; display: inline-block; background-color: red">
-                    <small style="color:white;">BLOCK</small>
-                </h4>
-                <h4 style="padding:5px; display: inline-block; background-color: #4b4a5a">
-                    <small style="color:white;">PROCESS</small>
-                </h4>
-                <h4 style="padding:5px; display: inline-block; background-color: #e1d5d2">
-                    <small style="color:white;">PROCESS JOIN</small>
-                </h4>
-                <h4 style="padding:5px; display: inline-block; background-color: #a55540">
-                    <small style="color:white;">PRODUCT</small>
-                </h4>
-                <h4 style="padding:5px; display: inline-block; background-color: #e79a58">
-                    <small style="color:white;">PRODUCT JOIN</small>
-                </h4>
-            </div>
-            <div style="display: inline-block; float:right" class="btn-group" role="group" aria-label="...">
-                <button id="save-graph" data-toggle="modal" type="button" class="btn btn-primary">Save State
-                </button>
-                <button data-toggle="modal" data-target="#processJoinModal" type="button" class="btn btn-primary">Create
-                    Process Join
-                </button>
-                <button data-toggle="modal" data-target="#productModal" type="button" class="btn btn-primary">Create
-                    Product
-                </button>
-                &lt;!&ndash;<button id="createMultiProduct" class="btn btn-primary">Create Multi
-                </button>&ndash;&gt;
-                <button data-toggle="modal" id="btnCreateProductJoin" type="button" class="btn btn-primary">Create
-                    Product Join
-                </button>
-                <button id="btn-zoomin" type="button" class="btn btn-warning">Zoom In</button>
-                <button id="btn-zoomout" type="button" class="btn btn-warning">Zoom Out</button>
-                &lt;!&ndash;<button id="btn-reset" type="button" class="btn btn-warning">Reset</button>&ndash;&gt;
-                &lt;!&ndash;<input type="range" class="zoom-range">&ndash;&gt;
-            </div>
-            <hr>
-            &lt;!&ndash;<canvas class="col-sm-12" id="viewport"></canvas>&ndash;&gt;
-            <div id="canvas-container" style="height:90%; width:100%; overflow: scroll">
-                <canvas id="viewport"></canvas>
-            </div>
-        </div>
-    </div>-->
     <span class="tooltiptext"></span>
     <ul id="workflowContextMenu" class="dropdown-menu" role="menu" style="display:none">
         <li><a tabindex="-1" href="#">Delete</a></li>
