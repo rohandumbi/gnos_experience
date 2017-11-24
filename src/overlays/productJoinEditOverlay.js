@@ -55,7 +55,6 @@ export class ProductJoinEditOverlay extends Overlay {
         var removeProductsFromJoinPromise = this.removeProductsFromJoin(removedProducts);
         Promise.all([addProductsToJoinPromise, removeProductsFromJoinPromise])
             .then(()=> {
-                this.close();
                 this.trigger('submitted', {addedProducts: addedProducts, removedProducts: removedProducts});
             })
             .catch(reason=> {
@@ -78,13 +77,14 @@ export class ProductJoinEditOverlay extends Overlay {
                 updatedProductJoin['child'] = addedProduct;
                 this.productJoinModel.add({
                     dataObject: updatedProductJoin,
-                    success: function (data) {
+                    success: (data)=> {
                         numberOfProductsAdded++;
+                        this.productJoin.productList.push(addedProduct);
                         if (numberOfProductsAdded === numberOfProductsToAdd) {
                             resolve();
                         }
                     },
-                    error: function (error) {
+                    error: (error)=> {
                         reject(error.message);
                     }
                 });
@@ -103,13 +103,14 @@ export class ProductJoinEditOverlay extends Overlay {
                 this.productJoinModel.delete({
                     url: 'http://localhost:4567/project/' + this.projectId + '/productjoins/' + this.productJoin.name + '/product',
                     id: removedProduct,
-                    success: function (data) {
+                    success: (data)=> {
                         numberOfProductsDeleted++;
+                        this.productJoin.productList.splice(this.productJoin.productList.indexOf(removedProduct), 1);
                         if (numberOfProductsDeleted === numberOfProductsToDelete) {
                             resolve();
                         }
                     },
-                    error: function (error) {
+                    error: (error)=> {
                         reject(error.message);
                     }
                 });

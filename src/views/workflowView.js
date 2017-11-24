@@ -583,7 +583,30 @@ export class WorkflowView extends View{
                 });
                 that.productJoinEditOverlay.on('submitted', (options)=> {
                     that.productJoinEditOverlay.close();
-                    //TODO: add/remove edges, update the product list for the product
+                    var productJoinNode = selected.node.name;
+                    var addedProducts = options.addedProducts;
+                    var addedProductNode;
+                    var removedProducts = options.removedProducts;
+                    var removedProductNode;
+                    addedProducts.forEach(addedProduct=> {
+                        addedProductNode = this.system.getNode(addedProduct);
+                        if (addedProductNode) {
+                            this.system.addEdge(addedProductNode, productJoinNode, {
+                                directed: true,
+                                weight: 1,
+                                color: '#333333'
+                            });
+                        }
+                    });
+                    removedProducts.forEach(removedProduct=> {
+                        removedProductNode = this.system.getNode(removedProduct);
+                        if (removedProductNode) {
+                            var edges = this.system.getEdges(removedProductNode, productJoinNode);
+                            edges.forEach(edge=> {
+                                this.system.pruneEdge(edge);
+                            });
+                        }
+                    });
                 });
                 that.productJoinEditOverlay.show();
             } else {
@@ -1175,7 +1198,6 @@ export class WorkflowView extends View{
         this.productJoinModel.add({
             dataObject: newProductJoin,
             success: function (data) {
-                //alert('Successfully created product join.');
                 that.productJoins.push(data);
                 that.addProductJoinsToGraph([data]);
                 that.$el.find('#product_join_name').val('');
@@ -1201,6 +1223,7 @@ export class WorkflowView extends View{
         this.productJoinModel.add({
             dataObject: updatedProductJoin,
             success: (data) => {
+                this.getProductJoinWithName(productJoinName).productList.push(productName);
                 var productNode = this.system.getNode(productName);
                 var productJoinNode = this.system.getNode(productJoinName);
                 this.system.addEdge(productNode, productJoinNode, {
