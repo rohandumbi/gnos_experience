@@ -30,9 +30,14 @@ export class ControlScreenView extends View{
     loadSavedRunConfig() {
         var savedRunConfig = JSON.parse(localStorage.getItem('RunConfig-' + this.projectId));
         if (savedRunConfig) {
-            this.$el.find('#gap').val(savedRunConfig.gap);
+            if (savedRunConfig.gap) {
+                this.$el.find('#gap').val(savedRunConfig.gap);
+            }
             if (savedRunConfig.isReclaim) {
                 this.$el.find('#reclaimoption').prop('checked', true);
+            }
+            if (savedRunConfig.period) {
+                this.$el.find('#period option[value="' + savedRunConfig.period + '"]').prop('selected', true);
             }
         }
     }
@@ -42,10 +47,10 @@ export class ControlScreenView extends View{
         this.$el.find('input:radio[name=modeoption]').change(function (e) {
             if (this.value === '1') {
                 that.$el.find('#window').prop('disabled', true);
-                that.$el.find('#step-size').prop('disabled', true);
+                //that.$el.find('#step-size').prop('disabled', true);
             } else if (this.value === '2') {
                 that.$el.find('#window').prop('disabled', false);
-                that.$el.find('#step-size').prop('disabled', false);
+                //that.$el.find('#step-size').prop('disabled', false);
             }
         });
 
