@@ -329,7 +329,6 @@ export class WorkflowView extends View{
         this.productJoinModel.fetch({
             success: (data) => {
                 this.productJoins = data;
-                //this.fetchStoredCoordinates();
                 this.fetchModels();
             },
             error: (data) => {
@@ -405,7 +404,6 @@ export class WorkflowView extends View{
                     $li.addClass('list-group-item list-group-item-info');
                     $liGroup.append($li);
                 });
-                //that.fetchProcessTreeNodes();
                 that.fetchStoredCoordinates();
             },
             error: function (data) {
@@ -507,7 +505,7 @@ export class WorkflowView extends View{
         setTimeout(function () {
             that.system.eachNode(function (node, point) {
                 var position = that.getStoredNodePosition(node.name);
-                if (position) {
+                if (position && position.screenPosition) {
                     var node = that.system.getNode(node.name);
                     /*var pos = $(canvas).offset();
                     var s = arbor.Point(position.x - pos.left, position.x - pos.top);
