@@ -9,6 +9,7 @@ import {ExpressionModel} from '../models/expressionModel';
 import {UnitModel} from '../models/unitModel';
 import {ProductGradeModel} from '../models/productGradeModel';
 import {MultiProductOverlay} from '../overlays/multiProductOverlay';
+import {ProductJoinEditOverlay} from '../overlays/productJoinEditOverlay';
 import {UIStateModel} from '../models/uiStateModel';
 
 export class WorkflowView extends View{
@@ -74,6 +75,16 @@ export class WorkflowView extends View{
         this.products.forEach(function (product) {
             if (product.name === productName) {
                 object = product;
+            }
+        });
+        return object;
+    }
+
+    getProductJoinWithName(productJoinName) {
+        var object = null;
+        this.productJoins.forEach(function (productJoin) {
+            if (productJoin.name === productJoinName) {
+                object = productJoin;
             }
         });
         return object;
@@ -473,7 +484,6 @@ export class WorkflowView extends View{
 
     initializeGraph(nodeData) {
         var that = this;
-        console.log(this.storedCoordinates);
         var parentWidth = this.$el.find('#canvas-container').width();
         var parentHeight = this.$el.find('#canvas-container').height();
         var $canvas = this.$el.find("#viewport");
@@ -564,6 +574,16 @@ export class WorkflowView extends View{
 
                 that.$el.find('input#edit-name').val(selected.node.name);
                 that.$el.find('#productEditModal').modal();
+            } else if (category === 'productJoin') {
+                var productJoin = that.getProductJoinWithName(selected.node.name);
+                that.productJoinEditOverlay = new ProductJoinEditOverlay({
+                    productJoin: productJoin,
+                    products: that.products
+                });
+                that.productJoinEditOverlay.on('submitted', ()=> {
+                    that.productJoinEditOverlay.close();
+                });
+                that.productJoinEditOverlay.show();
             } else {
                 alert("Edit not available for category: " + category);
             }
