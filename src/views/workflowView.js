@@ -318,7 +318,8 @@ export class WorkflowView extends View{
         this.productJoinModel.fetch({
             success: (data) => {
                 this.productJoins = data;
-                this.fetchStoredCoordinates();
+                //this.fetchStoredCoordinates();
+                this.fetchModels();
             },
             error: (data) => {
                 alert('Error fetching product joins:' + error.message);
@@ -369,7 +370,8 @@ export class WorkflowView extends View{
                 });
                 tableRow += '</select>';
                 that.$el.find('#process-list').append(tableRow);
-                that.fetchModels();
+                that.fetchProcessTreeNodes();
+                //that.fetchModels();
                 //that.initializeGraph();
             },
             error: function (data) {
@@ -385,18 +387,36 @@ export class WorkflowView extends View{
                 that.models = data;
                 var $liGroup = that.$el.find('ul.list-group');
                 var $li;
-                data.forEach(function (model) {
+                var unusedModels = that.filterUnusedModel();
+                unusedModels.forEach(function (model) {
                     $li = $('<li data-model-id="' + model.id + '" draggable="true">' + model.name + '</li>');
                     $li.attr('title', model.name);
                     $li.addClass('list-group-item list-group-item-info');
                     $liGroup.append($li);
                 });
-                that.fetchProcessTreeNodes();
+                //that.fetchProcessTreeNodes();
+                that.fetchStoredCoordinates();
             },
             error: function (data) {
                 alert('Error fetching list of pits: ' + data);
             }
         });
+    }
+
+    filterUnusedModel() {
+        var unusedModels = [];
+        this.models.forEach((model)=> {
+            var presentInTree = false;
+            this.treeNodes.forEach((node)=> {
+                if (node.modelId === model.id) {
+                    presentInTree = true;
+                }
+            });
+            if (!presentInTree) {
+                unusedModels.push(model);
+            }
+        });
+        return unusedModels;
     }
 
     onDomLoaded() {
@@ -706,6 +726,8 @@ export class WorkflowView extends View{
                     success: function () {
                         that.removeProcessFromProcessJoins(selected.node);
                         that.system.pruneNode(selected.node);
+                        var model = that.getModelWithId(selected.node.data.id);
+                        that.addModelToList(model);
                         var listOfBlockChildren = that.system.getEdgesFrom('Block');
                         if (listOfBlockChildren.length === 0) {// no more processes in graph
                             that.system.parameters({repulsion: 0});
@@ -1004,7 +1026,8 @@ export class WorkflowView extends View{
             dataObject: newModel,
             success: function (data) {
                 console.log('Successfully created model: ' + data);
-                that.addProcessesToGraph([data])
+                that.addProcessesToGraph([data]);
+                that.removeModelFromList(draggedModel);
             },
             error: function (data) {
                 alert('Error adding model: ' + data);
@@ -1074,7 +1097,7 @@ export class WorkflowView extends View{
             that.uiStateModel.add({
                 dataObject: stateObject,
                 success: (data) => {
-                    alert('Successfully saved state in DB.');
+                    alert('Successfully saved state.');
                 },
                 error: (error) => {
                     alert('Error saving state in DB: ' + error.message);
@@ -1225,5 +1248,21 @@ export class WorkflowView extends View{
                 that.products = data;
             }
         });
+    }
+
+    removeModelFromList(model) {
+        console.log('To remove: ' + model.name);
+        this.$el.find('.list-group li').each(function (index) {
+            if (parseInt($(this).data('model-id'), 10) === model.id) {
+                $(this).remove();
+            }
+        });
+    }
+
+    addModelToList(model) {
+        var $li = $('<li data-model-id="' + model.id + '" draggable="true">' + model.name + '</li>');
+        $li.attr('title', model.name);
+        $li.addClass('list-group-item list-group-item-info');
+        this.$el.find('.list-group').append($li);
     }
 }
