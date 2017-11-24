@@ -24,6 +24,17 @@ export class ControlScreenView extends View{
 
     onDomLoaded() {
 		this.bindEvents();
+        this.loadSavedRunConfig();
+    }
+
+    loadSavedRunConfig() {
+        var savedRunConfig = JSON.parse(localStorage.getItem('RunConfig-' + this.projectId));
+        if (savedRunConfig) {
+            this.$el.find('#gap').val(savedRunConfig.gap);
+            if (savedRunConfig.isReclaim) {
+                this.$el.find('#reclaimoption').prop('checked', true);
+            }
+        }
     }
 
     bindEvents() {
@@ -69,6 +80,7 @@ export class ControlScreenView extends View{
 				data: data,
 				success: function(data){
 					alert("Scheduler started")
+                    localStorage.setItem('RunConfig-' + that.projectId, JSON.stringify(dataObj));
 				},
 				error: function(data) {
 					alert(data);

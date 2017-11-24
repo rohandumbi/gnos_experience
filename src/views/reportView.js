@@ -49,18 +49,6 @@ export class ReportView extends View {
         this.ctx = this.$el.find('#myChart');
         var labels = [];
         var valueMap = {};
-        /*for (let key of Object.keys(reportData)) {
-            labels.push(key);
-            var yearlyDataArray = reportData[key];
-         yearlyDataArray.forEach(function (yearlyData) {
-         var name = yearlyData.name;
-         var mapEntry = valueMap[name];
-         if (!mapEntry) {//field is not present in map yet
-         valueMap[name] = {};
-         }
-         valueMap[name][key] = yearlyData.value;
-         });
-         }*/
         for (let j = 0; j < this.scenarioTimePeriod; j++) {
             labels.push(j + 1);
             var yearlyDataArray = reportData[j + 1] || [];
