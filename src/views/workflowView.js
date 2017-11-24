@@ -578,10 +578,12 @@ export class WorkflowView extends View{
                 var productJoin = that.getProductJoinWithName(selected.node.name);
                 that.productJoinEditOverlay = new ProductJoinEditOverlay({
                     productJoin: productJoin,
-                    products: that.products
+                    products: that.products,
+                    projectId: that.projectId
                 });
-                that.productJoinEditOverlay.on('submitted', ()=> {
+                that.productJoinEditOverlay.on('submitted', (options)=> {
                     that.productJoinEditOverlay.close();
+                    //TODO: add/remove edges, update the product list for the product
                 });
                 that.productJoinEditOverlay.show();
             } else {

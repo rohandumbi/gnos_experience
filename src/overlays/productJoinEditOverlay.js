@@ -1,4 +1,5 @@
 import {Overlay} from '../core/overlay';
+import {ProductJoinModel} from '../models/productJoinModel';
 export class ProductJoinEditOverlay extends Overlay {
     constructor(options) {
         var contentUrl = '../content/productJoinEditOverlay.html';
@@ -7,6 +8,8 @@ export class ProductJoinEditOverlay extends Overlay {
         super(mergedOptions);
         this.productJoin = options.productJoin;
         this.products = options.products;
+        this.projectId = options.projectId;
+        this.productJoinModel = new ProductJoinModel({projectId: options.projectId});
     }
 
     onDomLoaded() {
@@ -20,9 +23,9 @@ export class ProductJoinEditOverlay extends Overlay {
                 }
             });
             if (isPresent) {
-                productList += '<div class="checkbox"><label><input type="checkbox" checked="checked" value="' + product.name + '">' + product.name + '</label></div>'
+                productList += '<div class="checkbox"><label><input class="productName" type="checkbox" checked="checked" value="' + product.name + '">' + product.name + '</label></div>'
             } else {
-                productList += '<div class="checkbox"><label><input type="checkbox" value="' + product.name + '">' + product.name + '</label></div>'
+                productList += '<div class="checkbox"><label><input class="productName" type="checkbox" value="' + product.name + '">' + product.name + '</label></div>'
             }
         });
         this.$el.find('#productList').html(productList)
@@ -40,6 +43,77 @@ export class ProductJoinEditOverlay extends Overlay {
 
     updateProductJoin(e) {
         console.log('To edit product join: ' + this.productJoin);
-        this.trigger('submitted');
+        var existingProductList = this.productJoin.productList;
+        var editedProductList = [];
+        this.$el.find('#productList .productName:checked').each(function (event) {
+            editedProductList.push($(this).val());
+        });
+        var _ = require('underscore');
+        let addedProducts = _.difference(editedProductList, existingProductList);
+        let removedProducts = _.difference(existingProductList, editedProductList);
+        var addProductsToJoinPromise = this.addProductsToJoin(addedProducts);
+        var removeProductsFromJoinPromise = this.removeProductsFromJoin(removedProducts);
+        Promise.all([addProductsToJoinPromise, removeProductsFromJoinPromise])
+            .then(()=> {
+                this.close();
+                this.trigger('submitted', {addedProducts: addedProducts, removedProducts: removedProducts});
+            })
+            .catch(reason=> {
+                alert(reason);
+                this.close();
+            });
+    }
+
+    addProductsToJoin(addedProducts) {
+        return new Promise((resolve, reject)=> {
+            var numberOfProductsToAdd = addedProducts.length;
+            if (numberOfProductsToAdd === 0) {
+                resolve();
+            }
+            var numberOfProductsAdded = 0;
+            addedProducts.forEach(addedProduct => {
+                var updatedProductJoin = {}
+                updatedProductJoin['name'] = this.productJoin.name;
+                updatedProductJoin['childType'] = 1;
+                updatedProductJoin['child'] = addedProduct;
+                this.productJoinModel.add({
+                    dataObject: updatedProductJoin,
+                    success: function (data) {
+                        numberOfProductsAdded++;
+                        if (numberOfProductsAdded === numberOfProductsToAdd) {
+                            resolve();
+                        }
+                    },
+                    error: function (error) {
+                        reject(error.message);
+                    }
+                });
+            });
+        });
+    }
+
+    removeProductsFromJoin(removedProducts) {
+        return new Promise((resolve, reject)=> {
+            var numberOfProductsToDelete = removedProducts.length;
+            if (numberOfProductsToDelete === 0) {
+                resolve();
+            }
+            var numberOfProductsDeleted = 0;
+            removedProducts.forEach(removedProduct => {
+                this.productJoinModel.delete({
+                    url: 'http://localhost:4567/project/' + this.projectId + '/productjoins/' + this.productJoin.name + '/product',
+                    id: removedProduct,
+                    success: function (data) {
+                        numberOfProductsDeleted++;
+                        if (numberOfProductsDeleted === numberOfProductsToDelete) {
+                            resolve();
+                        }
+                    },
+                    error: function (error) {
+                        reject(error.message);
+                    }
+                });
+            })
+        });
     }
 }
