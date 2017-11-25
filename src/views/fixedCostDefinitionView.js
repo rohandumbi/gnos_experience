@@ -197,7 +197,7 @@ export class FixedCostDefinitionView extends View{
                         var filterName = row.filter;
                         var tableRow = '';
                         tableRow = (
-                            '<select class="filter" value="test" style="width:100%">' +
+                            '<select class="filter" value="test">' +
                             '<option selected disabled hidden>' + filterName + '</option>'
                         );
                         /*tableRow += '<option data-filtertype="-1" >' + 'ALL' + '</option>';*/
