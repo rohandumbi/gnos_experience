@@ -245,8 +245,8 @@ export class CapexView extends View{
             newInstance['expansionCapacity'] = 0;
         }
         this.capex.listOfCapexInstances.push(newInstance);
-        this.trigger('update:capex', this.capex);
-        this.$el.find("#datatype-grid-basic").bootgrid("append", [newInstance]);
+        this.trigger('added:capex', this.capex);
+        //this.$el.find("#datatype-grid-basic").bootgrid("append", [newInstance]);
         this.$el.find('#new_instance_name').val('');
     }
 

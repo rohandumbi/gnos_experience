@@ -80,11 +80,20 @@ export class CapexCollectionView extends View{
         console.log("initializing capex with id: " + capex.id);
         var capexView = new CapexView({capex: capex, projectId: this.projectId});
         capexView.on('update:capex', function (updatedCapex) {
-            console.log(updatedCapex);
             that.updateCapex({
                 capex: updatedCapex,
                 success: function (data) {
                     capexView.refreshCapex(data);
+                }
+            });
+        });
+        capexView.on('added:capex', function (addedCapex) {
+            that.updateCapex({
+                capex: addedCapex,
+                success: function (data) {
+                    capexView.refreshCapex(data);
+                    $('.modal-backdrop').hide();
+                    that.trigger('reload', data);
                 }
             });
         });

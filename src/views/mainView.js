@@ -194,6 +194,9 @@ export class MainView extends View{
             return;
         }
         this.capexCollectionView = new CapexCollectionView({projectId: this.projectId, scenario: this.scenario});
+        this.capexCollectionView.on('reload', options => {
+            this.initializeCapexConstraint(options);
+        });
         this.capexCollectionView.render();
         this.$el.find("#page-content-wrapper").html(this.capexCollectionView.$el);
     }
