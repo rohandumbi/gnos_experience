@@ -513,7 +513,7 @@ export class WorkflowView extends View{
                     node.p = position.screenPosition;
                 }
             });
-        }, 100);
+        }, 300);
         $canvas.contextMenu({
             arborSystem: this.system,
             menuSelector: "#workflowContextMenu",
