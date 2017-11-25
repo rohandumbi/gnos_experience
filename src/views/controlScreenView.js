@@ -36,8 +36,30 @@ export class ControlScreenView extends View{
             if (savedRunConfig.isReclaim) {
                 this.$el.find('#reclaimoption').prop('checked', true);
             }
+            if (!savedRunConfig.enableEquations['GRADE_CONSTRAINT']) {
+                this.$el.find('#gradeConstraint').prop('checked', false);
+            }
+            if (!savedRunConfig.enableEquations['BENCH_PROPORTION']) {
+                this.$el.find('#benchProportion').prop('checked', false);
+            }
+            if (!savedRunConfig.enableEquations['CAPEX']) {
+                this.$el.find('#capex').prop('checked', false);
+            }
             if (savedRunConfig.period) {
                 this.$el.find('#period option[value="' + savedRunConfig.period + '"]').prop('selected', true);
+            }
+            if (savedRunConfig.window) {
+                this.$el.find('#window').val(savedRunConfig.window);
+            }
+            if (savedRunConfig.mode === '1') {
+                this.$el.find('#globalBtn').prop('checked', true);
+                this.$el.find('#slidingBtn').prop('checked', false);
+                this.$el.find('#window').prop('disabled', true);
+            } else if (savedRunConfig.mode === '2') {
+                this.$el.find('#slidingBtn').prop('checked', true);
+                this.$el.find('#globalBtn').prop('checked', false);
+                this.$el.find('#window').prop('disabled', false);
+
             }
         }
     }
@@ -88,7 +110,7 @@ export class ControlScreenView extends View{
                     localStorage.setItem('RunConfig-' + that.projectId, JSON.stringify(dataObj));
 				},
 				error: function(data) {
-					alert(data);
+                    alert(data.message);
 				},
 				dataType: 'json'
 			});
