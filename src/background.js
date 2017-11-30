@@ -18,10 +18,10 @@ var childProcess;
 
 var setApplicationMenu = function () {
     var menus = [editMenuTemplate, devMenuTemplate];
-    /*if (env.name !== 'production') {
-        menus.push(devMenuTemplate);
-     }*/
-    Menu.setApplicationMenu(Menu.buildFromTemplate(menus));
+    if (env.name !== 'production') {
+        //menus.push(devMenuTemplate);
+        Menu.setApplicationMenu(Menu.buildFromTemplate(menus));
+    }
 };
 
 // Save userData in separate folders for each environment.
