@@ -643,9 +643,9 @@ body {
   /*width: 100%;*/
 }
 #workflowView .list-group-item {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 #workflowView .tooltiptext {
   /*visibility: hidden;*/

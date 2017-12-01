@@ -107,6 +107,7 @@ export class CapexView extends View{
             row += (
                 '<tr>' +
                 '<td>' + instance.name + '</td>' +
+                '<td>' + instance.inUse + '</td>' +
                 '<td>' + instance.groupingName + '</td>' +
                 '<td>' + instance.capexAmount + '</td>' +
                 '<td>' + instance.expansionCapacity + '</td>' +
@@ -152,6 +153,17 @@ export class CapexView extends View{
                         '<input class="instance_capex" type="text" value="' + row.capexAmount + '"' + '>'
                     );
                 },
+                "inUse": function (column, row) {
+                    if (row.inUse.toString() === 'true') {
+                        return (
+                            '<input class="use" type="checkbox" value="' + row.inUse + '"' + 'checked  >'
+                        )
+                    }else{
+                        return (
+                            '<input class="use" type="checkbox" value="' + row.inUse + '"' + '>'
+                        )
+                    }
+                },
                 "expansion_capacity": function(column, row){
                     return (
                         '<input class="instance_expansion" type="text" value="' + row.expansionCapacity + '"' + '>'
@@ -172,6 +184,10 @@ export class CapexView extends View{
             });
             that.grid.find('.instance_expansion').change(function () {
                 that.updateExpansion($(this));
+            });
+
+            that.grid.find(".use").change(function (event) {
+                that.updateInUse($(this));
             });
 
         });
@@ -226,6 +242,13 @@ export class CapexView extends View{
         this.trigger('update:capex', this.capex);
     }
 
+    updateInUse($use) {
+        var updatedInstance = this.getInstanceByName($use.closest('tr').data('row-id'));
+        var instanceInUse = $use.is(':checked');
+        updatedInstance['inUse'] = instanceInUse;
+        this.trigger('update:capex', this.capex);
+    }
+
     deleteCapex() {
         this.trigger('delete:capex', this.capex);
         this.$el.find("#datatype-grid-basic").bootgrid("remove");
@@ -243,6 +266,7 @@ export class CapexView extends View{
             newInstance['groupingType'] = 0;
             newInstance['capexAmount'] = 0;
             newInstance['expansionCapacity'] = 0;
+            newInstance['inUse'] = true;
         }
         this.capex.listOfCapexInstances.push(newInstance);
         this.trigger('added:capex', this.capex);
