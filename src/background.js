@@ -52,7 +52,7 @@ app.on('ready', function () {
          const child = spawn('javaw -jar ' + jarPath + ' -Djava.library.path=C:\\GNOS\\dll');*/
 
         const exec = require('child_process').exec;
-        const childProcess = exec('start "gnos_service" java -Djava.library.path=C:\\GNOS-Scheduler\\dll -jar ' + jarPath + ' -Xms2048m -Xmx4096m',
+        const childProcess = exec('start "gnos_service" java' + ' -Djava.library.path=C:\\GNOS-Scheduler\\dll' + ' -jar ' + ' -Xms2048m -Xmx4096m ' + jarPath,
             (error, stdout, stderr) => {
                 console.log('stdout: ' + stdout);
                 console.log('stderr: ' + stderr);
@@ -61,8 +61,6 @@ app.on('ready', function () {
                 }
             }
         )
-
-
     }
     setApplicationMenu();
 
