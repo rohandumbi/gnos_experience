@@ -61,9 +61,11 @@
     "yargs": "^4.2.0",
     "underscore": "^1.8.3",
     "requirejs-text": "^2",
-    "chart.js": "^2.5.0"
+    "chart.js": "^2.5.0",
+    "cytoscape": "^3"
   },
   "dependencies": {
-    "chart.js": "^2.5.0"
+    "chart.js": "^2.5.0",
+    "cytoscape": "^3"
   }
 }
