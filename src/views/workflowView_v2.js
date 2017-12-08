@@ -237,29 +237,27 @@ export class WorkflowView_V2 extends View {
     addProductsToGraph(products) {
         var that = this;
         products.forEach(function (product) {
-            var productNode = that.system.addNode(product.name, {
-                'color': '#A55540',
-                'shape': 'rect',
-                'label': product.name,
-                'category': 'product'
+
+            var productNode = that.system.add({
+                group: "nodes",
+                data: {id: product.name, label: product.name, weight: 75},//product has no ID, so name is the id
+                classes: 'product'
             });
 
             var modelId = product.modelId;
-            var associatedModel = that.getModelWithId(modelId);
-            var modelNode = that.system.getNode(associatedModel.name);
-            that.system.addEdge(modelNode, productNode, {directed: false, weight: 1, color: '#333333'});
+            var modelNode = that.getNodeWithId(modelId);
+            if (modelNode) {
+                that.system.add({
+                    group: "edges",
+                    data: {source: modelId, target: product.name, weight: 1}
+                });
+            }
         });
     }
 
     addProcessJoinsToGraph(processJoins) {
         var that = this;
         processJoins.forEach(function (processJoin) {
-            /*var processJoinNode = that.system.addNode(processJoin.name, {
-                'color': '#E1D5D2',
-                'shape': 'dot',
-                'label': processJoin.name,
-                'category': 'processJoin'
-             });*/
             var processJoinNode = that.system.add({
                 group: "nodes",
                 data: {id: processJoin.name, label: processJoin.name, weight: 75},//process join has no ID, so name is the id
@@ -271,11 +269,6 @@ export class WorkflowView_V2 extends View {
                     //var childModelNode = that.system.getNode(childModel.name);
                     var childModelNode = that.getNodeWithId(childProcessId);
                     if (childModelNode) {
-                        /*that.system.addEdge(childModelNode, processJoinNode, {
-                            directed: true,
-                            weight: 1,
-                            color: '#333333'
-                         });*/
                         that.system.add({
                             group: "edges",
                             data: {source: processJoin.name, target: childProcessId, weight: 1}
@@ -567,21 +560,24 @@ export class WorkflowView_V2 extends View {
                 .css({
                     'background-color': '#E1D5D2'
                 })
+                .selector('.product')
+                .css({
+                    'background-color': '#A55540'
+                })
         });
         this.system.add({
             group: "nodes",
             data: {id: 'block', label: 'Block', weight: 75},
-            /*position: { x: 200, y: 200 },*/
             classes: 'block'
         });
         this.addProcessesToGraph(this.treeNodes);
         this.addProcessJoinsToGraph(this.processJoins);
+        this.addProductsToGraph(this.products);
         var layout = this.system.elements().layout({
             name: 'breadthfirst'
         });
 
         layout.run();
-        //this.system.$('.block').addClass('block');
 
         /*var cy = cytoscape({
          container: $viewport, // container to render in
