@@ -6,6 +6,7 @@ import { DataMappingView } from './dataMappingView';
 import { RequiredFieldMappingView } from './requiredFieldMappingView';
 import { ExpressionDefinitionView } from './expressionDefinitionView';
 import { WorkflowView } from './workflowView';
+import {WorkflowView_V2} from './workflowView_v2';
 import { PitGroupView } from './pitGroupView';
 import {DumpDefinitionView} from './dumpDefinitionView';
 import {StockpileDefinitionView} from './stockpileDefinitionView';
@@ -83,6 +84,12 @@ export class MainView extends View{
         this.workflowView = new WorkflowView({projectId: this.projectId});
         this.workflowView.render();
         this.$el.find("#page-content-wrapper").html(this.workflowView.$el);
+    }
+
+    initializeWorkflow2Definition() {
+        this.workflowView2 = new WorkflowView_V2({projectId: this.projectId});
+        this.workflowView2.render();
+        this.$el.find("#page-content-wrapper").html(this.workflowView2.$el);
     }
     initializeGroupingDefinition(){
         this.pitGroupView = new PitGroupView({projectId: this.projectId});
@@ -245,6 +252,9 @@ export class MainView extends View{
                 break;
             case "workflow":
                 this.initializeWorkflowDefinition();
+                break;
+            case "workflow2":
+                this.initializeWorkflow2Definition();
                 break;
             case "pit_grouping":
                 this.initializeGroupingDefinition();

@@ -12,8 +12,7 @@ import {MultiProductOverlay} from '../overlays/multiProductOverlay';
 import {ProductJoinEditOverlay} from '../overlays/productJoinEditOverlay';
 import {UIStateModel} from '../models/uiStateModel';
 
-export class WorkflowView extends View {
-
+export class WorkflowView_V2 extends View {
     constructor(options) {
         super();
         this.projectId = options.projectId;
@@ -29,11 +28,37 @@ export class WorkflowView extends View {
         this.multiProductOverlay = new MultiProductOverlay();
         this.scaleFactor = 1;
         //this.productGradeModel = new ProductGradeModel({})
+        this.layout = {
+            name: 'circle',
+
+            fit: true, // whether to fit the viewport to the graph
+            padding: 30, // the padding on fit
+            boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
+            avoidOverlap: true, // prevents node overlap, may overflow boundingBox and radius if not enough space
+            nodeDimensionsIncludeLabels: false, // Excludes the label when calculating node bounding boxes for the layout algorithm
+            spacingFactor: undefined, // Applies a multiplicative factor (>0) to expand or compress the overall area that the nodes take up
+            radius: undefined, // the radius of the circle
+            startAngle: 3 / 2 * Math.PI, // where nodes start in radians
+            sweep: undefined, // how many radians should be between the first and last node (defaults to full circle)
+            clockwise: true, // whether the layout should go clockwise (true) or counterclockwise/anticlockwise (false)
+            sort: undefined, // a sorting function to order the nodes; e.g. function(a, b){ return a.data('weight') - b.data('weight') }
+            animate: false, // whether to transition the node positions
+            animationDuration: 500, // duration of animation in ms if enabled
+            animationEasing: undefined, // easing of animation if enabled
+            animateFilter: function (node, i) {
+                return true;
+            }, // a function that determines whether the node should be animated.  All nodes animated by default on animate enabled.  Non-animated nodes are positioned immediately when the layout starts
+            ready: undefined, // callback on layoutready
+            stop: undefined, // callback on layoutstop
+            transform: function (node, position) {
+                return position;
+            } // transform a given node position. Useful for changing flow direction in discrete layouts
+        };
     }
 
     getHtml() {
         var promise = new Promise(function (resolve, reject) {
-            $.get("../content/workflowView.html", function (data) {
+            $.get("../content/workflowView_v2.html", function (data) {
                 resolve(data);
             })
         });
@@ -111,7 +136,22 @@ export class WorkflowView extends View {
     }
 
     getNodeWithName(nodeName) {
-        return this.system.getNode(nodeName);
+        //return this.system.getNode(nodeName)
+        var object = this.system.$id(nodeName);
+        if (object.length > 0) {
+            return object;
+        } else {
+            return undefined;
+        }
+    }
+
+    getNodeWithId(nodeId) {
+        var object = this.system.$id(nodeId);
+        if (object.length > 0) {
+            return object;
+        } else {
+            return undefined;
+        }
     }
 
     filterNonGradeExpressions() {
@@ -214,21 +254,31 @@ export class WorkflowView extends View {
     addProcessJoinsToGraph(processJoins) {
         var that = this;
         processJoins.forEach(function (processJoin) {
-            var processJoinNode = that.system.addNode(processJoin.name, {
+            /*var processJoinNode = that.system.addNode(processJoin.name, {
                 'color': '#E1D5D2',
                 'shape': 'dot',
                 'label': processJoin.name,
                 'category': 'processJoin'
+             });*/
+            var processJoinNode = that.system.add({
+                group: "nodes",
+                data: {id: processJoin.name, label: processJoin.name, weight: 75},//process join has no ID, so name is the id
+                classes: 'model-join'
             });
             processJoin.childProcessList.forEach(function (childProcessId) {
                 if (childProcessId > 0) {
-                    var childModel = that.getModelWithId(childProcessId);
-                    var childModelNode = that.system.getNode(childModel.name);
+                    //var childModel = that.getModelWithId(childProcessId);
+                    //var childModelNode = that.system.getNode(childModel.name);
+                    var childModelNode = that.getNodeWithId(childProcessId);
                     if (childModelNode) {
-                        that.system.addEdge(childModelNode, processJoinNode, {
+                        /*that.system.addEdge(childModelNode, processJoinNode, {
                             directed: true,
                             weight: 1,
                             color: '#333333'
+                         });*/
+                        that.system.add({
+                            group: "edges",
+                            data: {source: processJoin.name, target: childProcessId, weight: 1}
                         });
                     }
                 }
@@ -244,33 +294,34 @@ export class WorkflowView extends View {
             var model = that.getModelWithId(modelId);
             var parentModel = that.getModelWithId(parentModelId);
 
-            var modelNode = that.getNodeWithName(model.name);
+            var modelNode = that.getNodeWithId(modelId);
             if (!modelNode) {
-                modelNode = that.system.addNode(model.name, {
-                    'color': '#4B4A5A',
-                    'shape': 'dot',
-                    'label': model.name,
-                    'id': model.id,
-                    'category': 'model'
+                modelNode = that.system.add({
+                    group: "nodes",
+                    data: {id: model.id, label: model.name, weight: 75},
+                    /*position: { x: 200, y: 200 },*/
+                    classes: 'model'
                 });
             }
             var parentNode = null;
+            var parentNodeId = 'block';
             if (parentModel) {
-                parentNode = that.getNodeWithName(parentModel.name);
+                parentNode = that.getNodeWithId(parentModelId);
                 if (!parentNode) {
-                    parentNode = that.system.addNode(parentModel.name, {
-                        'color': '#95cde5',
-                        'shape': 'dot',
-                        'label': parentModel.name,
-                        'id': parentModel.id,
-                        'category': 'block'
+                    parentNode = that.system.add({
+                        group: "nodes",
+                        data: {id: parentModel.id, label: parentModel.name, weight: 75},
+                        /*position: { x: 200, y: 200 },*/
+                        classes: 'model'
                     });
                 }
-            } else {
-                parentNode = that.getNodeWithName('Block');
+                parentNodeId = parentModel.id;
             }
 
-            that.system.addEdge(parentNode, modelNode, {directed: true, weight: 1, color: '#333333'});
+            that.system.add({
+                group: "edges",
+                data: {id: 'model-' + modelId, source: parentNodeId, target: modelId, weight: 1}
+            });
         });
     }
 
@@ -484,8 +535,64 @@ export class WorkflowView extends View {
         var that = this;
         var parentWidth = this.$el.find('#canvas-container').width();
         var parentHeight = this.$el.find('#canvas-container').height();
-        var $canvas = this.$el.find("#viewport");
+        var $viewport = this.$el.find('#viewport');
+        $viewport.width(parentWidth - 5);
+        $viewport.height(parentHeight - 5);
 
+        var cytoscape = require('cytoscape');
+        this.system = cytoscape({
+            container: $viewport,
+            style: cytoscape.stylesheet()
+                .selector('node')
+                .css({
+                    'content': 'data(label)'
+                })
+                .selector('edge')
+                .css({
+                    'curve-style': 'bezier',
+                    'target-arrow-shape': 'triangle',
+                    'width': 2,
+                    'line-color': '#ddd',
+                    'target-arrow-color': '#ddd'
+                })
+                .selector('.block')
+                .css({
+                    'background-color': '#d9534f'
+                })
+                .selector('.model')
+                .css({
+                    'background-color': '#4b4a5a'
+                })
+                .selector('.model-join')
+                .css({
+                    'background-color': '#E1D5D2'
+                })
+        });
+        this.system.add({
+            group: "nodes",
+            data: {id: 'block', label: 'Block', weight: 75},
+            /*position: { x: 200, y: 200 },*/
+            classes: 'block'
+        });
+        this.addProcessesToGraph(this.treeNodes);
+        this.addProcessJoinsToGraph(this.processJoins);
+        var layout = this.system.elements().layout({
+            name: 'breadthfirst'
+        });
+
+        layout.run();
+        //this.system.$('.block').addClass('block');
+
+        /*var cy = cytoscape({
+         container: $viewport, // container to render in
+         });
+         cy.add({
+         group: "nodes",
+         data: { weight: 75 },
+         position: { x: 200, y: 200 }
+         });*/
+
+        /*var $canvas = this.$el.find("#viewport");
         var canvas = document.querySelector('canvas');
         canvas.width = parentWidth - 5;
         canvas.height = parentHeight - 5;
@@ -507,14 +614,14 @@ export class WorkflowView extends View {
                 var position = that.getStoredNodePosition(node.name);
                 if (position && position.screenPosition) {
                     var node = that.system.getNode(node.name);
-                    /*var pos = $(canvas).offset();
+         /!*var pos = $(canvas).offset();
                      var s = arbor.Point(position.x - pos.left, position.x - pos.top);
-                     var p = that.system.fromScreen(s);*/
+         var p = that.system.fromScreen(s);*!/
                     node.p = position.screenPosition;
                 }
             });
-        }, 300);
-        $canvas.contextMenu({
+         }, 300);*/
+        /*$viewport.contextMenu({
             arborSystem: this.system,
             menuSelector: "#workflowContextMenu",
             menuSelected: function (invokedOn, selectedMenu, event, selected) {
@@ -522,9 +629,9 @@ export class WorkflowView extends View {
                 //alert("Name:" + selected.node.name + " Category:" + selected.node.data.category)
                 if (selectedAction.toString() === 'Delete') {
                     that.handleDelete(selected);
-                } /*else if ((selectedAction.toString() === 'Add product')) {
+         } /!*else if ((selectedAction.toString() === 'Add product')) {
                  that.handleAddProduct(selected);
-                 } */ else if ((selectedAction.toString() === 'Add to process join')) {
+         } *!/ else if ((selectedAction.toString() === 'Add to process join')) {
                     that.handleAddProcessToJoin(selected);
                 } else if ((selectedAction.toString() === 'Add to product join')) {
                     that.handleAddToProductJoin(selected);
@@ -538,7 +645,7 @@ export class WorkflowView extends View {
                     that.handleEdit(selected);
                 }
             }
-        });
+         });*/
     }
 
     handleEdit(selected) {
