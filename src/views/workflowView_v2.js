@@ -199,36 +199,32 @@ export class WorkflowView_V2 extends View {
     addProductJoinsToGraph(productJoins) {
         var that = this;
         productJoins.forEach(function (productJoin) {
-            var productJoinNode = that.system.addNode(productJoin.name, {
-                'color': '#E79A58',
-                'shape': 'rect',
-                'label': productJoin.name,
-                'category': 'productJoin'
+            var productJoinNode = that.system.add({
+                group: "nodes",
+                data: {id: productJoin.name, label: productJoin.name, weight: 75},//product has no ID, so name is the id
+                classes: 'product-join'
             });
             productJoin.productList.forEach(function (productName) {
-                var childProductNode = that.system.getNode(productName);
+                var childProductNode = that.getNodeWithId(productName);
                 if (childProductNode) {
-                    that.system.addEdge(childProductNode, productJoinNode, {
-                        directed: true,
-                        weight: 1,
-                        color: '#333333'
+                    that.system.add({
+                        group: "edges",
+                        data: {source: productName, target: productJoin.name, weight: 1}
                     });
                 }
             });
             productJoin.productJoinList.forEach(function (productJoinName) {
-                var childProductJoinNode = that.getNodeWithName(productJoinName);
+                var childProductJoinNode = that.getNodeWithId(productJoinName);
                 if (!childProductJoinNode) {
-                    childProductJoinNode = that.system.addNode(productJoinName, {
-                        'color': '#E79A58',
-                        'shape': 'rect',
-                        'label': productJoinName,
-                        'category': 'superProductJoin'
+                    childProductJoinNode = that.system.add({
+                        group: "nodes",
+                        data: {id: productJoinName, label: productJoinName, weight: 75},//product has no ID, so name is the id
+                        classes: 'product-join'
                     });
                 }
-                that.system.addEdge(productJoinNode, childProductJoinNode, {
-                    directed: true,
-                    weight: 1,
-                    color: '#333333'
+                that.system.add({
+                    group: "edges",
+                    data: {source: productJoin.name, target: productJoinName, weight: 1}
                 });
             });
         });
@@ -564,6 +560,10 @@ export class WorkflowView_V2 extends View {
                 .css({
                     'background-color': '#A55540'
                 })
+                .selector('.product-join')
+                .css({
+                    'background-color': '#E79A58'
+                })
         });
         this.system.add({
             group: "nodes",
@@ -573,6 +573,7 @@ export class WorkflowView_V2 extends View {
         this.addProcessesToGraph(this.treeNodes);
         this.addProcessJoinsToGraph(this.processJoins);
         this.addProductsToGraph(this.products);
+        this.addProductJoinsToGraph(this.productJoins);
         var layout = this.system.elements().layout({
             name: 'breadthfirst'
         });
