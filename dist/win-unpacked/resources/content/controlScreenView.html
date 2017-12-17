@@ -10,26 +10,28 @@
                         <div id="equations" class="">
                             <div class="checkbox">
                                 <label class="checkbox">
-                                    <input name="checkbox" type="checkbox" checked="checked" value="GRADE_CONSTRAINT"/>
+                                    <input id='gradeConstraint' name="checkbox" type="checkbox" checked="checked"
+                                           value="GRADE_CONSTRAINT"/>
                                     Grade Constraint
                                 </label>
                             </div>
                             <div class="checkbox">
                                 <label class="checkbox">
-                                    <input name="checkbox" type="checkbox" checked="checked" value="BENCH_PROPORTION"/>
+                                    <input id='benchProportion' name="checkbox" type="checkbox" checked="checked"
+                                           value="BENCH_PROPORTION"/>
                                     Bench Proportion
                                 </label>
                             </div>
                             <div class="checkbox">
                                 <label class="checkbox">
-                                    <input name="checkbox" type="checkbox" checked="checked" value="CAPEX"/>
+                                    <input id='capex' name="checkbox" type="checkbox" checked="checked" value="CAPEX"/>
                                     Capex
                                 </label>
                             </div>
                         </div>
                     </div>
                     <div id="swOptions" class="form-group">
-                        <label class="control-label requiredField" for="radio">
+                        <label class="control-label requiredField">
                             Mode of running scheduler
                             <span class="asteriskField">*</span>
                         </label>
@@ -70,10 +72,7 @@
                                 </i>
                             </div>
                         </div>
-                        <label class="control-label requiredField" for="period">
-                            Save GAP
-                            <span class="asteriskField">*</span>
-                        </label>
+                        <label class="control-label requiredField" for="period">GAP<span class="asteriskField">*</span></label>
                         <div class="input-group col-md-3 col-sm-3 col-xs-12">
                             <input class="form-control" id="gap" name="text" type="text"/>
                             <div class="input-group-addon">
@@ -95,7 +94,8 @@
                             Step Size
                         </label>
                         <div class="input-group col-md-3 col-sm-3 col-xs-12">
-                            <input class="form-control" id="step-size" name="text2" type="text" disabled="true"/>
+                            <input class="form-control" id="step-size" name="text2" type="text" disabled="true"
+                                   value="1"/>
                             <div class="input-group-addon">
                                 <i class="glyphicon glyphicon-align-right">
                                 </i>
