@@ -27,33 +27,6 @@ export class WorkflowView_V2 extends View {
         this.uiStateModel = new UIStateModel({projectId: options.projectId});
         this.multiProductOverlay = new MultiProductOverlay();
         this.scaleFactor = 1;
-        //this.productGradeModel = new ProductGradeModel({})
-        this.layout = {
-            name: 'circle',
-
-            fit: true, // whether to fit the viewport to the graph
-            padding: 30, // the padding on fit
-            boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
-            avoidOverlap: true, // prevents node overlap, may overflow boundingBox and radius if not enough space
-            nodeDimensionsIncludeLabels: false, // Excludes the label when calculating node bounding boxes for the layout algorithm
-            spacingFactor: undefined, // Applies a multiplicative factor (>0) to expand or compress the overall area that the nodes take up
-            radius: undefined, // the radius of the circle
-            startAngle: 3 / 2 * Math.PI, // where nodes start in radians
-            sweep: undefined, // how many radians should be between the first and last node (defaults to full circle)
-            clockwise: true, // whether the layout should go clockwise (true) or counterclockwise/anticlockwise (false)
-            sort: undefined, // a sorting function to order the nodes; e.g. function(a, b){ return a.data('weight') - b.data('weight') }
-            animate: false, // whether to transition the node positions
-            animationDuration: 500, // duration of animation in ms if enabled
-            animationEasing: undefined, // easing of animation if enabled
-            animateFilter: function (node, i) {
-                return true;
-            }, // a function that determines whether the node should be animated.  All nodes animated by default on animate enabled.  Non-animated nodes are positioned immediately when the layout starts
-            ready: undefined, // callback on layoutready
-            stop: undefined, // callback on layoutstop
-            transform: function (node, position) {
-                return position;
-            } // transform a given node position. Useful for changing flow direction in discrete layouts
-        };
     }
 
     getHtml() {
@@ -441,7 +414,7 @@ export class WorkflowView_V2 extends View {
                 unusedModels.forEach(function (model) {
                     $li = $('<li data-model-id="' + model.id + '" draggable="true">' + model.name + '</li>');
                     $li.attr('title', model.name);
-                    $li.addClass('list-group-item list-group-item-info');
+                    $li.addClass('list-group-item list-group-item-info unused-model');
                     $liGroup.append($li);
                 });
                 that.fetchStoredCoordinates();
@@ -1141,7 +1114,7 @@ export class WorkflowView_V2 extends View {
     }
 
     handleDragEnd(e) {
-        console.log('Dragged model: ' + e.target.innerHTML);
+        /*console.log('Dragged model: ' + e.target.innerHTML);
         this.system.parameters({repulsion: 0})
         var draggedModel = this.getModelWithName(e.target.innerHTML);
         e.target.style.opacity = '1';
@@ -1158,7 +1131,28 @@ export class WorkflowView_V2 extends View {
             }
             console.log(draggedModel.name + ':' + parentModel.name);
             this.addModelToProcessFlow({draggedModel: draggedModel, parentModel: parentModel});
-        }
+         }*/
+        e.target.style.opacity = '1';
+        var pos = this.$el.find('#viewport').offset();
+        var p = {x: e.clientX - pos.left, y: e.clientY - pos.top};
+        var nearestNode = this.getNearestNode(p);
+        console.log(nearestNode);
+    }
+
+    getNearestNode(dropPosition) {
+        var leastDistance = 0;
+        var nearestNode;
+        this.system.$('node').forEach((node)=> {
+            var renderedPosition = node.renderedPosition();
+            var delX = Math.abs(dropPosition.x - renderedPosition.x);
+            var delY = Math.abs(dropPosition.y - renderedPosition.y);
+            var linearDistance = Math.hypot(delX, delY);
+            if ((leastDistance === 0) || (linearDistance <= leastDistance)) {
+                nearestNode = node;
+                leastDistance = linearDistance;
+            }
+        });
+        return nearestNode;
     }
 
     addModelToProcessFlow(options) {
@@ -1206,21 +1200,7 @@ export class WorkflowView_V2 extends View {
         this.$el.on('click', '#btn-zoomin', this.handleZoomIn.bind(this));
         this.$el.on('click', '#btn-zoomout', this.handleZoomOut.bind(this));
         this.$el.on('click', '#viewport', this.handleCanvasClick.bind(this));
-        this.$el.find("#viewport").dblclick(function (event) {
-            var offset = $(this).offset();
-            var X = event.pageX - offset.left;
-            var Y = event.pageY - offset.top;
-            if (event.shiftKey) {
-                that.handleZoomOut();
-            } else {
-                that.handleZoomIn();
-                that.$el.find('#canvas-container').animate({
-                    scrollTop: Y,
-                    scrollLeft: X
-                }, 500);
-            }
-        });
-        this.bindDragEventsOnModels();
+        this.bindDragEvents();
         this.$el.find('#join_processes').click(function (event) {
             that.addProcessJoin();
         });
@@ -1369,12 +1349,29 @@ export class WorkflowView_V2 extends View {
         console.log(newProduct.name + ':' + newProduct.modelId + ':' + newProduct.unitType + ':' + newProduct.unitId);
     }
 
-    bindDragEventsOnModels() {
-        var models = document.querySelectorAll('.list-group-item');
+    bindDragEvents() {
+        /*var models = document.querySelectorAll('.list-group-item');
         var that = this;
         [].forEach.call(models, function (col) {
             col.addEventListener('dragstart', that.handleDragStart.bind(that), false);
             col.addEventListener('dragend', that.handleDragEnd.bind(that), false);
+         });*/
+        this.$el.on('dragstart', '.unused-model', (e)=> {
+            //console.log('Drag started.....');
+            this.handleDragStart(e);
+        });
+        this.$el.on('dragend', '.unused-model', (e)=> {
+            //console.log('Drag ended.....');
+            this.handleDragEnd(e);
+        });
+        /*this.system.$('.model').on('dragover', (e)=>{
+         console.log('Something being dragged over me.....');
+         });
+         this.system.$('.model').on('drop', (e)=>{
+         console.log('Something being dropped on me......');
+         });*/
+        this.system.on('dragover drop', 'node', (e)=> {
+            console.log('Received event: ' + e.type);
         });
     }
 
