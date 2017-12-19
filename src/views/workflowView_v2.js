@@ -172,14 +172,17 @@ export class WorkflowView_V2 extends View {
     addProductJoinsToGraph(productJoins) {
         var that = this;
         productJoins.forEach(function (productJoin) {
-            var productJoinNode = that.system.add({
-                group: "nodes",
-                data: {id: productJoin.name, label: productJoin.name, weight: 75},//product has no ID, so name is the id
-                classes: 'product-join'
-            });
+            var productJoinNode = that.getNodeWithId(productJoin.name);
+            if (!productJoinNode) {
+                productJoinNode = that.system.add({
+                    group: "nodes",
+                    data: {id: productJoin.name, label: productJoin.name, weight: 75},//product has no ID, so name is the id
+                    classes: 'product-join'
+                });
+            }
             productJoin.productList.forEach(function (productName) {
                 var childProductNode = that.getNodeWithId(productName);
-                if (childProductNode) {
+                if (childProductNode && !(childProductNode.edgesTo(productJoinNode).length > 0)) {
                     that.system.add({
                         group: "edges",
                         data: {source: productName, target: productJoin.name, weight: 1}
@@ -195,10 +198,12 @@ export class WorkflowView_V2 extends View {
                         classes: 'product-join'
                     });
                 }
-                that.system.add({
-                    group: "edges",
-                    data: {source: productJoin.name, target: productJoinName, weight: 1}
-                });
+                if (!(childProductJoinNode.edgesTo(productJoinNode).length > 0)) {
+                    that.system.add({
+                        group: "edges",
+                        data: {source: productJoin.name, target: productJoinName, weight: 1}
+                    });
+                }
             });
         });
     }
@@ -1266,7 +1271,7 @@ export class WorkflowView_V2 extends View {
 
     addProductJoin() {
         var that = this;
-        var newProductJoin = {}
+        /*var newProductJoin = {}
         newProductJoin['name'] = this.$el.find('#product_join_name').val();
         newProductJoin['childType'] = 0;
         newProductJoin['child'] = '';
@@ -1285,6 +1290,15 @@ export class WorkflowView_V2 extends View {
                     })
                 });
             }
+         });*/
+        var productJoinName = this.$el.find('#product_join_name').val();
+        var checkedProducts = that.$el.find('#productJoinModalProductList').find('input:checked');
+        checkedProducts.each((index, checkedProduct)=> {
+            var checkedProductName = $(checkedProduct).val();
+            that.addProductToProductJoin({
+                productJoinName: productJoinName,
+                productName: checkedProductName
+            })
         });
     }
 
@@ -1298,14 +1312,22 @@ export class WorkflowView_V2 extends View {
         this.productJoinModel.add({
             dataObject: updatedProductJoin,
             success: (data) => {
-                this.getProductJoinWithName(productJoinName).productList.push(productName);
-                var productNode = this.system.getNode(productName);
-                var productJoinNode = this.system.getNode(productJoinName);
-                this.system.addEdge(productNode, productJoinNode, {
+                var productJoin = this.getProductJoinWithName(productJoinName);
+                if (!productJoin) {
+                    this.productJoins.push(data);
+                } else {
+                    productJoin.productList.push(productName);
+                }
+                this.addProductJoinsToGraph([data]);
+
+                //this.getProductJoinWithName(productJoinName).productList.push(productName);
+                //var productNode = this.system.getNode(productName);
+                //var productJoinNode = this.system.getNode(productJoinName);
+                /*this.system.addEdge(productNode, productJoinNode, {
                     directed: true,
                     weight: 1,
                     color: '#333333'
-                });
+                 });*/
             },
             error: function (data) {
                 alert('Error adding product to join');
@@ -1330,7 +1352,6 @@ export class WorkflowView_V2 extends View {
         this.productModel.add({
             dataObject: newProduct,
             success: function (data) {
-                //alert('Successfully created product.');
                 that.products.push(data);
                 that.addProductsToGraph([data]);
                 that.$el.find('#product_name').val('');
