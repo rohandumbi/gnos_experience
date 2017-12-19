@@ -211,16 +211,17 @@ export class WorkflowView_V2 extends View {
     addProductsToGraph(products) {
         var that = this;
         products.forEach(function (product) {
-
-            var productNode = that.system.add({
-                group: "nodes",
-                data: {id: product.name, label: product.name, weight: 75},//product has no ID, so name is the id
-                classes: 'product'
-            });
-
+            var productNode = that.getNodeWithId(product.name);
+            if (!productNode) {
+                productNode = that.system.add({
+                    group: "nodes",
+                    data: {id: product.name, label: product.name, weight: 75},//product has no ID, so name is the id
+                    classes: 'product'
+                });
+            }
             var modelId = product.modelId;
             var modelNode = that.getNodeWithId(modelId);
-            if (modelNode) {
+            if (modelNode && !(modelNode.edgesTo(productNode).length > 0)) {
                 that.system.add({
                     group: "edges",
                     data: {source: modelId, target: product.name, weight: 1}
@@ -232,17 +233,20 @@ export class WorkflowView_V2 extends View {
     addProcessJoinsToGraph(processJoins) {
         var that = this;
         processJoins.forEach(function (processJoin) {
-            var processJoinNode = that.system.add({
-                group: "nodes",
-                data: {id: processJoin.name, label: processJoin.name, weight: 75},//process join has no ID, so name is the id
-                classes: 'model-join'
-            });
+            var processJoinNode = that.getNodeWithId(processJoin.name);
+            if (!processJoinNode) {
+                processJoinNode = that.system.add({
+                    group: "nodes",
+                    data: {id: processJoin.name, label: processJoin.name, weight: 75},//process join has no ID, so name is the id
+                    classes: 'model-join'
+                });
+            }
             processJoin.childProcessList.forEach(function (childProcessId) {
                 if (childProcessId > 0) {
                     //var childModel = that.getModelWithId(childProcessId);
                     //var childModelNode = that.system.getNode(childModel.name);
                     var childModelNode = that.getNodeWithId(childProcessId);
-                    if (childModelNode) {
+                    if (childModelNode && !(childModelNode.edgesTo(processJoinNode).length > 0)) {
                         that.system.add({
                             group: "edges",
                             data: {source: processJoin.name, target: childProcessId, weight: 1}
@@ -270,25 +274,25 @@ export class WorkflowView_V2 extends View {
                     classes: 'model'
                 });
             }
-            var parentNode = null;
             var parentNodeId = 'block';
+            var parentNode = that.getNodeWithId('block');
             if (parentModel) {
                 parentNode = that.getNodeWithId(parentModelId);
                 if (!parentNode) {
                     parentNode = that.system.add({
                         group: "nodes",
                         data: {id: parentModel.id, label: parentModel.name, weight: 75},
-                        /*position: { x: 200, y: 200 },*/
                         classes: 'model'
                     });
                 }
                 parentNodeId = parentModel.id;
             }
-
-            that.system.add({
-                group: "edges",
-                data: {id: 'model-' + modelId, source: parentNodeId, target: modelId, weight: 1}
-            });
+            if (!(modelNode.edgesTo(parentNode).length > 0)) {
+                that.system.add({
+                    group: "edges",
+                    data: {id: 'model-' + modelId, source: parentNodeId, target: modelId, weight: 1}
+                });
+            }
         });
     }
 
