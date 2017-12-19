@@ -1114,32 +1114,21 @@ export class WorkflowView_V2 extends View {
     }
 
     handleDragEnd(e) {
-        /*console.log('Dragged model: ' + e.target.innerHTML);
-        this.system.parameters({repulsion: 0})
         var draggedModel = this.getModelWithName(e.target.innerHTML);
-        e.target.style.opacity = '1';
-        var pos = this.$el.find('#viewport').offset();
-        var p = {x: e.pageX - pos.left, y: e.pageY - pos.top}
-        var selected = this.system.nearest(p);
-
-        if ((selected.node !== null) && (draggedModel !== null)) {
-            // dragged.node.tempMass = 10000
-            //dragged.node.fixed = true;
-            var parentModel = this.getModelWithName(selected.node.name);
-            if (!parentModel) {
-                parentModel = this.system.getNode('Block');
-            }
-            console.log(draggedModel.name + ':' + parentModel.name);
-            this.addModelToProcessFlow({draggedModel: draggedModel, parentModel: parentModel});
-         }*/
+        var parentModel;
         e.target.style.opacity = '1';
         var pos = this.$el.find('#viewport').offset();
         var p = {x: e.clientX - pos.left, y: e.clientY - pos.top};
-        var nearestNode = this.getNearestNode(p);
-        console.log(nearestNode);
+        var nearestNodeElement = this.getNearestNodeElement(p);
+        if (nearestNodeElement.hasClass('model') || nearestNodeElement.hasClass('block')) {
+            parentModel = this.getModelWithName(nearestNodeElement.data('label'));
+            this.addModelToProcessTree({draggedModel: draggedModel, parentModel: parentModel});
+        } else {
+            alert('Cannot add model to this element');
+        }
     }
 
-    getNearestNode(dropPosition) {
+    getNearestNodeElement(dropPosition) {
         var leastDistance = 0;
         var nearestNode;
         this.system.$('node').forEach((node)=> {
@@ -1155,13 +1144,17 @@ export class WorkflowView_V2 extends View {
         return nearestNode;
     }
 
-    addModelToProcessFlow(options) {
+    addModelToProcessTree(options) {
         var that = this;
+        var parentModelId = -1;
         var draggedModel = options.draggedModel;
         var parentModel = options.parentModel;
+        if (parentModel && parentModel.id) {
+            parentModelId = parentModel.id;
+        }
         var newModel = {
             modelId: draggedModel.id,
-            parentModelId: parentModel.id || -1
+            parentModelId: parentModelId
         }
         this.processTreeModel.add({
             dataObject: newModel,
