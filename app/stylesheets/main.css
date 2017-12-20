@@ -810,7 +810,6 @@ body {
     transform: rotate(360deg);
   }
 }
-
 .cy-context-menus-cxt-menu {
     display: none;
     z-index: 1000;
@@ -820,7 +819,6 @@ body {
     margin: 0;
     width: auto;
 }
-
 .cy-context-menus-cxt-menuitem {
     display: block;
     z-index: 1000;
@@ -835,15 +833,12 @@ body {
     border: 0;
     text-align: left;
 }
-
 .cy-context-menus-cxt-menuitem:enabled {
     color: #000000;
 }
-
 .cy-context-menus-ctx-operation:focus {
     outline: none;
 }
-
 .cy-context-menus-cxt-menuitem:hover {
     color: #ffffff;
     text-decoration: none;
@@ -851,11 +846,9 @@ body {
     background-image: none;
     cursor: pointer;
 }
-
 .cy-context-menus-cxt-menuitem[content]:before {
     content: attr(content);
 }
-
 .cy-context-menus-divider {
     border-bottom: 1px solid #A0A0A0;
 }

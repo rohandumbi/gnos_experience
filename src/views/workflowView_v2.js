@@ -628,7 +628,7 @@ export class WorkflowView_V2 extends View {
     }
 
     hookContextMenu() {
-        var removed = false;
+        var removed;
         var options = {
             // List of initial menu items
             menuItems: [
@@ -649,10 +649,12 @@ export class WorkflowView_V2 extends View {
                     selector: '.product-join, .model-join',
                     coreAsWell: false,
                     onClickFunction: function (event) {
-                        if (removed) {
-                            removed.restore();
+                        var target = event.target || event.cyTarget;
+                        if (target.hasClass('model-join')) {
+                            alert('Edit model join');
+                        } else if (target.hasClass('product-join')) {
+                            alert('Edit product join');
                         }
-                        contextMenu.hideMenuItem('undo-last-remove');
                     }
                 }
             ]
