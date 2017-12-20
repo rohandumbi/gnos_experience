@@ -59,10 +59,12 @@
     "source-map-support": "^0.4.2",
     "spectron": "^3.3.0",
     "yargs": "^4.2.0",
+    "jquery": "^3",
     "underscore": "^1.8.3",
     "requirejs-text": "^2",
     "chart.js": "^2.5.0",
-    "cytoscape": "^3"
+    "cytoscape": "^3",
+    "cytoscape-context-menus": "^3"
   },
   "dependencies": {
     "chart.js": "^2.5.0",

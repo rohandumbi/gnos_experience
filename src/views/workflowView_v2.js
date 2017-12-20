@@ -11,6 +11,8 @@ import {ProductGradeModel} from '../models/productGradeModel';
 import {MultiProductOverlay} from '../overlays/multiProductOverlay';
 import {ProductJoinEditOverlay} from '../overlays/productJoinEditOverlay';
 import {UIStateModel} from '../models/uiStateModel';
+import cytoscape from 'cytoscape';
+import contextMenus from 'cytoscape-context-menus';
 
 export class WorkflowView_V2 extends View {
     constructor(options) {
@@ -27,6 +29,7 @@ export class WorkflowView_V2 extends View {
         this.uiStateModel = new UIStateModel({projectId: options.projectId});
         this.multiProductOverlay = new MultiProductOverlay();
         this.scaleFactor = 1;
+        contextMenus(cytoscape, jQuery); // register extension
     }
 
     getHtml() {
@@ -510,6 +513,7 @@ export class WorkflowView_V2 extends View {
         ]).then(values => {
             this.filterNonGradeExpressions();
             this.initializeGraph();
+            this.hookContextMenu();
             this.bindDomEvents();
         }).catch(reason=> {
             alert(reason);
@@ -570,7 +574,7 @@ export class WorkflowView_V2 extends View {
         $viewport.width(parentWidth - 5);
         $viewport.height(parentHeight - 5);
 
-        var cytoscape = require('cytoscape');
+        //var cytoscape = require('cytoscape');
         this.system = cytoscape({
             container: $viewport,
             style: cytoscape.stylesheet()
@@ -621,6 +625,39 @@ export class WorkflowView_V2 extends View {
         });
 
         layout.run();
+    }
+
+    hookContextMenu() {
+        var removed = false;
+        var options = {
+            // List of initial menu items
+            menuItems: [
+                {
+                    id: 'remove',
+                    content: 'remove',
+                    selector: 'node, edge',
+                    onClickFunction: function (event) {
+                        var target = event.target || event.cyTarget;
+                        removed = target.remove();
+                        contextMenu.showMenuItem('undo-last-remove');
+                    },
+                    hasTrailingDivider: true
+                },
+                {
+                    id: 'edit',
+                    content: 'edit',
+                    selector: 'node',
+                    coreAsWell: false,
+                    onClickFunction: function (event) {
+                        if (removed) {
+                            removed.restore();
+                        }
+                        contextMenu.hideMenuItem('undo-last-remove');
+                    }
+                }
+            ]
+        };
+        var instance = this.system.contextMenus(options);
     }
 
     handleEdit(selected) {
@@ -1199,7 +1236,7 @@ export class WorkflowView_V2 extends View {
         var that = this;
         this.$el.on('click', '#btn-zoomin', this.handleZoomIn.bind(this));
         this.$el.on('click', '#btn-zoomout', this.handleZoomOut.bind(this));
-        this.$el.on('click', '#viewport', this.handleCanvasClick.bind(this));
+        //this.$el.on('click', '#viewport', this.handleCanvasClick.bind(this));
         this.bindDragEvents();
         this.$el.find('#join_processes').click(function (event) {
             that.addProcessJoin();
@@ -1232,15 +1269,6 @@ export class WorkflowView_V2 extends View {
             });
 
 
-        });
-        this.$el.find('#switch').change(function (event) {
-            //that.addProduct();
-            var isEditMode = $(this).is(':checked');
-            if (isEditMode) {
-                that.system.parameters({friction: 1})
-            } else {
-                that.system.parameters({friction: 0.5})
-            }
         });
         this.$el.find('#btnCreateProcessJoin').click((event) => {
             var processList = '';
