@@ -88,6 +88,16 @@ export class WorkflowView_V2 extends View {
         return object;
     }
 
+    getProcessJoinWithName(processJoinName) {
+        var object = null;
+        this.processJoins.forEach(function (processJoin) {
+            if (processJoin.name === processJoinName) {
+                object = processJoin;
+            }
+        });
+        return object;
+    }
+
     getUnitWithName(unitName) {
         var object = null;
         this.units.forEach(function (unit) {
@@ -506,7 +516,6 @@ export class WorkflowView_V2 extends View {
     }
 
     handleZoomIn() {
-        //alert("Implement zoom in");
         this.scaleFactor += 0.5;
         var $canvas = this.$el.find("#viewport");
         var existingWidth = $canvas.attr('width');
@@ -611,70 +620,6 @@ export class WorkflowView_V2 extends View {
         });
 
         layout.run();
-
-        /*var cy = cytoscape({
-         container: $viewport, // container to render in
-         });
-         cy.add({
-         group: "nodes",
-         data: { weight: 75 },
-         position: { x: 200, y: 200 }
-         });*/
-
-        /*var $canvas = this.$el.find("#viewport");
-        var canvas = document.querySelector('canvas');
-        canvas.width = parentWidth - 5;
-        canvas.height = parentHeight - 5;
-        this.system = arbor.ParticleSystem({
-            friction: 100,
-            stiffness: -512,
-            repulsion: 0,
-            gravity: false
-        });
-        this.system.renderer = Renderer($canvas);
-        var block = this.system.addNode('Block', {'color': 'red', 'shape': 'dot', 'label': 'Block'});
-        this.addProcessesToGraph(this.treeNodes);
-        this.addProcessJoinsToGraph(this.processJoins);
-        this.addProductsToGraph(this.products);
-        this.addProductJoinsToGraph(this.productJoins);
-
-        setTimeout(function () {
-            that.system.eachNode(function (node, point) {
-                var position = that.getStoredNodePosition(node.name);
-                if (position && position.screenPosition) {
-                    var node = that.system.getNode(node.name);
-         /!*var pos = $(canvas).offset();
-                     var s = arbor.Point(position.x - pos.left, position.x - pos.top);
-         var p = that.system.fromScreen(s);*!/
-                    node.p = position.screenPosition;
-                }
-            });
-         }, 300);*/
-        /*$viewport.contextMenu({
-            arborSystem: this.system,
-            menuSelector: "#workflowContextMenu",
-            menuSelected: function (invokedOn, selectedMenu, event, selected) {
-                var selectedAction = selectedMenu.text();
-                //alert("Name:" + selected.node.name + " Category:" + selected.node.data.category)
-                if (selectedAction.toString() === 'Delete') {
-                    that.handleDelete(selected);
-         } /!*else if ((selectedAction.toString() === 'Add product')) {
-                 that.handleAddProduct(selected);
-         } *!/ else if ((selectedAction.toString() === 'Add to process join')) {
-                    that.handleAddProcessToJoin(selected);
-                } else if ((selectedAction.toString() === 'Add to product join')) {
-                    that.handleAddToProductJoin(selected);
-                } else if ((selectedAction.toString() === 'Add expression')) {
-                    that.handleAddExpressionToProduct(selected);
-                } else if ((selectedAction.toString() === 'Add unit')) {
-                    that.handleAddUnitToProduct(selected);
-                } else if ((selectedAction.toString() === 'View grades')) {
-                    that.handleViewGrades(selected);
-                } else if ((selectedAction.toString() === 'Edit')) {
-                    that.handleEdit(selected);
-                }
-            }
-         });*/
     }
 
     handleEdit(selected) {
@@ -1294,6 +1239,14 @@ export class WorkflowView_V2 extends View {
                 that.system.parameters({friction: 0.5})
             }
         });
+        this.$el.find('#btnCreateProcessJoin').click((event) => {
+            var processList = '';
+            this.processes.forEach((process)=> {
+                processList += '<div class="checkbox"><label><input type="checkbox" value="' + process.id + '">' + process.name + '</label></div>'
+            });
+            this.$el.find('#processJoinModalProcessList').html(processList)
+            this.$el.find('#processJoinModal').modal();
+        });
         this.$el.find('#btnCreateProductJoin').click((event) => {
             var productList = '';
             this.products.forEach((product)=> {
@@ -1309,43 +1262,43 @@ export class WorkflowView_V2 extends View {
 
     addProcessJoin() {
         var that = this;
-        var newProcessJoin = {}
-        newProcessJoin['name'] = this.$el.find('#join_name').val();
-        newProcessJoin['processId'] = 0;
+        var processJoinName = this.$el.find('#join_name').val().trim();
+        var checkedModels = that.$el.find('#processJoinModalProcessList').find('input:checked');
+        checkedModels.each((index, checkedModel)=> {
+            var checkedModelId = $(checkedModel).val();
+            that.addProcessToProcessJoin({
+                processJoinName: processJoinName,
+                processId: checkedModelId
+            })
+        });
+    }
+
+    addProcessToProcessJoin(options) {
+        var processJoinName = options.processJoinName;
+        var processId = options.processId;
+        var updatedProcessJoin = {}
+        updatedProcessJoin['name'] = processJoinName;
+        updatedProcessJoin['processId'] = processId;
         this.processJoinModel.add({
-            dataObject: newProcessJoin,
-            success: function (data) {
-                //alert('Successfully created join.');
-                that.processJoins.push(data);
-                that.addProcessJoinsToGraph([data]);
-                that.$el.find('#join_name').val('');
+            dataObject: updatedProcessJoin,
+            success: (data) => {
+                var processJoin = this.getProcessJoinWithName(processJoinName);
+                if (!processJoin) {
+                    this.processJoins.push(data);
+                } else {
+                    processJoin.childProcessList.push(processId);
+                }
+                this.addProcessJoinsToGraph([data]);
+            },
+            error: function (data) {
+                alert('Error adding model to join');
             }
         });
     }
 
     addProductJoin() {
         var that = this;
-        /*var newProductJoin = {}
-        newProductJoin['name'] = this.$el.find('#product_join_name').val();
-        newProductJoin['childType'] = 0;
-        newProductJoin['child'] = '';
-        this.productJoinModel.add({
-            dataObject: newProductJoin,
-            success: function (data) {
-                that.productJoins.push(data);
-                that.addProductJoinsToGraph([data]);
-                that.$el.find('#product_join_name').val('');
-                var checkedProducts = that.$el.find('#productJoinModalProductList').find('input:checked');
-                checkedProducts.each((index, checkedProduct)=> {
-                    var checkedProductName = $(checkedProduct).val();
-                    that.addProductToProductJoin({
-                        productJoinName: newProductJoin.name,
-                        productName: checkedProductName
-                    })
-                });
-            }
-         });*/
-        var productJoinName = this.$el.find('#product_join_name').val();
+        var productJoinName = this.$el.find('#product_join_name').val().trim();
         var checkedProducts = that.$el.find('#productJoinModalProductList').find('input:checked');
         checkedProducts.each((index, checkedProduct)=> {
             var checkedProductName = $(checkedProduct).val();
@@ -1373,15 +1326,6 @@ export class WorkflowView_V2 extends View {
                     productJoin.productList.push(productName);
                 }
                 this.addProductJoinsToGraph([data]);
-
-                //this.getProductJoinWithName(productJoinName).productList.push(productName);
-                //var productNode = this.system.getNode(productName);
-                //var productJoinNode = this.system.getNode(productJoinName);
-                /*this.system.addEdge(productNode, productJoinNode, {
-                    directed: true,
-                    weight: 1,
-                    color: '#333333'
-                 });*/
             },
             error: function (data) {
                 alert('Error adding product to join');
@@ -1396,8 +1340,6 @@ export class WorkflowView_V2 extends View {
         var unitName = this.$el.find('#grade-expression').find(':selected').data('unit-name');
         var unitId = this.$el.find('#grade-expression').find(':selected').data('unit-id');
         var unitType = this.$el.find('#grade-expression').find(':selected').data('unit-type');
-        //var unit = this.getExpressionByName(unitName);
-        //newProduct[]
         newProduct['name'] = processName + '_' + this.$el.find('#product_name').val();
         var process = this.getModelWithName(processName);
         newProduct['modelId'] = process.id;
@@ -1418,28 +1360,11 @@ export class WorkflowView_V2 extends View {
     }
 
     bindDragEvents() {
-        /*var models = document.querySelectorAll('.list-group-item');
-        var that = this;
-        [].forEach.call(models, function (col) {
-            col.addEventListener('dragstart', that.handleDragStart.bind(that), false);
-            col.addEventListener('dragend', that.handleDragEnd.bind(that), false);
-         });*/
         this.$el.on('dragstart', '.unused-model', (e)=> {
-            //console.log('Drag started.....');
             this.handleDragStart(e);
         });
         this.$el.on('dragend', '.unused-model', (e)=> {
-            //console.log('Drag ended.....');
             this.handleDragEnd(e);
-        });
-        /*this.system.$('.model').on('dragover', (e)=>{
-         console.log('Something being dragged over me.....');
-         });
-         this.system.$('.model').on('drop', (e)=>{
-         console.log('Something being dropped on me......');
-         });*/
-        this.system.on('dragover drop', 'node', (e)=> {
-            console.log('Received event: ' + e.type);
         });
     }
 

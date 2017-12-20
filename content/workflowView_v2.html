@@ -15,7 +15,7 @@
                 <div class="btn-group">
                     <button id="save-graph" data-toggle="modal" type="button" class="btn btn-success">Save State
                     </button>
-                    <button data-toggle="modal" id="btnCreateModelJoin" type="button" class="btn btn-info">
+                    <button data-toggle="modal" id="btnCreateProcessJoin" type="button" class="btn btn-info">
                         Create Model Join
                     </button>
                     <button data-toggle="modal" data-target="#productModal" type="button" class="btn btn-info">Create
@@ -59,21 +59,19 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Join Definition</h4>
+                    <h4 class="modal-title" id="myModalLabel">Model Join Definition</h4>
                 </div>
                 <div class="modal-body">
-                    <form class="form-inline">
-                        <form class="form">
-                            <div class="form-group">
-                                <label for="join_name">Join Name:</label>
-                                <input type="text" class="form-control" id="join_name">
-                            </div>
-                            <div class="form-group">
-                                <label for="modelJoinModalModelList">List of Models:</label>
-                                <div id="modelJoinModalModelList" style="max-height: 400px; overflow:auto"></div>
-                            </div>
-                            <br/>
-                        </form>
+                    <form class="form">
+                        <div class="form-group">
+                            <label for="join_name">Model Join Name:</label>
+                            <input type="text" class="form-control" id="join_name">
+                        </div>
+                        <div class="form-group">
+                            <label for="processJoinModalProcessList">List of Models:</label>
+                            <div id="processJoinModalProcessList" style="max-height: 400px; overflow:auto"></div>
+                        </div>
+                        <br/>
                     </form>
                 </div>
                 <div class="modal-footer">
