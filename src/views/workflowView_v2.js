@@ -427,13 +427,14 @@ export class WorkflowView_V2 extends View {
                 success: (data) => {
                     this.processes = data;
                     var tableRow = (
+                        '<label>Process:</label>' +
                         '<select id="new_process" class="process-name form-control" value="test">'
                     );
                     this.processes.forEach(function (process) {
                         tableRow += '<option data-process-name="' + process.name + '">' + process.name + '</option>';
                     });
                     tableRow += '</select>';
-                    this.$el.find('#process-list').append(tableRow);
+                    this.$el.find('#process-list').html(tableRow);
                     resolve();
                 },
                 error: (data)=> {
@@ -1149,7 +1150,6 @@ export class WorkflowView_V2 extends View {
     }
 
     addModelToProcessTree(options) {
-        var that = this;
         var parentModelId = -1;
         var draggedModel = options.draggedModel;
         var parentModel = options.parentModel;
@@ -1162,12 +1162,15 @@ export class WorkflowView_V2 extends View {
         }
         this.processTreeModel.add({
             dataObject: newModel,
-            success: function (data) {
-                console.log('Successfully created model: ' + data);
-                that.addProcessesToGraph([data]);
-                that.removeModelFromList(draggedModel);
+            success: (data)=> {
+                this.treeNodes.push(data);
+                this.fetchProcesses()
+                    .then(result=> {
+                        this.addProcessesToGraph([data]);
+                        this.removeModelFromList(draggedModel);
+                    })
             },
-            error: function (data) {
+            error: (data)=> {
                 alert('Error adding model: ' + data);
             }
         });
