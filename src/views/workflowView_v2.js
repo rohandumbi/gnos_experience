@@ -635,7 +635,7 @@ export class WorkflowView_V2 extends View {
                 {
                     id: 'remove',
                     content: 'remove',
-                    selector: 'node, edge',
+                    selector: '.model, .model-join, .product, .product-join',
                     onClickFunction: function (event) {
                         var target = event.target || event.cyTarget;
                         removed = target.remove();
@@ -646,7 +646,7 @@ export class WorkflowView_V2 extends View {
                 {
                     id: 'edit',
                     content: 'edit',
-                    selector: 'node',
+                    selector: '.product-join, .model-join',
                     coreAsWell: false,
                     onClickFunction: function (event) {
                         if (removed) {
