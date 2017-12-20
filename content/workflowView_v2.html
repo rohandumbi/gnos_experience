@@ -15,7 +15,7 @@
                 <div class="btn-group">
                     <button id="save-graph" data-toggle="modal" type="button" class="btn btn-success">Save State
                     </button>
-                    <button data-toggle="modal" data-target="#processJoinModal" type="button" class="btn btn-info">
+                    <button data-toggle="modal" id="btnCreateModelJoin" type="button" class="btn btn-info">
                         Create Model Join
                     </button>
                     <button data-toggle="modal" data-target="#productModal" type="button" class="btn btn-info">Create
@@ -67,6 +67,10 @@
                             <div class="form-group">
                                 <label for="join_name">Join Name:</label>
                                 <input type="text" class="form-control" id="join_name">
+                            </div>
+                            <div class="form-group">
+                                <label for="modelJoinModalModelList">List of Models:</label>
+                                <div id="modelJoinModalModelList" style="max-height: 400px; overflow:auto"></div>
                             </div>
                             <br/>
                         </form>

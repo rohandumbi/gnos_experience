@@ -297,141 +297,165 @@ export class WorkflowView_V2 extends View {
     }
 
     fetchUnits() {
-        var that = this;
-        this.unitModel.fetch({
-            success: function (data) {
-                that.units = data;
-                var fieldSet = (
-                    '<fieldset class="group">' +
-                    '<legend>' + 'Select units' + '</legend>' +
-                    '<ul class="checkbox">'
-                );
-                that.units.forEach(function (unit) {
-                    fieldSet += '<li><input class="unit-checkbox" type="checkbox" value="' + unit.name + '" /><label for="cb1">' + unit.name + '</label></li>'
-                });
-                fieldSet += '</ul> </fieldset>'
-                that.$el.find('#unit-group').append(fieldSet);
-                that.fetchExpressions();
-            },
-            error: function (data) {
-                alert('Error fetching product joins');
-            }
+        var promise = new Promise((resolve, reject)=> {
+            this.unitModel.fetch({
+                success: (data) => {
+                    this.units = data;
+                    var fieldSet = (
+                        '<fieldset class="group">' +
+                        '<legend>' + 'Select units' + '</legend>' +
+                        '<ul class="checkbox">'
+                    );
+                    this.units.forEach(function (unit) {
+                        fieldSet += '<li><input class="unit-checkbox" type="checkbox" value="' + unit.name + '" /><label for="cb1">' + unit.name + '</label></li>'
+                    });
+                    fieldSet += '</ul> </fieldset>'
+                    this.$el.find('#unit-group').append(fieldSet);
+                    resolve();
+                },
+                error: (data)=> {
+                    reject('Error fetching product joins');
+                }
+            });
         });
+        return promise;
     }
 
     fetchExpressions() {
-        var that = this;
-        this.expressionModel.fetch({
-            success: function (data) {
-                that.expressions = data;
-                that.filterNonGradeExpressions();
-                that.fetchProcesses();
-            },
-            error: function (data) {
-                alert('Error fetching product joins');
-            }
+        var promise = new Promise((resolve, reject)=> {
+            this.expressionModel.fetch({
+                success: (data)=> {
+                    this.expressions = data;
+                    resolve();
+                },
+                error: (data)=> {
+                    reject('Error fetching product joins');
+                }
+            });
         });
+        return promise;
     }
 
     fetchStoredCoordinates() {
-        this.uiStateModel.fetch({
-            success: (data)=> {
-                this.storedCoordinates = data;
-                this.initializeGraph();
-                this.bindDomEvents();
-            },
-            error: (error)=> {
-                alert(error.message);
-            }
+        var promise = new Promise((resolve, reject)=> {
+            this.uiStateModel.fetch({
+                success: (data)=> {
+                    this.storedCoordinates = data;
+                    resolve();
+                },
+                error: (error)=> {
+                    reject(error.message);
+                }
+            });
         });
+        return promise;
     }
 
     fetchProductJoins() {
-        var that = this;
-        this.productJoinModel.fetch({
-            success: (data) => {
-                this.productJoins = data;
-                this.fetchModels();
-            },
-            error: (data) => {
-                alert('Error fetching product joins:' + error.message);
-            }
+        var promise = new Promise((resolve, reject)=> {
+            this.productJoinModel.fetch({
+                success: (data) => {
+                    this.productJoins = data;
+                    resolve();
+                },
+                error: (error) => {
+                    reject('Error fetching product joins:' + error.message);
+                }
+            });
         });
+        return promise;
     }
 
     fetchProducts() {
-        var that = this;
-        this.productModel.fetch({
-            success: function (data) {
-                that.products = data;
-                that.fetchProductJoins();
-            }
+        var promise = new Promise((resolve, reject)=> {
+            this.productModel.fetch({
+                success: (data)=> {
+                    this.products = data;
+                    resolve();
+                },
+                error: (error)=> {
+                    reject('Error fetching products: ' + error.message);
+                }
+            });
         });
+        return promise;
     }
 
     fetchProcessJoins() {
-        var that = this;
-        this.processJoinModel.fetch({
-            success: function (data) {
-                that.processJoins = data;
-                that.fetchProducts();
-            }
+        var promise = new Promise((resolve, reject)=> {
+            this.processJoinModel.fetch({
+                success: (data)=> {
+                    this.processJoins = data;
+                    resolve();
+                },
+                error: (error)=> {
+                    reject('Error fetching process joins: ' + error.message);
+                }
+            });
         });
+        return promise;
     }
 
     fetchProcessTreeNodes() {
-        var that = this;
-        this.processTreeModel.fetch({
-            success: function (data) {
-                that.treeNodes = data;
-                that.fetchProcessJoins();
-            }
+        var promise = new Promise((resolve, reject)=> {
+            this.processTreeModel.fetch({
+                success: (data)=> {
+                    this.treeNodes = data;
+                    resolve();
+                },
+                error: (error)=> {
+                    reject('Error fetching tree nodes: ' + error.message);
+                }
+            });
         });
+        return promise;
     }
 
     fetchProcesses() {
-        var that = this;
-        this.processModel.fetch({
-            success: function (data) {
-                that.processes = data;
-                var tableRow = (
-                    '<select id="new_process" class="process-name form-control" value="test">'
-                );
-                that.processes.forEach(function (process) {
-                    tableRow += '<option data-process-name="' + process.name + '">' + process.name + '</option>';
-                });
-                tableRow += '</select>';
-                that.$el.find('#process-list').append(tableRow);
-                that.fetchProcessTreeNodes();
-                //that.fetchModels();
-                //that.initializeGraph();
-            },
-            error: function (data) {
-                alert('Error fetching list of pits: ' + data);
-            }
+        var promise = new Promise((resolve, reject)=> {
+            this.processModel.fetch({
+                success: (data) => {
+                    this.processes = data;
+                    var tableRow = (
+                        '<select id="new_process" class="process-name form-control" value="test">'
+                    );
+                    this.processes.forEach(function (process) {
+                        tableRow += '<option data-process-name="' + process.name + '">' + process.name + '</option>';
+                    });
+                    tableRow += '</select>';
+                    this.$el.find('#process-list').append(tableRow);
+                    resolve();
+                },
+                error: (data)=> {
+                    reject('Error fetching list of pits: ' + data);
+                }
+            });
         });
+        return promise;
     }
 
     fetchModels() {
-        var that = this;
-        this.gnosModel.fetch({
-            success: function (data) {
-                that.models = data;
-                var $liGroup = that.$el.find('ul.list-group');
-                var $li;
-                var unusedModels = that.filterUnusedModel();
-                unusedModels.forEach(function (model) {
-                    $li = $('<li data-model-id="' + model.id + '" draggable="true">' + model.name + '</li>');
-                    $li.attr('title', model.name);
-                    $li.addClass('list-group-item list-group-item-info unused-model');
-                    $liGroup.append($li);
-                });
-                that.fetchStoredCoordinates();
-            },
-            error: function (data) {
-                alert('Error fetching list of pits: ' + data);
-            }
+        var promise = new Promise((resolve, reject)=> {
+            this.gnosModel.fetch({
+                success: (data)=> {
+                    this.models = data;
+                    var $liGroup = this.$el.find('ul.list-group');
+                    var $li;
+                    var unusedModels = this.filterUnusedModel();
+                    unusedModels.forEach(function (model) {
+                        $li = $('<li data-model-id="' + model.id + '" draggable="true">' + model.name + '</li>');
+                        $li.attr('title', model.name);
+                        $li.addClass('list-group-item list-group-item-info unused-model');
+                        $liGroup.append($li);
+                    });
+                    resolve();
+                },
+                error: (data)=> {
+                    reject('Error fetching list of pits: ' + data);
+                }
+            });
         });
+        return promise;
     }
 
     filterUnusedModel() {
@@ -451,8 +475,34 @@ export class WorkflowView_V2 extends View {
     }
 
     onDomLoaded() {
-        this.fetchUnits();
+        //this.fetchUnits();
         //this.fitCanvasToContainer();
+        var fetchUnitsPromise = this.fetchUnits();
+        var fetchExpressionsPromise = this.fetchExpressions();
+        var fetchProcessesPromise = this.fetchProcesses();
+        var fetchProcessTreeNodesPromise = this.fetchProcessTreeNodes();
+        var fetchProcessJoinsPromise = this.fetchProcessJoins();
+        var fetchProductsPromise = this.fetchProducts();
+        var fetchProductJoinsPromise = this.fetchProductJoins();
+        var fetchModelsPromise = this.fetchModels();
+        var fetchStoredCoordinatesPromise = this.fetchStoredCoordinates();
+        Promise.all([
+            fetchUnitsPromise,
+            fetchExpressionsPromise,
+            fetchProcessesPromise,
+            fetchProcessTreeNodesPromise,
+            fetchProcessJoinsPromise,
+            fetchProductsPromise,
+            fetchProductJoinsPromise,
+            fetchModelsPromise,
+            fetchStoredCoordinatesPromise
+        ]).then(values => {
+            this.filterNonGradeExpressions();
+            this.initializeGraph();
+            this.bindDomEvents();
+        }).catch(reason=> {
+            alert(reason);
+        });
     }
 
     handleZoomIn() {
