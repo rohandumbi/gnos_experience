@@ -453,15 +453,6 @@ export class WorkflowView_V2 extends View {
             this.gnosModel.fetch({
                 success: (data)=> {
                     this.models = data;
-                    var $liGroup = this.$el.find('ul.list-group');
-                    var $li;
-                    var unusedModels = this.filterUnusedModel();
-                    unusedModels.forEach(function (model) {
-                        $li = $('<li data-model-id="' + model.id + '" draggable="true">' + model.name + '</li>');
-                        $li.attr('title', model.name);
-                        $li.addClass('list-group-item list-group-item-info unused-model');
-                        $liGroup.append($li);
-                    });
                     resolve();
                 },
                 error: (data)=> {
@@ -484,6 +475,14 @@ export class WorkflowView_V2 extends View {
             if (!presentInTree) {
                 unusedModels.push(model);
             }
+        });
+        var $liGroup = this.$el.find('ul.list-group');
+        var $li;
+        unusedModels.forEach(function (model) {
+            $li = $('<li data-model-id="' + model.id + '" draggable="true">' + model.name + '</li>');
+            $li.attr('title', model.name);
+            $li.addClass('list-group-item list-group-item-info unused-model');
+            $liGroup.append($li);
         });
         return unusedModels;
     }
@@ -512,6 +511,7 @@ export class WorkflowView_V2 extends View {
             fetchStoredCoordinatesPromise
         ]).then(values => {
             this.filterNonGradeExpressions();
+            this.filterUnusedModel();
             this.initializeGraph();
             this.hookContextMenu();
             this.bindDomEvents();
@@ -646,20 +646,60 @@ export class WorkflowView_V2 extends View {
                 {
                     id: 'edit',
                     content: 'edit',
-                    selector: '.product-join, .model-join',
+                    selector: '.product, .product-join, .model-join',
                     coreAsWell: false,
-                    onClickFunction: function (event) {
+                    onClickFunction: (event)=> {
                         var target = event.target || event.cyTarget;
                         if (target.hasClass('model-join')) {
                             alert('Edit model join');
+                        } else if (target.hasClass('product')) {
+                            alert('Edit product');
                         } else if (target.hasClass('product-join')) {
-                            alert('Edit product join');
+                            //alert('Edit product join');
+                            this.editProductJoin(target);
                         }
                     }
                 }
             ]
         };
         var instance = this.system.contextMenus(options);
+    }
+
+    editProductJoin(el) {
+        var productJoin = this.getProductJoinWithName(el.id());
+        this.productJoinEditOverlay = new ProductJoinEditOverlay({
+            productJoin: productJoin,
+            products: this.products,
+            projectId: this.projectId
+        });
+        this.productJoinEditOverlay.on('submitted', (options)=> {
+            this.productJoinEditOverlay.close();
+            /*var productJoinNode = selected.node.name;
+             var addedProducts = options.addedProducts;
+             var addedProductNode;
+             var removedProducts = options.removedProducts;
+             var removedProductNode;
+             addedProducts.forEach(addedProduct=> {
+             addedProductNode = this.system.getNode(addedProduct);
+             if (addedProductNode) {
+             this.system.addEdge(addedProductNode, productJoinNode, {
+             directed: true,
+             weight: 1,
+             color: '#333333'
+             });
+             }
+             });
+             removedProducts.forEach(removedProduct=> {
+             removedProductNode = this.system.getNode(removedProduct);
+             if (removedProductNode) {
+             var edges = this.system.getEdges(removedProductNode, productJoinNode);
+             edges.forEach(edge=> {
+             this.system.pruneEdge(edge);
+             });
+             }
+             });*/
+        });
+        this.productJoinEditOverlay.show();
     }
 
     handleEdit(selected) {
