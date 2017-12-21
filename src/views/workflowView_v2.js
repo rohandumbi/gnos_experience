@@ -674,30 +674,13 @@ export class WorkflowView_V2 extends View {
         });
         this.productJoinEditOverlay.on('submitted', (options)=> {
             this.productJoinEditOverlay.close();
-            /*var productJoinNode = selected.node.name;
-             var addedProducts = options.addedProducts;
-             var addedProductNode;
-             var removedProducts = options.removedProducts;
-             var removedProductNode;
-             addedProducts.forEach(addedProduct=> {
-             addedProductNode = this.system.getNode(addedProduct);
-             if (addedProductNode) {
-             this.system.addEdge(addedProductNode, productJoinNode, {
-             directed: true,
-             weight: 1,
-             color: '#333333'
-             });
-             }
-             });
-             removedProducts.forEach(removedProduct=> {
-             removedProductNode = this.system.getNode(removedProduct);
-             if (removedProductNode) {
-             var edges = this.system.getEdges(removedProductNode, productJoinNode);
-             edges.forEach(edge=> {
-             this.system.pruneEdge(edge);
-             });
-             }
-             });*/
+            this.fetchProductJoins().then((result)=> {
+                var updatedProductJoin = this.getProductJoinWithName(el.id());
+                this.system.$('node').edgesTo('#' + el.id()).remove();
+                this.addProductJoinsToGraph([updatedProductJoin]);
+            }).catch((msg)=> {
+                alert(msg);
+            });
         });
         this.productJoinEditOverlay.show();
     }
