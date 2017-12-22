@@ -10,6 +10,7 @@ import {UnitModel} from '../models/unitModel';
 import {ProductGradeModel} from '../models/productGradeModel';
 import {MultiProductOverlay} from '../overlays/multiProductOverlay';
 import {ProductJoinEditOverlay} from '../overlays/productJoinEditOverlay';
+import {ProcessJoinEditOverlay} from '../overlays/processJoinEditOverlay';
 import {UIStateModel} from '../models/uiStateModel';
 import cytoscape from 'cytoscape';
 import contextMenus from 'cytoscape-context-menus';
@@ -256,13 +257,11 @@ export class WorkflowView_V2 extends View {
             }
             processJoin.childProcessList.forEach(function (childProcessId) {
                 if (childProcessId > 0) {
-                    //var childModel = that.getModelWithId(childProcessId);
-                    //var childModelNode = that.system.getNode(childModel.name);
                     var childModelNode = that.getNodeWithId(childProcessId);
                     if (childModelNode && !(childModelNode.edgesTo(processJoinNode).length > 0)) {
                         that.system.add({
                             group: "edges",
-                            data: {source: processJoin.name, target: childProcessId, weight: 1}
+                            data: {source: childProcessId, target: processJoin.name, weight: 1}
                         });
                     }
                 }
@@ -639,7 +638,6 @@ export class WorkflowView_V2 extends View {
                     onClickFunction: function (event) {
                         var target = event.target || event.cyTarget;
                         removed = target.remove();
-                        contextMenu.showMenuItem('undo-last-remove');
                     },
                     hasTrailingDivider: true
                 },
@@ -651,7 +649,7 @@ export class WorkflowView_V2 extends View {
                     onClickFunction: (event)=> {
                         var target = event.target || event.cyTarget;
                         if (target.hasClass('model-join')) {
-                            alert('Edit model join');
+                            this.editModelJoin(target);
                         } else if (target.hasClass('product')) {
                             alert('Edit product');
                         } else if (target.hasClass('product-join')) {
@@ -663,6 +661,26 @@ export class WorkflowView_V2 extends View {
             ]
         };
         var instance = this.system.contextMenus(options);
+    }
+
+    editModelJoin(el) {
+        var processJoin = this.getProcessJoinWithName(el.id());
+        this.processJoinEditOverlay = new ProcessJoinEditOverlay({
+            processJoin: processJoin,
+            processes: this.processes,
+            projectId: this.projectId
+        });
+        this.processJoinEditOverlay.on('submitted', (options)=> {
+            this.processJoinEditOverlay.close();
+            /*this.fetchProductJoins().then((result)=> {
+             var updatedProductJoin = this.getProductJoinWithName(el.id());
+             this.system.$('node').edgesTo('#' + el.id()).remove();
+             this.addProductJoinsToGraph([updatedProductJoin]);
+             }).catch((msg)=> {
+             alert(msg);
+             });*/
+        });
+        this.processJoinEditOverlay.show();
     }
 
     editProductJoin(el) {
@@ -716,41 +734,6 @@ export class WorkflowView_V2 extends View {
 
                 that.$el.find('input#edit-name').val(selected.node.name);
                 that.$el.find('#productEditModal').modal();
-            } else if (category === 'productJoin') {
-                var productJoin = that.getProductJoinWithName(selected.node.name);
-                that.productJoinEditOverlay = new ProductJoinEditOverlay({
-                    productJoin: productJoin,
-                    products: that.products,
-                    projectId: that.projectId
-                });
-                that.productJoinEditOverlay.on('submitted', (options)=> {
-                    that.productJoinEditOverlay.close();
-                    var productJoinNode = selected.node.name;
-                    var addedProducts = options.addedProducts;
-                    var addedProductNode;
-                    var removedProducts = options.removedProducts;
-                    var removedProductNode;
-                    addedProducts.forEach(addedProduct=> {
-                        addedProductNode = this.system.getNode(addedProduct);
-                        if (addedProductNode) {
-                            this.system.addEdge(addedProductNode, productJoinNode, {
-                                directed: true,
-                                weight: 1,
-                                color: '#333333'
-                            });
-                        }
-                    });
-                    removedProducts.forEach(removedProduct=> {
-                        removedProductNode = this.system.getNode(removedProduct);
-                        if (removedProductNode) {
-                            var edges = this.system.getEdges(removedProductNode, productJoinNode);
-                            edges.forEach(edge=> {
-                                this.system.pruneEdge(edge);
-                            });
-                        }
-                    });
-                });
-                that.productJoinEditOverlay.show();
             } else {
                 alert("Edit not available for category: " + category);
             }
