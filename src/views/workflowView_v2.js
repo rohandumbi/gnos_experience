@@ -633,8 +633,9 @@ export class WorkflowView_V2 extends View {
             menuItems: [
                 {
                     id: 'remove',
-                    content: 'remove',
+                    content: 'Remove',
                     selector: '.model, .model-join, .product, .product-join',
+                    coreAsWell: false,
                     onClickFunction: function (event) {
                         var target = event.target || event.cyTarget;
                         removed = target.remove();
@@ -643,7 +644,7 @@ export class WorkflowView_V2 extends View {
                 },
                 {
                     id: 'edit',
-                    content: 'edit',
+                    content: 'Edit',
                     selector: '.product, .product-join, .model-join',
                     coreAsWell: false,
                     onClickFunction: (event)=> {
@@ -651,11 +652,26 @@ export class WorkflowView_V2 extends View {
                         if (target.hasClass('model-join')) {
                             this.editModelJoin(target);
                         } else if (target.hasClass('product')) {
-                            alert('Edit product');
+                            this.editProduct(target);
                         } else if (target.hasClass('product-join')) {
-                            //alert('Edit product join');
                             this.editProductJoin(target);
                         }
+                    }
+                },
+                {
+                    id: 'grades',
+                    content: 'View grades',
+                    selector: '.product, .product-join',
+                    coreAsWell: false,
+                    onClickFunction: (event)=> {
+                        var target = event.target || event.cyTarget;
+                        this.$el.find('#grade-list').html('');
+                        if (target.hasClass('product')) {
+                            this.showGradeListForProduct(target.id());
+                        } else if (target.hasClass('product-join')) {
+                            this.showGradeListForProductJoin(target.id());
+                        }
+                        this.$el.find('#associatedGrades').modal();
                     }
                 }
             ]
@@ -703,44 +719,34 @@ export class WorkflowView_V2 extends View {
         this.productJoinEditOverlay.show();
     }
 
-    handleEdit(selected) {
-        var that = this;
-        var selected = selected;
-        if (selected.node) {
-            var category = selected.node.data.category;
-
-            if (category === 'product') {
-                /*that.$el.find('#grade-list').html('');
-                 that.showGradeListForProduct(selected.node.name);
-                 that.$el.find('#associatedGrades').modal();*/
-                var product = that.getProductWithName(selected.node.name);
-                var unitId, expressionId;
-                var unitName;
-                if (product.fieldIdList.length > 0) {
-                    unitId = product.fieldIdList[0];
-                    var unit = that.getUnitWithId(unitId);
-                    unitName = unit.name;
-                } else {
-                    expressionId = product.expressionIdList[0];
-                    var expression = that.getExpressionById(expressionId);
-                    unitName = expression.name;
-                }
-                that.$el.find('#edit-grade-expression').val('');
-                //that.$el.find('#edit-grade-expression .present-value').html(unitName);
-                that.$el.find('#edit-grade-expression option').filter(function () {
-                    //may want to use $.trim in here
-                    return $(this).text() === unitName;
-                }).prop('selected', true);
-
-                that.$el.find('input#edit-name').val(selected.node.name);
-                that.$el.find('#productEditModal').modal();
-            } else {
-                alert("Edit not available for category: " + category);
-            }
+    editProduct(el) {
+        var product = this.getProductWithName(el.id());
+        var unitId, expressionId;
+        var unitName;
+        if (product.fieldIdList.length > 0) {
+            unitId = product.fieldIdList[0];
+            var unit = this.getUnitWithId(unitId);
+            unitName = unit.name;
+        } else {
+            expressionId = product.expressionIdList[0];
+            var expression = this.getExpressionById(expressionId);
+            unitName = expression.name;
         }
+        this.$el.find('#edit-grade-expression').val('');
+        this.$el.find('#edit-grade-expression option').filter(function () {
+            //may want to use $.trim in here
+            return $(this).text() === unitName;
+        }).prop('selected', true);
+
+        this.$el.find('input#edit-name').val(el.id());
+        this.$el.find('#edit-product').click((event)=> {
+            this.updateProduct();
+            this.$el.find('#edit-product').off();
+        });
+        this.$el.find('#productEditModal').modal();
     }
 
-    editProduct(event) {
+    updateProduct() {
         var that = this;
         var productName = this.$el.find('input#edit-name').val();
         var unitType = this.$el.find('#edit-grade-expression').find(':selected').data('unit-type');
@@ -1023,19 +1029,6 @@ export class WorkflowView_V2 extends View {
         }
     }
 
-    /*handleAddProduct(event) {
-     var pos = this.$el.find('#viewport').offset();
-     var p = {x: event.pageX - pos.left, y: event.pageY - pos.top}
-     var selected = this.system.nearest(p);
-     if (selected.node.data.category !== 'model') {
-     alert('options not available for category' + selected.node.data.category);
-     return;
-     } else {
-     this.$el.find('#productModal').modal();
-     }
-
-     }*/
-
     handleAddToProductJoin(selected) {
         var that = this;
 
@@ -1255,9 +1248,9 @@ export class WorkflowView_V2 extends View {
         this.$el.find('#add-product').click(function (event) {
             that.addProduct();
         });
-        this.$el.find('#edit-product').click(function (event) {
+        /*this.$el.find('#edit-product').click(function (event) {
             that.editProduct();
-        });
+         });*/
         this.$el.find('#save-graph').click(function (event) {
             var coordinateSystem = [];
             var nodes = []
