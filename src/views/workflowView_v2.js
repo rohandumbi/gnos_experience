@@ -672,13 +672,13 @@ export class WorkflowView_V2 extends View {
         });
         this.processJoinEditOverlay.on('submitted', (options)=> {
             this.processJoinEditOverlay.close();
-            /*this.fetchProductJoins().then((result)=> {
-             var updatedProductJoin = this.getProductJoinWithName(el.id());
-             this.system.$('node').edgesTo('#' + el.id()).remove();
-             this.addProductJoinsToGraph([updatedProductJoin]);
-             }).catch((msg)=> {
-             alert(msg);
-             });*/
+            this.fetchProcessJoins().then((result)=> {
+                var updatedProcessJoin = this.getProcessJoinWithName(el.id());
+                this.system.$('node').edgesTo('#' + el.id()).remove();
+                this.addProcessJoinsToGraph([updatedProcessJoin]);
+            }).catch((msg)=> {
+                alert(msg);
+            });
         });
         this.processJoinEditOverlay.show();
     }

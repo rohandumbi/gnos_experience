@@ -23,9 +23,9 @@ export class ProcessJoinEditOverlay extends Overlay {
                 }
             });
             if (isPresent) {
-                processList += '<div class="checkbox"><label><input class="productName" type="checkbox" checked="checked" value="' + process.id + '">' + process.name + '</label></div>'
+                processList += '<div class="checkbox"><label><input class="processName" type="checkbox" checked="checked" value="' + process.id + '">' + process.name + '</label></div>'
             } else {
-                processList += '<div class="checkbox"><label><input class="productName" type="checkbox" value="' + process.id + '">' + process.name + '</label></div>'
+                processList += '<div class="checkbox"><label><input class="processName" type="checkbox" value="' + process.id + '">' + process.name + '</label></div>'
             }
         });
         this.$el.find('#processList').html(processList)
@@ -37,25 +37,24 @@ export class ProcessJoinEditOverlay extends Overlay {
             this.trigger('closed');
         });
         this.$el.find('.btn-submit').click((e) => {
-            this.updateProductJoin(e);
+            this.updateProcessJoin(e);
         });
     }
 
-    updateProductJoin(e) {
-        console.log('To edit product join: ' + this.productJoin);
-        var existingProductList = this.productJoin.productList;
-        var editedProductList = [];
-        this.$el.find('#productList .productName:checked').each(function (event) {
-            editedProductList.push($(this).val());
+    updateProcessJoin(e) {
+        var existingProcessIdList = this.processJoin.childProcessList;
+        var editedProcessIdList = [];
+        this.$el.find('#processList .processName:checked').each(function (event) {
+            editedProcessIdList.push(parseInt($(this).val(), 10));
         });
         var _ = require('underscore');
-        let addedProducts = _.difference(editedProductList, existingProductList);
-        let removedProducts = _.difference(existingProductList, editedProductList);
-        var addProductsToJoinPromise = this.addProductsToJoin(addedProducts);
-        var removeProductsFromJoinPromise = this.removeProductsFromJoin(removedProducts);
-        Promise.all([addProductsToJoinPromise, removeProductsFromJoinPromise])
+        let addedProcesses = _.difference(editedProcessIdList, existingProcessIdList);
+        let removedProcesses = _.difference(existingProcessIdList, editedProcessIdList);
+        var addProcessesToJoinPromise = this.addProcessToJoin(addedProcesses);
+        var removeProcessesFromJoinPromise = this.removeProcessesFromJoin(removedProcesses);
+        Promise.all([addProcessesToJoinPromise, removeProcessesFromJoinPromise])
             .then(()=> {
-                this.trigger('submitted', {addedProducts: addedProducts, removedProducts: removedProducts});
+                this.trigger('submitted', {addedProcesses: addedProcesses, removedProcesses: removedProcesses});
             })
             .catch(reason=> {
                 alert(reason);
@@ -63,24 +62,23 @@ export class ProcessJoinEditOverlay extends Overlay {
             });
     }
 
-    addProductsToJoin(addedProducts) {
+    addProcessToJoin(addedProcessIds) {
         return new Promise((resolve, reject)=> {
-            var numberOfProductsToAdd = addedProducts.length;
-            if (numberOfProductsToAdd === 0) {
+            var numberOfProcessesToAdd = addedProcessIds.length;
+            if (numberOfProcessesToAdd === 0) {
                 resolve();
             }
-            var numberOfProductsAdded = 0;
-            addedProducts.forEach(addedProduct => {
-                var updatedProductJoin = {}
-                updatedProductJoin['name'] = this.productJoin.name;
-                updatedProductJoin['childType'] = 1;
-                updatedProductJoin['child'] = addedProduct;
-                this.productJoinModel.add({
-                    dataObject: updatedProductJoin,
+            var numberOfProcessesAdded = 0;
+            var updatedProcessJoin = {};
+            addedProcessIds.forEach(addedProcessId => {
+                updatedProcessJoin['name'] = this.processJoin.name;
+                updatedProcessJoin['processId'] = addedProcessId;
+                this.processJoinModel.add({
+                    dataObject: updatedProcessJoin,
                     success: (data)=> {
-                        numberOfProductsAdded++;
-                        this.productJoin.productList.push(addedProduct);
-                        if (numberOfProductsAdded === numberOfProductsToAdd) {
+                        numberOfProcessesAdded++;
+                        this.processJoin.childProcessList.push(addedProcessId);
+                        if (numberOfProcessesAdded === numberOfProcessesToAdd) {
                             resolve();
                         }
                     },
@@ -92,21 +90,21 @@ export class ProcessJoinEditOverlay extends Overlay {
         });
     }
 
-    removeProductsFromJoin(removedProducts) {
+    removeProcessesFromJoin(removedProcessIds) {
         return new Promise((resolve, reject)=> {
-            var numberOfProductsToDelete = removedProducts.length;
-            if (numberOfProductsToDelete === 0) {
+            var numberOfProcessesToDelete = removedProcessIds.length;
+            if (numberOfProcessesToDelete === 0) {
                 resolve();
             }
-            var numberOfProductsDeleted = 0;
-            removedProducts.forEach(removedProduct => {
-                this.productJoinModel.delete({
-                    url: 'http://localhost:4567/project/' + this.projectId + '/productjoins/' + this.productJoin.name + '/product',
-                    id: removedProduct,
+            var numberOfProcessesDeleted = 0;
+            removedProcessIds.forEach(removedProcessId => {
+                this.processJoinModel.delete({
+                    url: 'http://localhost:4567/project/' + this.projectId + '/processjoins/' + this.processJoin.name + '/process',
+                    id: removedProcessId,
                     success: (data)=> {
-                        numberOfProductsDeleted++;
-                        this.productJoin.productList.splice(this.productJoin.productList.indexOf(removedProduct), 1);
-                        if (numberOfProductsDeleted === numberOfProductsToDelete) {
+                        numberOfProcessesDeleted++;
+                        this.processJoin.childProcessList.splice(this.processJoin.childProcessList.indexOf(removedProcessId), 1);
+                        if (numberOfProcessesDeleted === numberOfProcessesToDelete) {
                             resolve();
                         }
                     },
