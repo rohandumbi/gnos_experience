@@ -487,8 +487,6 @@ export class WorkflowView_V2 extends View {
     }
 
     onDomLoaded() {
-        //this.fetchUnits();
-        //this.fitCanvasToContainer();
         var fetchUnitsPromise = this.fetchUnits();
         var fetchExpressionsPromise = this.fetchExpressions();
         var fetchProcessesPromise = this.fetchProcesses();
@@ -628,6 +626,7 @@ export class WorkflowView_V2 extends View {
 
     hookContextMenu() {
         var removed;
+        var removePromise;
         var options = {
             // List of initial menu items
             menuItems: [
@@ -636,9 +635,17 @@ export class WorkflowView_V2 extends View {
                     content: 'Remove',
                     selector: '.model, .model-join, .product, .product-join',
                     coreAsWell: false,
-                    onClickFunction: function (event) {
+                    onClickFunction: (event)=> {
                         var target = event.target || event.cyTarget;
-                        removed = target.remove();
+                        if (target.hasClass('model')) {
+                            this.deleteModel(target);
+                        } else if (target.hasClass('model-join')) {
+                            this.deleteModelJoin(target);
+                        } else if (target.hasClass('product')) {
+                            this.deleteProduct(target);
+                        } else if (target.hasClass('product-join')) {
+                            this.deleteProductJoin(target);
+                        }
                     },
                     hasTrailingDivider: true
                 },
@@ -779,26 +786,6 @@ export class WorkflowView_V2 extends View {
         });
     }
 
-    handleViewGrades(selected) {
-        var that = this;
-        var selected = selected;
-        if (selected.node) {
-            var category = selected.node.data.category;
-
-            if (category === 'product') {
-                that.$el.find('#grade-list').html('');
-                that.showGradeListForProduct(selected.node.name);
-                that.$el.find('#associatedGrades').modal();
-            } else if (category === 'productJoin') {
-                that.$el.find('#grade-list').html('');
-                that.showGradeListForProductJoin(selected.node.name);
-                that.$el.find('#associatedGrades').modal();
-            } else {
-                alert('Not available for category: ' + category);
-            }
-        }
-    }
-
     showGradeListForProductJoin(productJoinName) {
         var that = this;
         this.productJoinModel.fetch({
@@ -844,311 +831,144 @@ export class WorkflowView_V2 extends View {
     }
 
     removeProductFromProductJoins(productNode) {
-        var that = this;
-        var parentProductJoinNodes = this.system.getEdgesFrom(productNode);
-        parentProductJoinNodes.forEach(function (parentProductJoinNode) {
-            console.log(parentProductJoinNode.target.name);
-            that.removeProductFromProductJoin(productNode.name, parentProductJoinNode.target.name);
+        var removeProductFromProductJoinPromises = [];
+        var promise = new Promise((resolve, reject)=> {
+            var parentProductJoinConnections = productNode.edgesTo('.product-join');
+            parentProductJoinConnections.forEach((parentProductJoinConnection)=> {
+                removeProductFromProductJoinPromises.push(this.removeProductFromProductJoin(productNode.id(), parentProductJoinConnection.data('target')));
+            });
+            Promise.all(removeProductFromProductJoinPromises)
+                .then(result=> {
+                    resolve();
+                })
+                .catch(error=> {
+                    reject(error);
+                });
         });
+        return promise;
     }
 
     removeProductFromProductJoin(productName, productJoinName) {
-        var that = this;
-        this.productJoinModel.delete({
-            url: 'http://localhost:4567/project/' + that.projectId + '/productjoins/' + productJoinName + '/product',
-            id: productName,
-            success: function (data) {
-                //alert('Successfully deleted product node.')
-            },
-            error: function (data) {
-                alert('Failed to delete product join.');
-            }
+        var promise = new Promise((resolve, reject)=> {
+            this.productJoinModel.delete({
+                url: 'http://localhost:4567/project/' + this.projectId + '/productjoins/' + productJoinName + '/product',
+                id: productName,
+                success: (data)=> {
+                    resolve(data);
+                },
+                error: (error)=> {
+                    reject(error.message);
+                }
+            });
         });
+        return promise;
     }
 
-    removeProcessFromProcessJoins(processNode) {
-        var that = this;
-        var parentProcessJoinNodes = this.system.getEdgesFrom(processNode);
-        parentProcessJoinNodes.forEach(function (parentProcessJoinNode) {
-            console.log(parentProcessJoinNode.target.name);
-            that.removeProcessFromProcessJoin(processNode.data.id, parentProcessJoinNode.target.name);
+    removeProcessFromProcessJoins(modelNode) {
+        var removeProcessFromProcessJoinPromises = [];
+        var promise = new Promise((resolve, reject)=> {
+            var connectedProcessJoinConnections = modelNode.edgesTo('.model-join');
+            connectedProcessJoinConnections.forEach((connectedProcessJoinConnection)=> {
+                removeProcessFromProcessJoinPromises.push(this.removeProcessFromProcessJoin(modelNode.id(), connectedProcessJoinConnection.data('target')));
+            });
+            Promise.all(removeProcessFromProcessJoinPromises)
+                .then(result=> {
+                    resolve();
+                })
+                .catch(error=> {
+                    reject(error);
+                });
         });
+        return promise;
     }
 
     removeProcessFromProcessJoin(modelId, processJoinName) {
-        var that = this;
-        this.processJoinModel.delete({
-            url: 'http://localhost:4567/project/' + that.projectId + '/processjoins/' + processJoinName + '/process',
+        var promise = new Promise((resolve, reject)=> {
+            this.processJoinModel.delete({
+                url: 'http://localhost:4567/project/' + this.projectId + '/processjoins/' + processJoinName + '/process',
+                id: modelId,
+                success: (data)=> {
+                    resolve(data);
+                },
+                error: (error)=> {
+                    reject(error.message);
+                }
+            });
+        });
+        return promise;
+    }
+
+    deleteModel(el) {
+        var modelId = el.id();
+        this.processTreeModel.delete({
+            url: 'http://localhost:4567/project/' + this.projectId + '/processtreenodes/model',
             id: modelId,
-            success: function (data) {
-                //alert('Successfully deleted model node.')
+            success: (data) => {
+                this.removeProcessFromProcessJoins(el)
+                    .then((result)=> {
+                        var model = this.getModelWithId(parseInt(modelId, 10));
+                        this.addModelToDraggableList(model);
+                        Promise.all([this.fetchProcesses(), this.fetchProcessJoins(), this.fetchProcessTreeNodes()])
+                            .then((result)=> {
+                                el.remove();
+                            })
+                            .catch(errorMsg=> {
+                                alert(errorMsg);
+                            })
+                    })
+                    .catch((errorMsg)=> {
+                        alert(errorMsg);
+                    });
             },
-            error: function (data) {
-                alert('Failed to delete product join.');
+            error: function (error) {
+                reject(error.message);
             }
         });
     }
 
-    handleDelete(selected) {
-        var that = this;
-        var selected = selected;
-        if (selected.node) {
-            console.log('Delete: ' + selected.node.name);
-            var category = selected.node.data.category;
-            if (category.toString() === 'model') {
-                this.processTreeModel.delete({
-                    url: 'http://localhost:4567/project/' + that.projectId + '/processtreenodes/model',
-                    id: selected.node.data.id,
-                    success: function () {
-                        that.removeProcessFromProcessJoins(selected.node);
-                        that.system.pruneNode(selected.node);
-                        var model = that.getModelWithId(selected.node.data.id);
-                        that.addModelToList(model);
-                        var listOfBlockChildren = that.system.getEdgesFrom('Block');
-                        if (listOfBlockChildren.length === 0) {// no more processes in graph
-                            that.system.parameters({repulsion: 0});
-                        }
-                    },
-                    error: function (data) {
-                        alert('Failed to delete model.');
-                    }
-                });
-            } else if (category.toString() === 'processJoin') {
-                this.processJoinModel.delete({
-                    url: 'http://localhost:4567/project/' + that.projectId + '/processjoins',
-                    id: selected.node.name,
-                    success: function () {
-                        that.system.pruneNode(selected.node);
-                    },
-                    error: function (data) {
-                        alert('Failed to delete process join.');
-                    }
-                });
-            } else if (category.toString() === 'product') {
-                this.productModel.delete({
-                    url: 'http://localhost:4567/project/' + that.projectId + '/products',
-                    id: selected.node.name,
-                    success: function () {
-                        that.removeProductFromProductJoins(selected.node);
-                        that.system.pruneNode(selected.node);
-                    },
-                    error: function (data) {
-                        alert('Failed to delete product.');
-                    }
-                });
-            } else if (category.toString() === 'productJoin') {
-                this.productJoinModel.delete({
-                    url: 'http://localhost:4567/project/' + that.projectId + '/productjoins',
-                    id: selected.node.name,
-                    success: function (data) {
-                        that.system.pruneNode(selected.node);
-                    },
-                    error: function (data) {
-                        alert('Failed to delete product join.');
-                    }
-                });
-            } else if (category.toString() === 'superProductJoin') {
-                this.productJoinModel.delete({
-                    url: 'http://localhost:4567/project/' + that.projectId + '/productjoins',
-                    id: selected.node.name,
-                    success: function (data) {
-                        that.system.pruneNode(selected.node);
-                    },
-                    error: function (data) {
-                        alert('Failed to delete product join.');
-                    }
-                });
+    deleteModelJoin(el) {
+        this.processJoinModel.delete({
+            url: 'http://localhost:4567/project/' + this.projectId + '/processjoins',
+            id: el.id(),
+            success: ()=> {
+                el.remove();
+            },
+            error: (error)=> {
+                alert('Failed to delete process join.' + error.message);
             }
-        }
+        });
     }
 
-
-    handleAddExpressionToProduct(selected) {
-        var that = this;
-        var selected = selected;
-        if (selected.node.data.category !== 'product') {
-            alert('options not available for category' + selected.node.data.category);
-            return;
-        } else {
-            this.$el.find('#addExpressions').click(function (event) {
-                $(this).off('click');
-                that.$el.find('.expression-checkbox:checked').each(
-                    function (checkbox) {
-                        // Insert code here
-                        console.log($(this).val());
-                        var updatedProduct = that.getProductWithName(selected.node.name);
-                        var expression = that.getExpressionByName($(this).val());
-                        updatedProduct['unitType'] = 2;
-                        updatedProduct['unitId'] = expression.id;
-                        that.productModel.add({
-                            dataObject: updatedProduct,
-                            success: function (data) {
-                                //alert('Successfully added expression to product.');
-                            },
-                            error: function (data) {
-                                alert('Error adding product to join');
-                            }
-                        });
-                    }
-                );
-            });
-            this.$el.find('#addExpressionToProductModal').modal();
-        }
-    }
-
-    handleAddUnitToProduct(selected) {
-        var that = this;
-        var selected = selected;
-        if (selected.node.data.category !== 'product') {
-            alert('options not available for category' + selected.node.data.category);
-            return;
-        } else {
-            this.$el.find('#addUnits').click(function (event) {
-                $(this).off('click');
-                that.$el.find('.unit-checkbox:checked').each(
-                    function (checkbox) {
-                        // Insert code here
-                        console.log($(this).val());
-                        var updatedProduct = that.getProductWithName(selected.node.name);
-                        var unit = that.getUnitWithName($(this).val());
-                        updatedProduct['unitType'] = 1;
-                        updatedProduct['unitId'] = unit.id;
-                        that.productModel.add({
-                            dataObject: updatedProduct,
-                            success: function (data) {
-                                //alert('Successfully added unit to product.');
-                            },
-                            error: function (data) {
-                                alert('Error adding product to join');
-                            }
-                        });
-                    }
-                );
-            });
-            this.$el.find('#addUnitToProductModal').modal();
-        }
-    }
-
-    handleAddToProductJoin(selected) {
-        var that = this;
-
-        var selected = selected;
-        var category = selected.node.data.category;
-        if (category !== 'product' && category !== 'productJoin') {
-            alert('Option not available for category: ' + selected.node.data.category);
-            return;
-        }
-        if (category == 'product') {
-            this.handleAddProductToProductJoin(selected);
-        } else if (category == 'productJoin') {
-            this.handleAddProductJoinToProductJoin(selected);
-        }
-    }
-
-    handleAddProductToProductJoin(selected) {
-        var that = this;
-        var selected = selected;
-        if (selected.node) {
-            console.log('Adding product: ' + selected.node.name);
-            this.$el.find('#addProductToJoin').click(function (event) {
-                $(this).off('click');
-                var productJoinName = that.$el.find('#target_product_join').val();
-                var productJoinNode = that.system.getNode(productJoinName.trim());
-                if (productJoinNode) {
-                    var updatedProductJoin = {}
-                    updatedProductJoin['name'] = productJoinName;
-                    updatedProductJoin['childType'] = 1;
-                    updatedProductJoin['child'] = selected.node.name;
-                    that.productJoinModel.add({
-                        dataObject: updatedProductJoin,
-                        success: function (data) {
-                            //alert('Successfully added to join.');
-                            that.system.addEdge(selected.node, productJoinNode, {
-                                directed: true,
-                                weight: 1,
-                                color: '#333333'
-                            });
-                            that.$el.find('#target_product_join').val('');
-                        },
-                        error: function (data) {
-                            alert('Error adding product to join');
-                        }
+    deleteProduct(el) {
+        this.productModel.delete({
+            url: 'http://localhost:4567/project/' + this.projectId + '/products',
+            id: el.id(),
+            success: ()=> {
+                this.removeProductFromProductJoins(el)
+                    .then((result)=> {
+                        el.remove();
+                    })
+                    .catch((errorMsg)=> {
+                        alert(errorMsg);
                     });
-                }
-            });
-            this.$el.find('#addProductToJoinModal').modal();
-        }
+            },
+            error: function (data) {
+                alert('Failed to delete product.');
+            }
+        });
     }
 
-    handleAddProductJoinToProductJoin(selected) {
-        var that = this;
-        var selected = selected;
-        if (selected.node) {
-            console.log('Adding product join: ' + selected.node.name);
-            this.$el.find('#addProductJoinToJoin').click(function (event) {
-                $(this).off('click');
-                var productJoinName = that.$el.find('#parent_product_join').val();
-                var productJoinNode = that.system.getNode(productJoinName.trim());
-                if (productJoinNode) {
-                    var updatedProductJoin = {}
-                    updatedProductJoin['name'] = productJoinName;
-                    updatedProductJoin['childType'] = 2;
-                    updatedProductJoin['child'] = selected.node.name;
-                    that.productJoinModel.add({
-                        dataObject: updatedProductJoin,
-                        success: function (data) {
-                            //alert('Successfully added to join.');
-                            that.system.addEdge(selected.node, productJoinNode, {
-                                directed: true,
-                                weight: 1,
-                                color: '#333333'
-                            });
-                            that.$el.find('#target_product_join').val('');
-                        },
-                        error: function (data) {
-                            alert('Error adding product to join');
-                        }
-                    });
-                }
-            });
-            this.$el.find('#addProductJoinToJoinModal').modal();
-        }
-    }
-
-
-    handleAddProcessToJoin(selected) {
-        var that = this;
-        var selected = selected;
-        if (selected.node.data.category !== 'model') {
-            alert('Option not available for category: ' + selected.node.data.category);
-            return;
-        }
-        if (selected.node) {
-            console.log('Adding to process: ' + selected.node.name);
-            this.$el.find('#add-to-join').click(function (event) {
-                $(this).off('click');
-                var processJoinName = that.$el.find('#target_join').val();
-                var processJoinNode = that.system.getNode(processJoinName.trim());
-                if (processJoinNode) {
-                    var newProcessJoin = {}
-                    newProcessJoin['name'] = processJoinName;
-                    newProcessJoin['processId'] = selected.node.data.id;
-                    that.processJoinModel.add({
-                        dataObject: newProcessJoin,
-                        success: function (data) {
-                            //alert('Successfully added to join.');
-                            that.system.addEdge(selected.node, processJoinNode, {
-                                directed: true,
-                                weight: 1,
-                                color: '#333333'
-                            });
-                            that.$el.find('#target_join').val('');
-                        }
-                    });
-                }
-            });
-            this.$el.find('#addProcessToJoinModal').modal();
-        }
+    deleteProductJoin(el) {
+        this.productJoinModel.delete({
+            url: 'http://localhost:4567/project/' + this.projectId + '/productjoins',
+            id: el.id(),
+            success: (data)=> {
+                el.remove();
+            },
+            error: (error)=> {
+                alert('Failed to delete product join. ' + error.message);
+            }
+        });
     }
 
 
@@ -1214,30 +1034,10 @@ export class WorkflowView_V2 extends View {
         });
     }
 
-    handleCanvasClick(e) {
-        var that = this;
-        var pos = this.$el.find('#viewport').offset();
-        var _mouseP = arbor.Point(e.pageX - pos.left, e.pageY - pos.top)
-        var clickedNode = this.system.nearest(_mouseP);
-        if (clickedNode.node !== null) clickedNode.node.fixed = true;
-        this.$el.find('.tooltiptext').html(clickedNode.node.name);
-        this.$el.find('.tooltiptext')
-            .show()
-            .css({
-                position: "absolute",
-                left: e.clientX - $('#sidebar-wrapper').width(),
-                top: e.clientY
-            })
-        setTimeout(function () {
-            that.$el.find('.tooltiptext').hide();
-        }, 1000);
-    }
-
     bindDomEvents() {
         var that = this;
         this.$el.on('click', '#btn-zoomin', this.handleZoomIn.bind(this));
         this.$el.on('click', '#btn-zoomout', this.handleZoomOut.bind(this));
-        //this.$el.on('click', '#viewport', this.handleCanvasClick.bind(this));
         this.bindDragEvents();
         this.$el.find('#join_processes').click(function (event) {
             that.addProcessJoin();
@@ -1248,10 +1048,7 @@ export class WorkflowView_V2 extends View {
         this.$el.find('#add-product').click(function (event) {
             that.addProduct();
         });
-        /*this.$el.find('#edit-product').click(function (event) {
-            that.editProduct();
-         });*/
-        this.$el.find('#save-graph').click(function (event) {
+        /*this.$el.find('#save-graph').click(function (event) {
             var coordinateSystem = [];
             var nodes = []
             that.system.eachNode(function (node, point) {
@@ -1270,7 +1067,7 @@ export class WorkflowView_V2 extends View {
             });
 
 
-        });
+         });*/
         this.$el.find('#btnCreateProcessJoin').click((event) => {
             var processList = '';
             this.processes.forEach((process)=> {
@@ -1318,7 +1115,7 @@ export class WorkflowView_V2 extends View {
                 if (!processJoin) {
                     this.processJoins.push(data);
                 } else {
-                    processJoin.childProcessList.push(processId);
+                    processJoin.childProcessList.push(parseInt(processId, 10));
                 }
                 this.addProcessJoinsToGraph([data]);
             },
@@ -1428,10 +1225,10 @@ export class WorkflowView_V2 extends View {
         });
     }
 
-    addModelToList(model) {
+    addModelToDraggableList(model) {
         var $li = $('<li data-model-id="' + model.id + '" draggable="true">' + model.name + '</li>');
         $li.attr('title', model.name);
-        $li.addClass('list-group-item list-group-item-info');
+        $li.addClass('list-group-item list-group-item-info unused-model');
         this.$el.find('.list-group').append($li);
     }
 }
