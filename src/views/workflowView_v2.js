@@ -510,6 +510,7 @@ export class WorkflowView_V2 extends View {
             this.filterNonGradeExpressions();
             this.filterUnusedModel();
             this.initializeGraph();
+            this.setStoredNodePositions();
             this.hookContextMenu();
             this.bindDomEvents();
         }).catch(reason=> {
@@ -561,6 +562,40 @@ export class WorkflowView_V2 extends View {
             }
         });
         return position;
+    }
+
+    setStoredNodePositions() {
+        this.storedCoordinates.forEach((storedCoordinate)=> {
+            var node = this.system.nodes("[label='" + storedCoordinate.nodeName + "']")[0];//taking first returned node as the node to be set
+            if (node) {
+                node.position({x: storedCoordinate.xLoc, y: storedCoordinate.yLoc});
+            } else {
+                console.log('No node for ' + storedCoordinate.nodeName);
+            }
+        });
+    }
+
+    saveUiState() {
+        var coordinateSystem = [];
+        var nodes = []
+        this.system.nodes().forEach((node)=> {
+            var screenPositionObject = {
+                nodeName: node.data('label'),
+                xLoc: node.position('x'),
+                yLoc: node.position('y')
+            };
+            nodes.push(screenPositionObject);
+        });
+        var stateObject = {projectId: this.projectId, nodes: nodes};
+        this.uiStateModel.add({
+            dataObject: stateObject,
+            success: (data) => {
+                alert('Successfully saved state.');
+            },
+            error: (error) => {
+                alert('Error saving state in DB: ' + error.message);
+            }
+        });
     }
 
     initializeGraph(nodeData) {
@@ -1048,26 +1083,9 @@ export class WorkflowView_V2 extends View {
         this.$el.find('#add-product').click(function (event) {
             that.addProduct();
         });
-        /*this.$el.find('#save-graph').click(function (event) {
-            var coordinateSystem = [];
-            var nodes = []
-            that.system.eachNode(function (node, point) {
-                var screenPositionObject = {nodeName: node.name, xLoc: node._p.x, yLoc: node._p.y};
-                nodes.push(screenPositionObject);
-            });
-            var stateObject = {projectId: that.projectId, nodes: nodes};
-            that.uiStateModel.add({
-                dataObject: stateObject,
-                success: (data) => {
-                    alert('Successfully saved state.');
-                },
-                error: (error) => {
-                    alert('Error saving state in DB: ' + error.message);
-                }
-            });
-
-
-         });*/
+        this.$el.find('#save-graph').click((event)=> {
+            this.saveUiState();
+        });
         this.$el.find('#btnCreateProcessJoin').click((event) => {
             var processList = '';
             this.processes.forEach((process)=> {
