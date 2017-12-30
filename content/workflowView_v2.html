@@ -11,28 +11,34 @@
     </div>
     <div class="col-md-10" style="height:100%">
         <div class="panel panel-primary" style="height:100%">
-            <div class="panel-heading">
+            <div class="btn-toolbar">
                 <div class="btn-group">
-                    <button id="save-graph" data-toggle="modal" type="button" class="btn btn-success">Save State
+                    <button id="save-graph" title="Save state" data-toggle="modal" type="button"
+                            class="btn btn-default">
+                        <span class="glyphicon glyphicon-floppy-disk"></span>
                     </button>
-                    <button data-toggle="modal" id="btnCreateProcessJoin" type="button" class="btn btn-info">
-                        Create Model Join
+                    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        <span class="caret"></span>
                     </button>
-                    <button data-toggle="modal" data-target="#productModal" type="button" class="btn btn-info">Create
-                        Product
+                    <ul class="dropdown-menu">
+                        <li id="btnCreateProcessJoin"><a href="#">Model Join</a></li>
+                        <li data-toggle="modal" data-target="#productModal"><a href="#">Product</a></li>
+                        <li id="btnCreateProductJoin"><a href="#">Product Join</a></li>
+                    </ul>
+                    <button id="btn-zoomin" type="button" class="btn btn-default">
+                        <span class="glyphicon glyphicon-zoom-in"></span>
                     </button>
-                    <button data-toggle="modal" id="btnCreateProductJoin" type="button" class="btn btn-info">Create
-                        Product Join
+                    <button id="btn-zoomout" type="button" class="btn btn-default">
+                        <span class="glyphicon glyphicon-zoom-out"></span>
                     </button>
-                    <button id="btn-zoomin" type="button" class="btn btn-default">Zoom In</button>
-                    <button id="btn-zoomout" type="button" class="btn btn-default">Zoom Out</button>
                     <!--<button id="createMultiProduct" class="btn btn-primary">Create Multi</button>-->
                 </div>
-                <span class="label" style="background-color: #d9534f">BLOCK</span>
+                <!--<span class="label" style="background-color: #d9534f">BLOCK</span>
                 <span class="label" style="background-color: #4b4a5a">MODEL</span>
                 <span class="label" style="background-color: #e1d5d2">MODEL JOIN</span>
                 <span class="label" style="background-color: #a55540">PRODUCT</span>
-                <span class="label" style="background-color: #e79a58">PRODUCT JOIN</span>
+                <span class="label" style="background-color: #e79a58">PRODUCT JOIN</span>-->
             </div>
             <div class="panel-body" style="height:95%; overflow: auto; padding:0px;">
                 <div id="canvas-container" style="height:99%; width:100%; overflow: auto">
