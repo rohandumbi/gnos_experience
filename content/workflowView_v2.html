@@ -1,7 +1,7 @@
 <div id="workflowView" class="container-fluid" style="height:100%">
     <div class="col-md-2" style="height:100%">
         <div class="panel panel-primary" style="height:100%">
-            <div class="panel-heading" style="height:55px;">
+            <div class="panel-heading">
                 <h3 class="panel-title">Models</h3>
             </div>
             <div class="panel-body" style="height:90%; overflow: auto">
@@ -26,10 +26,10 @@
                         <li data-toggle="modal" data-target="#productModal"><a href="#">Product</a></li>
                         <li id="btnCreateProductJoin"><a href="#">Product Join</a></li>
                     </ul>
-                    <button id="btn-zoomin" type="button" class="btn btn-default">
+                    <button id="btn-zoomin" title="Zoom In" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-zoom-in"></span>
                     </button>
-                    <button id="btn-zoomout" type="button" class="btn btn-default">
+                    <button id="btn-zoomout" title="Zoom Out" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-zoom-out"></span>
                     </button>
                     <!--<button id="createMultiProduct" class="btn btn-primary">Create Multi</button>-->
@@ -48,17 +48,6 @@
         </div>
     </div>
     <span class="tooltiptext"></span>
-    <!--<ul id="workflowContextMenu" class="dropdown-menu" role="menu" style="display:none">
-        <li><a tabindex="-1" href="#">Delete</a></li>
-        &lt;!&ndash;<li><a tabindex="-1" href="#">Add product</a></li>&ndash;&gt;
-        <li><a tabindex="-1" href="#">Add to process join</a></li>
-        <li><a tabindex="-1" href="#">Add to product join</a></li>
-        <li class="divider"></li>
-        &lt;!&ndash;<li><a tabindex="-1" href="#">Add expression</a></li>
-        <li><a tabindex="-1" href="#">Add unit</a></li>&ndash;&gt;
-        <li><a tabindex="-1" href="#">View grades</a></li>
-        <li><a tabindex="-1" href="#">Edit</a></li>
-    </ul>-->
     <div class="modal fade" id="processJoinModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
