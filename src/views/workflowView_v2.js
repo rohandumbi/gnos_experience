@@ -1105,6 +1105,66 @@ export class WorkflowView_V2 extends View {
         this.$el.find('#createMultiProduct').click((event)=> {
             this.multiProductOverlay.show();
         });
+        this.$el.find('#btnBlockFilter').click(event=> {
+            this.toggleBlockNodeDisplay(event);
+        });
+        this.$el.find('#btnModelFilter').click(event=> {
+            this.toggleModelNodesDisplay(event);
+        });
+        this.$el.find('#btnModelJoinFilter').click(event=> {
+            this.toggleModelJoinNodesDisplay(event);
+        });
+        this.$el.find('#btnProductFilter').click(event=> {
+            this.toggleProductNodesDisplay(event);
+        });
+        this.$el.find('#btnProductJoinFilter').click(event=> {
+            this.toggleProductJoinNodesDisplay(event);
+        });
+    }
+
+    toggleBlockNodeDisplay(event) {
+        if ($(event.currentTarget).hasClass('active')) {
+            this.system.$('.block').show();
+        } else {
+            console.log('hide blocks');
+            this.system.$('.block').hide();
+        }
+    }
+
+    toggleModelNodesDisplay(event) {
+        if ($(event.currentTarget).hasClass('active')) {
+            this.system.$('.model').show();
+        } else {
+            console.log('hide models');
+            this.system.$('.model').hide();
+        }
+    }
+
+    toggleModelJoinNodesDisplay(event) {
+        if ($(event.currentTarget).hasClass('active')) {
+            this.system.$('.model-join').show();
+        } else {
+            console.log('hide model joins');
+            this.system.$('.model-join').hide();
+        }
+    }
+
+    toggleProductNodesDisplay(event) {
+        if ($(event.currentTarget).hasClass('active')) {
+            this.system.$('.product').show();
+        } else {
+            console.log('hide products');
+            this.system.$('.product').hide();
+        }
+    }
+
+    toggleProductJoinNodesDisplay() {
+        if ($(event.currentTarget).hasClass('active')) {
+            this.system.$('.product-join').show();
+        } else {
+            console.log('hide product joins');
+            this.system.$('.product-join').hide();
+        }
     }
 
     addProcessJoin() {
