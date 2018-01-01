@@ -1120,6 +1120,32 @@ export class WorkflowView_V2 extends View {
         this.$el.find('#btnProductJoinFilter').click(event=> {
             this.toggleProductJoinNodesDisplay(event);
         });
+        this.$el.find('#btnUserLayout').click(event=> {
+            this.$el.find('.btn-layout').removeClass('active');
+            $(event.currentTarget).addClass('active');
+            this.setStoredNodePositions();
+        });
+        this.$el.find('#btnWidthFirstLayout').click(event=> {
+            this.$el.find('.btn-layout').removeClass('active');
+            $(event.currentTarget).addClass('active');
+            var layout = this.system.layout({name: 'breadthfirst'});
+            layout.run();
+        });
+        this.$el.find('#btnCircularLayout').click(event=> {
+            this.$el.find('.btn-layout').removeClass('active');
+            $(event.currentTarget).addClass('active');
+            var layout = this.system.layout({
+                name: 'concentric',
+                concentric: ele => {
+                    return ele.data('weight');
+                },
+                levelWidth: nodes=> {
+                    return 1;
+                },
+                padding: 10
+            });
+            layout.run();
+        });
     }
 
     toggleBlockNodeDisplay(event) {
