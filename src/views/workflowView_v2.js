@@ -1172,11 +1172,9 @@ export class WorkflowView_V2 extends View {
         this.$el.find('#btn-restore').click(event=> {
             if (this.allNodes) {
                 this.allNodes.restore();
-                this.allNodes = undefined;
             }
             if (this.allEdges) {
                 this.allEdges.restore();
-                this.allEdges = undefined;
             }
             this.applyExistingLayout();
         });
