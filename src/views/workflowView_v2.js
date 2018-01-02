@@ -1144,23 +1144,6 @@ export class WorkflowView_V2 extends View {
         this.$el.find('#btnCircularLayout').click(event=> {
             this.$el.find('.btn-layout').removeClass('active');
             $(event.currentTarget).addClass('active');
-            /*var layout = this.system.layout({
-                name: 'concentric',
-             fit: true,
-             animate: true,
-             animationDuration: 500,
-             startAngle: 1/ 2 * Math.PI,
-             equidistant: true, // whether levels have an equal radial distance betwen them, may cause bounding box overflow
-             minNodeSpacing: 10,
-             avoidOverlap: true,
-             concentric: node => {
-             return node.data('weight');
-                },
-                levelWidth: nodes=> {
-                    return 1;
-                },
-                padding: 10
-             });*/
             var layout = this.system.layout({
                 name: 'breadthfirst',
                 directed: true,
@@ -1171,6 +1154,17 @@ export class WorkflowView_V2 extends View {
                 animationDuration: 500
             });
             layout.run();
+        });
+        this.$el.find('#btn-zoomin').click(event=> {
+            this.system.zoom(parseFloat(this.system.zoom()) + .5);
+            this.system.center();
+        });
+        this.$el.find('#btn-zoomout').click(event=> {
+            this.system.zoom(parseFloat(this.system.zoom()) - .5);
+            this.system.center();
+        });
+        this.$el.find('#btn-fitscreen').click(event=> {
+            this.system.fit();
         });
     }
 
