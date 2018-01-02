@@ -30,6 +30,7 @@ export class WorkflowView_V2 extends View {
         this.uiStateModel = new UIStateModel({projectId: options.projectId});
         this.multiProductOverlay = new MultiProductOverlay();
         this.scaleFactor = 1;
+        this.layout = 'preset';
         contextMenus(cytoscape, jQuery); // register extension
     }
 
@@ -513,6 +514,8 @@ export class WorkflowView_V2 extends View {
             this.setStoredNodePositions();
             this.hookContextMenu();
             this.bindDomEvents();
+            this.allNodes = this.system.$('node');
+            this.allEdges = this.system.$('edge');
         }).catch(reason=> {
             alert(reason);
         });
@@ -735,8 +738,6 @@ export class WorkflowView_V2 extends View {
     displayOnlyConnectedNodes(el) {
         var successorNodes = el.successors();
         var predecessorNodes = el.predecessors();
-        this.allNodes = this.system.$('node');
-        this.allEdges = this.system.$('edge');
         this.allNodes.remove();
         el.restore();
         successorNodes.restore();
@@ -1142,39 +1143,20 @@ export class WorkflowView_V2 extends View {
         this.$el.find('#btnProductJoinFilter').click(event=> {
             this.toggleProductJoinNodesDisplay(event);
         });
-        this.$el.find('#btnUserLayout').click(event=> {
+        this.$el.find('#btnPresetLayout').click(event=> {
             this.$el.find('.btn-layout').removeClass('active');
             $(event.currentTarget).addClass('active');
-            this.fetchStoredCoordinates().then(result=> {
-                this.setStoredNodePositions();
-            });
+            this.applyPresetLayout();
         });
-        this.$el.find('#btnWidthFirstLayout').click(event=> {
+        this.$el.find('#btnDirectedtLayout').click(event=> {
             this.$el.find('.btn-layout').removeClass('active');
             $(event.currentTarget).addClass('active');
-            var layout = this.system.layout({
-                name: 'breadthfirst',
-                directed: true,
-                spacingFactor: 1.75,
-                avoidOverlap: true,
-                animate: true,
-                animationDuration: 500
-            });
-            layout.run();
+            this.applyDirectedLayout();
         });
-        this.$el.find('#btnCircularLayout').click(event=> {
+        this.$el.find('#btnConcentricLayout').click(event=> {
             this.$el.find('.btn-layout').removeClass('active');
             $(event.currentTarget).addClass('active');
-            var layout = this.system.layout({
-                name: 'breadthfirst',
-                directed: true,
-                circle: true,
-                spacingFactor: 1.75,
-                avoidOverlap: true,
-                animate: true,
-                animationDuration: 500
-            });
-            layout.run();
+            this.applyConcentricLayout();
         });
         this.$el.find('#btn-zoomin').click(event=> {
             this.system.zoom(parseFloat(this.system.zoom()) + .5);
@@ -1196,7 +1178,52 @@ export class WorkflowView_V2 extends View {
                 this.allEdges.restore();
                 this.allEdges = undefined;
             }
+            this.applyExistingLayout();
         });
+    }
+
+    applyExistingLayout() {
+        if (this.layout === 'preset') {
+            this.applyPresetLayout();
+        } else if (this.layout === 'directed') {
+            this.applyDirectedLayout();
+        } else if (this.layout === 'concentric') {
+            this.applyConcentricLayout();
+        }
+    }
+
+    applyPresetLayout() {
+        this.fetchStoredCoordinates().then(result=> {
+            this.setStoredNodePositions();
+        });
+        this.layout = 'preset';
+    }
+
+    applyDirectedLayout() {
+        var layout = this.system.layout({
+            name: 'breadthfirst',
+            directed: true,
+            spacingFactor: 1.75,
+            avoidOverlap: true,
+            animate: true,
+            animationDuration: 500
+        });
+        layout.run();
+        this.layout = 'directed';
+    }
+
+    applyConcentricLayout() {
+        var layout = this.system.layout({
+            name: 'breadthfirst',
+            directed: true,
+            circle: true,
+            spacingFactor: 1.75,
+            avoidOverlap: true,
+            animate: true,
+            animationDuration: 500
+        });
+        layout.run();
+        this.layout = 'concentric';
     }
 
     toggleBlockNodeDisplay(event) {
