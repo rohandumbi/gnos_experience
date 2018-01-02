@@ -190,7 +190,7 @@ export class WorkflowView_V2 extends View {
             if (!productJoinNode) {
                 productJoinNode = that.system.add({
                     group: "nodes",
-                    data: {id: productJoin.name, label: productJoin.name, weight: 75},//product has no ID, so name is the id
+                    data: {id: productJoin.name, label: productJoin.name, weight: 1},//product has no ID, so name is the id
                     classes: 'product-join'
                 });
             }
@@ -208,7 +208,7 @@ export class WorkflowView_V2 extends View {
                 if (!childProductJoinNode) {
                     childProductJoinNode = that.system.add({
                         group: "nodes",
-                        data: {id: productJoinName, label: productJoinName, weight: 75},//product has no ID, so name is the id
+                        data: {id: productJoinName, label: productJoinName, weight: 1},//product has no ID, so name is the id
                         classes: 'product-join'
                     });
                 }
@@ -229,7 +229,7 @@ export class WorkflowView_V2 extends View {
             if (!productNode) {
                 productNode = that.system.add({
                     group: "nodes",
-                    data: {id: product.name, label: product.name, weight: 75},//product has no ID, so name is the id
+                    data: {id: product.name, label: product.name, weight: 2},//product has no ID, so name is the id
                     classes: 'product'
                 });
             }
@@ -251,7 +251,7 @@ export class WorkflowView_V2 extends View {
             if (!processJoinNode) {
                 processJoinNode = that.system.add({
                     group: "nodes",
-                    data: {id: processJoin.name, label: processJoin.name, weight: 75},//process join has no ID, so name is the id
+                    data: {id: processJoin.name, label: processJoin.name, weight: 3},//process join has no ID, so name is the id
                     classes: 'model-join'
                 });
             }
@@ -281,7 +281,7 @@ export class WorkflowView_V2 extends View {
             if (!modelNode) {
                 modelNode = that.system.add({
                     group: "nodes",
-                    data: {id: model.id, label: model.name, weight: 75},
+                    data: {id: model.id, label: model.name, weight: 4},
                     /*position: { x: 200, y: 200 },*/
                     classes: 'model'
                 });
@@ -293,7 +293,7 @@ export class WorkflowView_V2 extends View {
                 if (!parentNode) {
                     parentNode = that.system.add({
                         group: "nodes",
-                        data: {id: parentModel.id, label: parentModel.name, weight: 75},
+                        data: {id: parentModel.id, label: parentModel.name, weight: 4},
                         classes: 'model'
                     });
                 }
@@ -573,6 +573,13 @@ export class WorkflowView_V2 extends View {
                 console.log('No node for ' + storedCoordinate.nodeName);
             }
         });
+        var layout = this.system.layout({
+            name: 'preset',
+            fit: true,
+            animate: true,
+            animationDuration: 500
+        });
+        layout.run();
     }
 
     saveUiState() {
@@ -606,7 +613,6 @@ export class WorkflowView_V2 extends View {
         $viewport.width(parentWidth - 5);
         $viewport.height(parentHeight - 5);
 
-        //var cytoscape = require('cytoscape');
         this.system = cytoscape({
             container: $viewport,
             style: cytoscape.stylesheet()
@@ -645,18 +651,13 @@ export class WorkflowView_V2 extends View {
         });
         this.system.add({
             group: "nodes",
-            data: {id: 'block', label: 'Block', weight: 75},
+            data: {id: 'block', label: 'Block', weight: 5},
             classes: 'block'
         });
         this.addProcessesToGraph(this.treeNodes);
         this.addProcessJoinsToGraph(this.processJoins);
         this.addProductsToGraph(this.products);
         this.addProductJoinsToGraph(this.productJoins);
-        var layout = this.system.elements().layout({
-            name: 'breadthfirst'
-        });
-
-        layout.run();
     }
 
     hookContextMenu() {
@@ -1123,26 +1124,51 @@ export class WorkflowView_V2 extends View {
         this.$el.find('#btnUserLayout').click(event=> {
             this.$el.find('.btn-layout').removeClass('active');
             $(event.currentTarget).addClass('active');
-            this.setStoredNodePositions();
+            this.fetchStoredCoordinates().then(result=> {
+                this.setStoredNodePositions();
+            });
         });
         this.$el.find('#btnWidthFirstLayout').click(event=> {
             this.$el.find('.btn-layout').removeClass('active');
             $(event.currentTarget).addClass('active');
-            var layout = this.system.layout({name: 'breadthfirst'});
+            var layout = this.system.layout({
+                name: 'breadthfirst',
+                directed: true,
+                spacingFactor: 1.75,
+                avoidOverlap: true,
+                animate: true,
+                animationDuration: 500
+            });
             layout.run();
         });
         this.$el.find('#btnCircularLayout').click(event=> {
             this.$el.find('.btn-layout').removeClass('active');
             $(event.currentTarget).addClass('active');
-            var layout = this.system.layout({
+            /*var layout = this.system.layout({
                 name: 'concentric',
-                concentric: ele => {
-                    return ele.data('weight');
+             fit: true,
+             animate: true,
+             animationDuration: 500,
+             startAngle: 1/ 2 * Math.PI,
+             equidistant: true, // whether levels have an equal radial distance betwen them, may cause bounding box overflow
+             minNodeSpacing: 10,
+             avoidOverlap: true,
+             concentric: node => {
+             return node.data('weight');
                 },
                 levelWidth: nodes=> {
                     return 1;
                 },
                 padding: 10
+             });*/
+            var layout = this.system.layout({
+                name: 'breadthfirst',
+                directed: true,
+                circle: true,
+                spacingFactor: 1.75,
+                avoidOverlap: true,
+                animate: true,
+                animationDuration: 500
             });
             layout.run();
         });
