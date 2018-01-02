@@ -716,10 +716,31 @@ export class WorkflowView_V2 extends View {
                         }
                         this.$el.find('#associatedGrades').modal();
                     }
+                },
+                {
+                    id: 'connections',
+                    content: 'View connections',
+                    selector: '.model, .model-join, .product, .product-join',
+                    coreAsWell: false,
+                    onClickFunction: (event)=> {
+                        var target = event.target || event.cyTarget;
+                        this.displayOnlyConnectedNodes(target);
+                    }
                 }
             ]
         };
         var instance = this.system.contextMenus(options);
+    }
+
+    displayOnlyConnectedNodes(el) {
+        var successorNodes = el.successors();
+        var predecessorNodes = el.predecessors();
+        this.allNodes = this.system.$('node');
+        this.allEdges = this.system.$('edge');
+        this.allNodes.remove();
+        el.restore();
+        successorNodes.restore();
+        predecessorNodes.restore();
     }
 
     editModelJoin(el) {
@@ -1165,6 +1186,16 @@ export class WorkflowView_V2 extends View {
         });
         this.$el.find('#btn-fitscreen').click(event=> {
             this.system.fit();
+        });
+        this.$el.find('#btn-restore').click(event=> {
+            if (this.allNodes) {
+                this.allNodes.restore();
+                this.allNodes = undefined;
+            }
+            if (this.allEdges) {
+                this.allEdges.restore();
+                this.allEdges = undefined;
+            }
         });
     }
 
