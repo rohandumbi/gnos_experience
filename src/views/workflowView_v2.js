@@ -479,7 +479,7 @@ export class WorkflowView_V2 extends View {
         var $liGroup = this.$el.find('ul.list-group');
         var $li;
         unusedModels.forEach(function (model) {
-            $li = $('<li data-model-id="' + model.id + '" draggable="true"><span>' + model.name + '</span></li>');
+            $li = $('<li data-model-id="' + model.id + '" draggable="true"><span class="glyphicon glyphicon-adjust"></span>&nbsp;<label>' + model.name + '</label></li>');
             $li.attr('title', model.name);
             $li.addClass('list-group-item list-group-item-info unused-model');
             $liGroup.append($li);
@@ -1035,7 +1035,7 @@ export class WorkflowView_V2 extends View {
     }
 
     handleDragEnd(e) {
-        var draggedModel = this.getModelWithName($(e.target.innerHTML).html());
+        var draggedModel = this.getModelWithName($(e.target).find('label').html());
         var parentModel;
         e.target.style.opacity = '1';
         var pos = this.$el.find('#viewport').offset();
@@ -1406,7 +1406,7 @@ export class WorkflowView_V2 extends View {
     }
 
     addModelToDraggableList(model) {
-        var $li = $('<li data-model-id="' + model.id + '" draggable="true"><span>' + model.name + '</span></li>');
+        var $li = $('<li data-model-id="' + model.id + '" draggable="true"><span class="glyphicon glyphicon-adjust"></span>&nbsp;<label>' + model.name + '</label></li>');
         $li.attr('title', model.name);
         $li.addClass('list-group-item list-group-item-info unused-model');
         this.$el.find('.list-group').append($li);
