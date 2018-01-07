@@ -479,7 +479,7 @@ export class WorkflowView_V2 extends View {
         var $liGroup = this.$el.find('ul.list-group');
         var $li;
         unusedModels.forEach(function (model) {
-            $li = $('<li data-model-id="' + model.id + '" draggable="true"><span class="glyphicon glyphicon-adjust"></span>&nbsp;<label>' + model.name + '</label></li>');
+            $li = $('<li data-model-id="' + model.id + '" draggable="true"><span class="glyphicon glyphicon-adjust"></span>&nbsp;<a>' + model.name + '</a></li>');
             $li.attr('title', model.name);
             $li.addClass('list-group-item list-group-item-info unused-model');
             $liGroup.append($li);
@@ -1035,7 +1035,7 @@ export class WorkflowView_V2 extends View {
     }
 
     handleDragEnd(e) {
-        var draggedModel = this.getModelWithName($(e.target).find('label').html());
+        var draggedModel = this.getModelWithName($(e.target).find('a').html());
         var parentModel;
         e.target.style.opacity = '1';
         var pos = this.$el.find('#viewport').offset();
@@ -1128,21 +1128,23 @@ export class WorkflowView_V2 extends View {
         this.$el.find('#createMultiProduct').click((event)=> {
             this.multiProductOverlay.show();
         });
-        this.$el.find('#btnBlockFilter').click(event=> {
+
+        this.$el.find('#blockFilter').change(event=> {
             this.toggleBlockNodeDisplay(event);
         });
-        this.$el.find('#btnModelFilter').click(event=> {
+        this.$el.find('#modelFilter').change(event=> {
             this.toggleModelNodesDisplay(event);
         });
-        this.$el.find('#btnModelJoinFilter').click(event=> {
+        this.$el.find('#mJoinFilter').change(event=> {
             this.toggleModelJoinNodesDisplay(event);
         });
-        this.$el.find('#btnProductFilter').click(event=> {
+        this.$el.find('#productFilter').click(event=> {
             this.toggleProductNodesDisplay(event);
         });
-        this.$el.find('#btnProductJoinFilter').click(event=> {
+        this.$el.find('#pJoinFilter').click(event=> {
             this.toggleProductJoinNodesDisplay(event);
         });
+
         this.$el.find('#btnPresetLayout').click(event=> {
             this.$el.find('.btn-layout').removeClass('active');
             $(event.currentTarget).addClass('active');
@@ -1225,7 +1227,7 @@ export class WorkflowView_V2 extends View {
     }
 
     toggleBlockNodeDisplay(event) {
-        if ($(event.currentTarget).hasClass('active')) {
+        if ($(event.currentTarget).is(":checked")) {
             this.system.$('.block').show();
         } else {
             console.log('hide blocks');
@@ -1234,7 +1236,7 @@ export class WorkflowView_V2 extends View {
     }
 
     toggleModelNodesDisplay(event) {
-        if ($(event.currentTarget).hasClass('active')) {
+        if ($(event.currentTarget).is(":checked")) {
             this.system.$('.model').show();
         } else {
             console.log('hide models');
@@ -1243,7 +1245,7 @@ export class WorkflowView_V2 extends View {
     }
 
     toggleModelJoinNodesDisplay(event) {
-        if ($(event.currentTarget).hasClass('active')) {
+        if ($(event.currentTarget).is(":checked")) {
             this.system.$('.model-join').show();
         } else {
             console.log('hide model joins');
@@ -1252,7 +1254,7 @@ export class WorkflowView_V2 extends View {
     }
 
     toggleProductNodesDisplay(event) {
-        if ($(event.currentTarget).hasClass('active')) {
+        if ($(event.currentTarget).is(":checked")) {
             this.system.$('.product').show();
         } else {
             console.log('hide products');
@@ -1261,10 +1263,9 @@ export class WorkflowView_V2 extends View {
     }
 
     toggleProductJoinNodesDisplay() {
-        if ($(event.currentTarget).hasClass('active')) {
+        if ($(event.currentTarget).is(":checked")) {
             this.system.$('.product-join').show();
         } else {
-            console.log('hide product joins');
             this.system.$('.product-join').hide();
         }
     }
@@ -1406,7 +1407,7 @@ export class WorkflowView_V2 extends View {
     }
 
     addModelToDraggableList(model) {
-        var $li = $('<li data-model-id="' + model.id + '" draggable="true"><span class="glyphicon glyphicon-adjust"></span>&nbsp;<label>' + model.name + '</label></li>');
+        var $li = $('<li data-model-id="' + model.id + '" draggable="true"><span class="glyphicon glyphicon-adjust"></span>&nbsp;<a>' + model.name + '</a></li>');
         $li.attr('title', model.name);
         $li.addClass('list-group-item list-group-item-info unused-model');
         this.$el.find('.list-group').append($li);
