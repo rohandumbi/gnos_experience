@@ -638,6 +638,36 @@ body {
     }*/
   /* Rounded sliders */
 }
+
+#workflowView .colorCode {
+    height: 14px;
+    width: 28px;
+    /*display: inline-block;
+          vertical-align: middle;*/
+    position: absolute;
+    top: 9px;
+    right: 10px;
+}
+
+#workflowView .colorCode.block {
+    background: #d9534f;
+}
+
+#workflowView .colorCode.model {
+    background: #4b4a5a;
+}
+
+#workflowView .colorCode.product {
+    background: #a55540;
+}
+
+#workflowView .colorCode.modelJoin {
+    background: #e1d5d2;
+}
+
+#workflowView .colorCode.productJoin {
+    background: #e79a58;
+}
 #workflowView #viewport {
   /*border: solid 1px blue;*/
   /*width: 100%;*/
