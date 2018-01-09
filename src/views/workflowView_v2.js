@@ -8,7 +8,7 @@ import {ProductJoinModel} from '../models/productJoinModel';
 import {ExpressionModel} from '../models/expressionModel';
 import {UnitModel} from '../models/unitModel';
 import {ProductGradeModel} from '../models/productGradeModel';
-import {MultiProductOverlay} from '../overlays/multiProductOverlay';
+import {CreateProductOverlay} from '../overlays/createProductOverlay';
 import {ProductJoinEditOverlay} from '../overlays/productJoinEditOverlay';
 import {ProcessJoinEditOverlay} from '../overlays/processJoinEditOverlay';
 import {UIStateModel} from '../models/uiStateModel';
@@ -28,7 +28,6 @@ export class WorkflowView_V2 extends View {
         this.expressionModel = new ExpressionModel({projectId: options.projectId});
         this.unitModel = new UnitModel({projectId: options.projectId});
         this.uiStateModel = new UIStateModel({projectId: options.projectId});
-        this.multiProductOverlay = new MultiProductOverlay();
         this.scaleFactor = 1;
         this.layout = 'preset';
         contextMenus(cytoscape, jQuery); // register extension
@@ -1125,10 +1124,14 @@ export class WorkflowView_V2 extends View {
             this.$el.find('#productJoinModalProductList').html(productList)
             this.$el.find('#productJoinModal').modal();
         });
-        this.$el.find('#createMultiProduct').click((event)=> {
-            this.multiProductOverlay.show();
+        this.$el.find('#btnCreateProduct').click((event)=> {
+            this.createProductOverlay = new CreateProductOverlay({
+                projectId: this.projectId,
+                processes: this.processes,
+                units: this.units
+            });
+            this.createProductOverlay.show();
         });
-
         this.$el.find('#blockFilter').change(event=> {
             this.toggleBlockNodeDisplay(event);
         });

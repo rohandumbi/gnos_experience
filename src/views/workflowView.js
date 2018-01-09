@@ -8,7 +8,7 @@ import {ProductJoinModel} from '../models/productJoinModel';
 import {ExpressionModel} from '../models/expressionModel';
 import {UnitModel} from '../models/unitModel';
 import {ProductGradeModel} from '../models/productGradeModel';
-import {MultiProductOverlay} from '../overlays/multiProductOverlay';
+import {CreateProductOverlay} from '../overlays/createProductOverlay';
 import {ProductJoinEditOverlay} from '../overlays/productJoinEditOverlay';
 import {UIStateModel} from '../models/uiStateModel';
 
@@ -26,7 +26,7 @@ export class WorkflowView extends View{
         this.expressionModel = new ExpressionModel({projectId: options.projectId});
         this.unitModel = new UnitModel({projectId: options.projectId});
         this.uiStateModel = new UIStateModel({projectId: options.projectId});
-        this.multiProductOverlay = new MultiProductOverlay();
+        this.createProductOverlay = new CreateProductOverlay();
         this.scaleFactor = 1;
         //this.productGradeModel = new ProductGradeModel({})
     }
@@ -1167,7 +1167,7 @@ export class WorkflowView extends View{
             this.$el.find('#productJoinModal').modal();
         });
         this.$el.find('#createMultiProduct').click((event)=> {
-            this.multiProductOverlay.show();
+            this.createProductOverlay.show();
         });
     }
 
