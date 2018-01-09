@@ -14,7 +14,7 @@ export class CreateProductOverlay extends Overlay {
         this.processes.forEach(process=> {
             var $tr = $('<tr class="selectionTableRow"></tr>');
             var $tdProcess = $('<td></td>');
-            $tdProcess.append('<span><input style="margin-right:5px;" class="processName" type="checkbox" value="' + process.id + '">' + process.name + '</span>');
+            $tdProcess.append('<input style="margin-right:5px;" class="processNameCheckbox" type="checkbox" value="' + process.id + '"/><span class="processName">' + process.name + '</span>');
             var $tdUnit = $('<td></td>');
             $tdUnit.append(this.getUnitList());
             $tr.append($tdProcess);
@@ -65,9 +65,11 @@ export class CreateProductOverlay extends Overlay {
     handleSubmit(e) {
         var $allRows = this.$el.find('.selectionTableRow');
         $allRows.each((index, element)=> {
-            var $processCheckbox = $(element).find('.processName');
+            var $processCheckbox = $(element).find('.processNameCheckbox');
             if ($processCheckbox.is(':checked')) {
-                console.log('create product for process Id: ' + $processCheckbox.val());
+                var $processName = $(element).find('.processName');
+
+                console.log('create product for process Id: ' + $processCheckbox.val() + ' name: ' + $processName.html());
             }
         });
     }
