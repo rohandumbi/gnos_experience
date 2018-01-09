@@ -24,6 +24,26 @@ export class CreateProductOverlay extends Overlay {
         this.bindEvents();
     }
 
+    createNewProduct(options) {
+        var promise = new Promise((resolve, reject)=> {
+            var newProduct = {};
+            newProduct['name'] = options.productName;
+            newProduct['modelId'] = options.modelId;
+            newProduct['unitType'] = options.unitType;
+            newProduct['unitId'] = options.unitId;
+            this.productModel.add({
+                dataObject: newProduct,
+                success: function (data) {
+                    resolve(data);
+                },
+                error: function (error) {
+                    reject(error);
+                }
+            });
+        });
+        return promise;
+    }
+
     getUnitList() {
         var $select = $('<select class="form-control associatedUnit"></select>');
         this.units.forEach(unit=> {
@@ -38,11 +58,17 @@ export class CreateProductOverlay extends Overlay {
             this.trigger('closed');
         });
         this.$el.find('.btn-submit').click((e) => {
-            this.updateProduct(e);
+            this.handleSubmit(e);
         });
     }
 
-    updateProduct(e) {
-        console.log('TODO: update product');
+    handleSubmit(e) {
+        var $allRows = this.$el.find('.selectionTableRow');
+        $allRows.each((index, element)=> {
+            var $processCheckbox = $(element).find('.processName');
+            if ($processCheckbox.is(':checked')) {
+                console.log('create product for process Id: ' + $processCheckbox.val());
+            }
+        });
     }
 }
