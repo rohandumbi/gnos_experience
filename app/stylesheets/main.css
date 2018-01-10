@@ -1,4 +1,3 @@
-/*@import url('./bootstrap.min.css');*/
 /*@import url(http://fonts.googleapis.com/css?family=Roboto);*/
 #loginView {
   color: #74b1be;
@@ -487,6 +486,9 @@ body {
   display: inline-block;
   padding: 10px 10px 10px 0px;
 }
+.nav-side-menu .category-icon {
+  float: none !important;
+}
 .nav-side-menu .brand {
   background-color: #23282e;
   line-height: 50px;
@@ -554,14 +556,6 @@ body {
   background-color: #020203;
 }
 .nav-side-menu ul .sub-menu li:before,
-.nav-side-menu li .sub-menu li:before {
-  font-family: FontAwesome;
-  content: "\f105";
-  display: inline-block;
-  padding-left: 10px;
-  padding-right: 10px;
-  vertical-align: middle;
-}
 .nav-side-menu li {
   padding-left: 0px;
   border-left: 3px solid #2e353d;
@@ -639,38 +633,38 @@ body {
   /* Rounded sliders */
 }
 #workflowView .colorCode {
-    height: 14px;
-    width: 28px;
-    /*display: inline-block;
-          vertical-align: middle;*/
-    position: absolute;
-    top: 9px;
-    right: 10px;
+  height: 14px;
+  width: 28px;
+  /*display: inline-block;
+        vertical-align: middle;*/
+  position: absolute;
+  top: 9px;
+  right: 10px;
 }
 #workflowView .colorCode.block {
-    background: #d9534f;
+  background: #d9534f;
 }
 #workflowView .colorCode.model {
-    background: #4b4a5a;
+  background: #4b4a5a;
 }
 #workflowView .colorCode.product {
-    background: #a55540;
+  background: #a55540;
 }
 #workflowView .colorCode.modelJoin {
-    background: #e1d5d2;
+  background: #e1d5d2;
 }
 #workflowView .colorCode.productJoin {
-    background: #e79a58;
+  background: #e79a58;
 }
 #workflowView #viewport {
   /*border: solid 1px blue;*/
   /*width: 100%;*/
 }
 #workflowView .filterBtn {
-    border-bottom: 3px solid green;
+  border-bottom: 3px solid green;
 }
 #workflowView .filterBtn.active {
-    border-bottom: 3px solid red;
+  border-bottom: 3px solid red;
 }
 #workflowView .list-group-item {
   overflow: hidden;
@@ -841,46 +835,46 @@ body {
   }
 }
 .cy-context-menus-cxt-menu {
-    display: none;
-    z-index: 1000;
-    position: absolute;
-    border: 1px solid #A0A0A0;
-    padding: 0;
-    margin: 0;
-    width: auto;
+  display: none;
+  z-index: 1000;
+  position: absolute;
+  border: 1px solid #A0A0A0;
+  padding: 0;
+  margin: 0;
+  width: auto;
 }
 .cy-context-menus-cxt-menuitem {
-    display: block;
-    z-index: 1000;
-    width: 100%;
-    padding: 3px 20px;
-    position: relative;
-    margin: 0;
-    background-color: #f8f8f8;
-    font-weight: normal;
-    font-size: 12px;
-    white-space: nowrap;
-    border: 0;
-    text-align: left;
+  display: block;
+  z-index: 1000;
+  width: 100%;
+  padding: 3px 20px;
+  position: relative;
+  margin: 0;
+  background-color: #f8f8f8;
+  font-weight: normal;
+  font-size: 12px;
+  white-space: nowrap;
+  border: 0;
+  text-align: left;
 }
 .cy-context-menus-cxt-menuitem:enabled {
-    color: #000000;
+  color: #000000;
 }
 .cy-context-menus-ctx-operation:focus {
-    outline: none;
+  outline: none;
 }
 .cy-context-menus-cxt-menuitem:hover {
-    color: #ffffff;
-    text-decoration: none;
-    background-color: #0B9BCD;
-    background-image: none;
-    cursor: pointer;
+  color: #ffffff;
+  text-decoration: none;
+  background-color: #0B9BCD;
+  background-image: none;
+  cursor: pointer;
 }
 .cy-context-menus-cxt-menuitem[content]:before {
-    content: attr(content);
+  content: attr(content);
 }
 .cy-context-menus-divider {
-    border-bottom: 1px solid #A0A0A0;
+  border-bottom: 1px solid #A0A0A0;
 }
 html,
 body {
