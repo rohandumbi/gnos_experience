@@ -26,7 +26,7 @@ export class WorkflowView extends View{
         this.expressionModel = new ExpressionModel({projectId: options.projectId});
         this.unitModel = new UnitModel({projectId: options.projectId});
         this.uiStateModel = new UIStateModel({projectId: options.projectId});
-        this.createProductOverlay = new CreateProductOverlay();
+        /*this.createProductOverlay = new CreateProductOverlay();*/
         this.scaleFactor = 1;
         //this.productGradeModel = new ProductGradeModel({})
     }
@@ -1166,9 +1166,9 @@ export class WorkflowView extends View{
             this.$el.find('#productJoinModalProductList').html(productList)
             this.$el.find('#productJoinModal').modal();
         });
-        this.$el.find('#createMultiProduct').click((event)=> {
+        /*this.$el.find('#createMultiProduct').click((event)=> {
             this.createProductOverlay.show();
-        });
+         });*/
     }
 
     addProcessJoin() {
