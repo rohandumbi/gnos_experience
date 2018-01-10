@@ -150,26 +150,18 @@ export class WorkflowView_V2 extends View {
             }
         });
         var tableRow = (
-            '<select id="grade-expression" class="grade-expression form-control">'
-        );
-        var tableRow1 = (
-            '<select id="edit-grade-expression" class="grade-expression form-control">' /*+
-             '<option class="present-value" selected="" disabled="" hidden=""></option>'*/
+            '<select id="edit-grade-expression" class="grade-expression form-control">'
         );
         //add non-grade expressions
         that.nonGradeExpressions.forEach(function (expression) {
-            tableRow += '<option data-unit-id="' + expression.id + '" data-unit-type="2" data-unit-name="' + expression.name + '">' + expression.name + '</option>';
-            tableRow1 += '<option data-unit-id="' + expression.id + '" data-unit-type="2" value="' + expression.name + '" data-unit-name="' + expression.name + '">' + expression.name + '</option>';
+            tableRow += '<option data-unit-id="' + expression.id + '" data-unit-type="2" value="' + expression.name + '" data-unit-name="' + expression.name + '">' + expression.name + '</option>';
         });
         //add units
         that.units.forEach(function (unit) {
-            tableRow += '<option data-unit-id="' + unit.id + '" data-unit-type="1" data-unit-name="' + unit.name + '">' + unit.name + '</option>';
-            tableRow1 += '<option data-unit-id="' + unit.id + '" data-unit-type="1" value="' + unit.name + '" data-unit-name="' + unit.name + '">' + unit.name + '</option>';
+            tableRow += '<option data-unit-id="' + unit.id + '" data-unit-type="1" value="' + unit.name + '" data-unit-name="' + unit.name + '">' + unit.name + '</option>';
         });
         tableRow += '</select>';
-        tableRow1 += '</select>';
-        that.$el.find('#unit-list').append(tableRow);
-        that.$el.find('#edit-unit-list').append(tableRow1);
+        that.$el.find('#edit-unit-list').append(tableRow);
 
         var fieldSet = (
             '<fieldset class="group">' +
@@ -1128,7 +1120,17 @@ export class WorkflowView_V2 extends View {
             this.createProductOverlay = new CreateProductOverlay({
                 projectId: this.projectId,
                 processes: this.processes,
+                nonGradeExpressions: this.nonGradeExpressions,
                 units: this.units
+            });
+            this.createProductOverlay.on('submitted', createdProductsArray=> {
+                //this.products.push(createdProductsArray);
+                Promise.all([this.fetchUnits(), this.fetchExpressions(), this.fetchProducts()]).then(result=> {
+                    this.addProductsToGraph(createdProductsArray);
+                    this.createProductOverlay.close();
+                }).catch(error=> {
+                    alert(error);
+                });
             });
             this.createProductOverlay.show();
         });
