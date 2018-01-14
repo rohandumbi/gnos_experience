@@ -6,8 +6,8 @@ export class Overlay {
         }
         this._callbacks = {};
         this.contentUrl = options.contentUrl;
-        this.$el = $(`<div class="modal animated bounceIn fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                        <div class="modal-dialog" role="document">
+        this.$el = $(`<div class="gnos-overlay modal animated bounceIn fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                        <div class="gnos-overlay-doalog modal-dialog" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -24,7 +24,38 @@ export class Overlay {
                         </div>
                        </div>`);
         this.$el.find('.modal-title').html(options.title);
+        if (!options.draggable) {
+            this.enableDragging();
+        }
+    }
 
+    enableDragging() {
+        var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+        var $header = this.$el.find('.modal-header');
+        var elmnt = this.$el.get(0);
+        $header.mousedown(e=> {
+            e = e || window.event;
+            // get the mouse cursor position at startup:
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            //document.onmouseup = closeDragElement;
+            document.onmouseup = (e)=> {
+                document.onmouseup = null;
+                document.onmousemove = null;
+            }
+            // call a function whenever the cursor moves:
+            document.onmousemove = (e)=> {
+                e = e || window.event;
+                // calculate the new cursor position:
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                // set the element's new position:
+                elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+                elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+            };
+        });
     }
 
     show(model) {
