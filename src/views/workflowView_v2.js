@@ -666,15 +666,20 @@ export class WorkflowView_V2 extends View {
                     selector: '.model, .model-join, .product, .product-join',
                     coreAsWell: false,
                     onClickFunction: (event)=> {
-                        var target = event.target || event.cyTarget;
-                        if (target.hasClass('model')) {
-                            this.deleteModel(target);
-                        } else if (target.hasClass('model-join')) {
-                            this.deleteModelJoin(target);
-                        } else if (target.hasClass('product')) {
-                            this.deleteProduct(target);
-                        } else if (target.hasClass('product-join')) {
-                            this.deleteProductJoin(target);
+                        var returnValue = confirm("This will remove the node permanently. Are you sure?");
+                        if (returnValue == true) {
+                            var target = event.target || event.cyTarget;
+                            if (target.hasClass('model')) {
+                                this.deleteModel(target);
+                            } else if (target.hasClass('model-join')) {
+                                this.deleteModelJoin(target);
+                            } else if (target.hasClass('product')) {
+                                this.deleteProduct(target);
+                            } else if (target.hasClass('product-join')) {
+                                this.deleteProductJoin(target);
+                            }
+                        } else {
+                            return;
                         }
                     },
                     hasTrailingDivider: true
