@@ -512,37 +512,6 @@ export class WorkflowView_V2 extends View {
         });
     }
 
-    handleZoomIn() {
-        this.scaleFactor += 0.5;
-        var $canvas = this.$el.find("#viewport");
-        var existingWidth = $canvas.attr('width');
-        var existingHeight = $canvas.attr('height');
-
-        var newWidth = existingWidth * 1.5;
-        var newHeight = existingHeight * 1.5;
-        this.system.renderer.setScaleFactor(this.scaleFactor);
-        this.resizeCanvas({newWidth: newWidth, newHeight: newHeight});
-    }
-
-    handleZoomOut() {
-        this.scaleFactor -= 0.5;
-        var $canvas = this.$el.find("#viewport");
-        var existingWidth = $canvas.attr('width');
-        var existingHeight = $canvas.attr('height');
-
-        var newWidth = existingWidth / 1.5;
-        var newHeight = existingHeight / 1.5;
-        this.system.renderer.setScaleFactor(this.scaleFactor);
-        this.resizeCanvas({newWidth: newWidth, newHeight: newHeight});
-    }
-
-    resizeCanvas(options) {
-        var $canvas = this.$el.find("#viewport");
-        $canvas.attr('width', options.newWidth);
-        $canvas.attr('height', options.newHeight);
-        this.system.screenSize(options.newWidth, options.newHeight);
-    }
-
     getStoredNodePosition(nodeName) {
         var position = {};
         if (!this.storedCoordinates) {
@@ -604,8 +573,6 @@ export class WorkflowView_V2 extends View {
         var parentWidth = this.$el.find('#canvas-container').width();
         var parentHeight = this.$el.find('#canvas-container').height();
         var $viewport = this.$el.find('#viewport');
-        $viewport.width(parentWidth - 5);
-        $viewport.height(parentHeight - 5);
 
         this.system = cytoscape({
             container: $viewport,
@@ -1090,8 +1057,6 @@ export class WorkflowView_V2 extends View {
 
     bindDomEvents() {
         var that = this;
-        this.$el.on('click', '#btn-zoomin', this.handleZoomIn.bind(this));
-        this.$el.on('click', '#btn-zoomout', this.handleZoomOut.bind(this));
         this.bindDragEvents();
         this.$el.find('#join_processes').click(function (event) {
             that.addProcessJoin();
@@ -1421,5 +1386,15 @@ export class WorkflowView_V2 extends View {
         $li.attr('title', model.name);
         $li.addClass('list-group-item list-group-item-info unused-model');
         this.$el.find('.list-group').append($li);
+    }
+
+    resize() {
+        console.log('Time to readjust canvas');
+        var $viewport = this.$el.find('#viewport');
+        setTimeout(()=> {
+            $viewport.find('div').width($viewport.width());
+            $viewport.find('div').height($viewport.height());
+            this.system.resize();
+        }, 500);
     }
 }

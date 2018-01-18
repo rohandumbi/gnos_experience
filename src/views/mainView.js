@@ -321,6 +321,9 @@ export class MainView extends View{
         this.$el.find("#toggleBtn").click(function(e) {
             e.preventDefault();
             that.$el.find("#wrapper").toggleClass("toggled");
+            if (that.workflowView2) {
+                that.workflowView2.resize();
+            }
         });
         this.$el.find(".brand").click(function (e) {
             e.preventDefault();
