@@ -24,9 +24,9 @@ export class Overlay {
                         </div>
                        </div>`);
         this.$el.find('.modal-title').html(options.title);
-        if (!options.draggable) {
+        /*if (!options.draggable) {
             this.enableDragging();
-        }
+         }*/
     }
 
     enableDragging() {
