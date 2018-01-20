@@ -70,6 +70,12 @@ export class CreateProductOverlay extends Overlay {
         this.$el.find('.btn-submit').click((e) => {
             this.handleSubmit(e);
         });
+        this.$el.find("#searchInput").on("keyup", (e)=> {
+            var value = $(e.currentTarget).val().toLowerCase();
+            this.$el.find(".table tr").filter((index, element)=> {
+                $(element).toggle($(element).find('.processName').text().toLowerCase().indexOf(value) > -1)
+            });
+        });
     }
 
     handleSubmit(e) {
