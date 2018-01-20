@@ -83,7 +83,7 @@ export class CreateProductOverlay extends Overlay {
         var $allRows = this.$el.find('.selectionTableRow');
         var productType = this.$el.find('#name').val();
         if (!productType) {
-            alert('Product name cannot be empty');
+            this.$el.find('.form-name').addClass('has-error has-feedback');
             return;
         }
         $allRows.each((index, element)=> {
