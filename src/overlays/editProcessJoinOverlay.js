@@ -2,7 +2,7 @@ import {Overlay} from '../core/overlay';
 import {ProcessJoinModel} from '../models/processJoinModel';
 export class EditProcessJoinOverlay extends Overlay {
     constructor(options) {
-        var contentUrl = '../content/processJoinEditOverlay.html';
+        var contentUrl = '../content/editProcessJoinOverlay.html';
         var overlayTitle = 'Edit Process Join';
         var mergedOptions = $.extend(options, {contentUrl: contentUrl, title: overlayTitle});
         super(mergedOptions);

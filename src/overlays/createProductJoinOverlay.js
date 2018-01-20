@@ -2,7 +2,7 @@ import {Overlay} from '../core/overlay';
 import {ProductJoinModel} from '../models/productJoinModel';
 export class EditProductJoinOverlay extends Overlay {
     constructor(options) {
-        var contentUrl = '../content/editProductJoinOverlay.html';
+        var contentUrl = '../content/createProductJoinOverlay.html';
         var overlayTitle = 'Edit Product Join';
         var mergedOptions = $.extend(options, {contentUrl: contentUrl, title: overlayTitle});
         super(mergedOptions);
