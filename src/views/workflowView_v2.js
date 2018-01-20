@@ -1125,6 +1125,23 @@ export class WorkflowView_V2 extends View {
             }
             this.applyExistingLayout();
         });
+        this.system.nodes().on('click', (e)=> {
+            this.handleNodeClick(e);
+        });
+    }
+
+    handleNodeClick(e) {
+        this.$el.find('.tooltiptext').html(e.target.data('label'));
+        this.$el.find('.tooltiptext')
+            .show()
+            .css({
+                position: "absolute",
+                left: e.originalEvent.clientX - $('#sidebar-wrapper').width(), //little hack here
+                top: e.originalEvent.clientY
+            })
+        setTimeout(()=> {
+            this.$el.find('.tooltiptext').hide();
+        }, 1000);
     }
 
     applyExistingLayout() {
