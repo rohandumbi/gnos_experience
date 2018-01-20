@@ -10,6 +10,7 @@ import {UnitModel} from '../models/unitModel';
 import {ProductGradeModel} from '../models/productGradeModel';
 import {CreateProductOverlay} from '../overlays/createProductOverlay';
 import {CreateProductJoinOverlay} from '../overlays/createProductJoinOverlay';
+import {CreateProcessJoinOverlay} from '../overlays/createProcessJoinOverlay';
 import {EditProductJoinOverlay} from '../overlays/editProductJoinOverlay';
 import {EditProcessJoinOverlay} from '../overlays/editProcessJoinOverlay';
 import {UIStateModel} from '../models/uiStateModel';
@@ -1059,19 +1060,11 @@ export class WorkflowView_V2 extends View {
     bindDomEvents() {
         var that = this;
         this.bindDragEvents();
-        this.$el.find('#join_processes').click(function (event) {
-            that.addProcessJoin();
-        });
         this.$el.find('#save-graph').click((event)=> {
             this.saveUiState();
         });
         this.$el.find('#btnCreateProcessJoin').click((event) => {
-            var processList = '';
-            this.processes.forEach((process)=> {
-                processList += '<div class="checkbox"><label><input type="checkbox" value="' + process.id + '">' + process.name + '</label></div>'
-            });
-            this.$el.find('#processJoinModalProcessList').html(processList)
-            this.$el.find('#processJoinModal').modal();
+            this.createProcessJoin();
         });
         this.$el.find('#btnCreateProductJoin').click((event) => {
             this.createProductJoin();
@@ -1220,19 +1213,6 @@ export class WorkflowView_V2 extends View {
         }
     }
 
-    addProcessJoin() {
-        var that = this;
-        var processJoinName = this.$el.find('#join_name').val().trim();
-        var checkedModels = that.$el.find('#processJoinModalProcessList').find('input:checked');
-        checkedModels.each((index, checkedModel)=> {
-            var checkedModelId = $(checkedModel).val();
-            that.addProcessToProcessJoin({
-                processJoinName: processJoinName,
-                processId: checkedModelId
-            })
-        });
-    }
-
     addProcessToProcessJoin(options) {
         var processJoinName = options.processJoinName;
         var processId = options.processId;
@@ -1275,7 +1255,6 @@ export class WorkflowView_V2 extends View {
     }
 
     createProductJoin() {
-        var that = this;
         this.createProductJoinOverlay = new CreateProductJoinOverlay({
             projectId: this.projectId,
             products: this.products
@@ -1287,6 +1266,20 @@ export class WorkflowView_V2 extends View {
             });
         });
         this.createProductJoinOverlay.show();
+    }
+
+    createProcessJoin() {
+        this.createProcessJoinOverlay = new CreateProcessJoinOverlay({
+            projectId: this.projectId,
+            processes: this.processes
+        });
+        this.createProcessJoinOverlay.on('submitted', processJoin=> {
+            this.fetchProcessJoins().then(()=> {
+                this.addProcessJoinsToGraph([processJoin]);
+                this.createProcessJoinOverlay.close();
+            });
+        });
+        this.createProcessJoinOverlay.show();
     }
 
     bindDragEvents() {
