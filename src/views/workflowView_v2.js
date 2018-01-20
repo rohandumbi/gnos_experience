@@ -684,7 +684,7 @@ export class WorkflowView_V2 extends View {
                         } else if (target.hasClass('product-join')) {
                             this.showGradeListForProductJoin(target.id());
                         }
-                        this.$el.find('#associatedGrades').modal();
+                        this.$el.find('#associatedGradesModal').modal();
                     }
                 },
                 {
