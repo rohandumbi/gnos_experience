@@ -27,6 +27,12 @@ export class CreateProcessJoinOverlay extends Overlay {
         this.$el.find('.btn-submit').click((e) => {
             this.createProcessJoin(e);
         });
+        this.$el.find("#searchInput").on("keyup", (e)=> {
+            var value = $(e.currentTarget).val().toLowerCase();
+            this.$el.find("#processList div.checkbox").filter((index, element)=> {
+                $(element).toggle($(element).find('label').text().toLowerCase().indexOf(value) > -1)
+            });
+        });
     }
 
     createProcessJoin(e) {

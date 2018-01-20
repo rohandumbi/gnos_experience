@@ -39,6 +39,12 @@ export class EditProductJoinOverlay extends Overlay {
         this.$el.find('.btn-submit').click((e) => {
             this.updateProductJoin(e);
         });
+        this.$el.find("#searchInput").on("keyup", (e)=> {
+            var value = $(e.currentTarget).val().toLowerCase();
+            this.$el.find("#productList div.checkbox").filter((index, element)=> {
+                $(element).toggle($(element).find('.productName').val().toLowerCase().indexOf(value) > -1)
+            });
+        });
     }
 
     updateProductJoin(e) {
