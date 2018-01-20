@@ -539,6 +539,8 @@ export class WorkflowView_V2 extends View {
             }
         });
         var layout = this.system.layout({
+            nodeDimensionsIncludeLabels: true,
+            avoidOverlap: true,
             name: 'preset',
             fit: true,
             animate: true,
@@ -1144,6 +1146,7 @@ export class WorkflowView_V2 extends View {
 
     applyDirectedLayout() {
         var layout = this.system.layout({
+            nodeDimensionsIncludeLabels: true,
             name: 'breadthfirst',
             directed: true,
             spacingFactor: 1.75,
@@ -1157,6 +1160,7 @@ export class WorkflowView_V2 extends View {
 
     applyConcentricLayout() {
         var layout = this.system.layout({
+            nodeDimensionsIncludeLabels: true,
             name: 'breadthfirst',
             directed: true,
             circle: true,
