@@ -1,6 +1,6 @@
 import {Overlay} from '../core/overlay';
 import {ProcessJoinModel} from '../models/processJoinModel';
-export class ProcessJoinEditOverlay extends Overlay {
+export class EditProcessJoinOverlay extends Overlay {
     constructor(options) {
         var contentUrl = '../content/processJoinEditOverlay.html';
         var overlayTitle = 'Edit Process Join';

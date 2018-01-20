@@ -9,8 +9,8 @@ import {ExpressionModel} from '../models/expressionModel';
 import {UnitModel} from '../models/unitModel';
 import {ProductGradeModel} from '../models/productGradeModel';
 import {CreateProductOverlay} from '../overlays/createProductOverlay';
-import {ProductJoinEditOverlay} from '../overlays/productJoinEditOverlay';
-import {ProcessJoinEditOverlay} from '../overlays/processJoinEditOverlay';
+import {EditProductJoinOverlay} from '../overlays/editProductJoinOverlay';
+import {EditProcessJoinOverlay} from '../overlays/editProcessJoinOverlay';
 import {UIStateModel} from '../models/uiStateModel';
 import cytoscape from 'cytoscape';
 import contextMenus from 'cytoscape-context-menus';
@@ -709,13 +709,13 @@ export class WorkflowView_V2 extends View {
 
     editModelJoin(el) {
         var processJoin = this.getProcessJoinWithName(el.id());
-        this.processJoinEditOverlay = new ProcessJoinEditOverlay({
+        this.editProcessJoinOverlay = new EditProcessJoinOverlay({
             processJoin: processJoin,
             processes: this.processes,
             projectId: this.projectId
         });
-        this.processJoinEditOverlay.on('submitted', (options)=> {
-            this.processJoinEditOverlay.close();
+        this.editProcessJoinOverlay.on('submitted', (options)=> {
+            this.editProcessJoinOverlay.close();
             this.fetchProcessJoins().then((result)=> {
                 var updatedProcessJoin = this.getProcessJoinWithName(el.id());
                 this.system.$('node').edgesTo('#' + el.id()).remove();
@@ -724,18 +724,18 @@ export class WorkflowView_V2 extends View {
                 alert(msg);
             });
         });
-        this.processJoinEditOverlay.show();
+        this.editProcessJoinOverlay.show();
     }
 
     editProductJoin(el) {
         var productJoin = this.getProductJoinWithName(el.id());
-        this.productJoinEditOverlay = new ProductJoinEditOverlay({
+        this.editProductJoinOverlay = new EditProductJoinOverlay({
             productJoin: productJoin,
             products: this.products,
             projectId: this.projectId
         });
-        this.productJoinEditOverlay.on('submitted', (options)=> {
-            this.productJoinEditOverlay.close();
+        this.editProductJoinOverlay.on('submitted', (options)=> {
+            this.editProductJoinOverlay.close();
             this.fetchProductJoins().then((result)=> {
                 var updatedProductJoin = this.getProductJoinWithName(el.id());
                 this.system.$('node').edgesTo('#' + el.id()).remove();
@@ -744,7 +744,7 @@ export class WorkflowView_V2 extends View {
                 alert(msg);
             });
         });
-        this.productJoinEditOverlay.show();
+        this.editProductJoinOverlay.show();
     }
 
     editProduct(el) {

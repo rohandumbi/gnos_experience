@@ -9,7 +9,7 @@ import {ExpressionModel} from '../models/expressionModel';
 import {UnitModel} from '../models/unitModel';
 import {ProductGradeModel} from '../models/productGradeModel';
 import {CreateProductOverlay} from '../overlays/createProductOverlay';
-import {ProductJoinEditOverlay} from '../overlays/productJoinEditOverlay';
+import {EditProductJoinOverlay} from '../overlays/editProductJoinOverlay';
 import {UIStateModel} from '../models/uiStateModel';
 
 export class WorkflowView extends View{

@@ -1,6 +1,6 @@
 import {Overlay} from '../core/overlay';
 import {ProductJoinModel} from '../models/productJoinModel';
-export class ProductJoinEditOverlay extends Overlay {
+export class EditProductJoinOverlay extends Overlay {
     constructor(options) {
         var contentUrl = '../content/productJoinEditOverlay.html';
         var overlayTitle = 'Edit Product Join';

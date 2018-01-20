@@ -251,9 +251,6 @@ export class MainView extends View{
                 this.initializeModelDefinition();
                 break;
             case "workflow":
-                this.initializeWorkflowDefinition();
-                break;
-            case "workflow2":
                 this.initializeWorkflow2Definition();
                 break;
             case "pit_grouping":
