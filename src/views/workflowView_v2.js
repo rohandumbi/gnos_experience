@@ -9,6 +9,7 @@ import {ExpressionModel} from '../models/expressionModel';
 import {UnitModel} from '../models/unitModel';
 import {ProductGradeModel} from '../models/productGradeModel';
 import {CreateProductOverlay} from '../overlays/createProductOverlay';
+import {CreateProductJoinOverlay} from '../overlays/createProductJoinOverlay';
 import {EditProductJoinOverlay} from '../overlays/editProductJoinOverlay';
 import {EditProcessJoinOverlay} from '../overlays/editProcessJoinOverlay';
 import {UIStateModel} from '../models/uiStateModel';
@@ -1061,12 +1062,6 @@ export class WorkflowView_V2 extends View {
         this.$el.find('#join_processes').click(function (event) {
             that.addProcessJoin();
         });
-        this.$el.find('#join_products').click(function (event) {
-            that.addProductJoin();
-        });
-        this.$el.find('#add-product').click(function (event) {
-            that.addProduct();
-        });
         this.$el.find('#save-graph').click((event)=> {
             this.saveUiState();
         });
@@ -1079,30 +1074,10 @@ export class WorkflowView_V2 extends View {
             this.$el.find('#processJoinModal').modal();
         });
         this.$el.find('#btnCreateProductJoin').click((event) => {
-            var productList = '';
-            this.products.forEach((product)=> {
-                productList += '<div class="checkbox"><label><input type="checkbox" value="' + product.name + '">' + product.name + '</label></div>'
-            });
-            this.$el.find('#productJoinModalProductList').html(productList)
-            this.$el.find('#productJoinModal').modal();
+            this.createProductJoin();
         });
         this.$el.find('#btnCreateProduct').click((event)=> {
-            this.createProductOverlay = new CreateProductOverlay({
-                projectId: this.projectId,
-                processes: this.processes,
-                nonGradeExpressions: this.nonGradeExpressions,
-                units: this.units
-            });
-            this.createProductOverlay.on('submitted', createdProductsArray=> {
-                //this.products.push(createdProductsArray);
-                Promise.all([this.fetchUnits(), this.fetchExpressions(), this.fetchProducts()]).then(result=> {
-                    this.addProductsToGraph(createdProductsArray);
-                    this.createProductOverlay.close();
-                }).catch(error=> {
-                    alert(error);
-                });
-            });
-            this.createProductOverlay.show();
+            this.createProduct();
         });
         this.$el.find('#blockFilter').change(event=> {
             this.toggleBlockNodeDisplay(event);
@@ -1281,67 +1256,37 @@ export class WorkflowView_V2 extends View {
         });
     }
 
-    addProductJoin() {
-        var that = this;
-        var productJoinName = this.$el.find('#product_join_name').val().trim();
-        var checkedProducts = that.$el.find('#productJoinModalProductList').find('input:checked');
-        checkedProducts.each((index, checkedProduct)=> {
-            var checkedProductName = $(checkedProduct).val();
-            that.addProductToProductJoin({
-                productJoinName: productJoinName,
-                productName: checkedProductName
-            })
+    createProduct() {
+        this.createProductOverlay = new CreateProductOverlay({
+            projectId: this.projectId,
+            processes: this.processes,
+            nonGradeExpressions: this.nonGradeExpressions,
+            units: this.units
         });
+        this.createProductOverlay.on('submitted', createdProductsArray=> {
+            Promise.all([this.fetchUnits(), this.fetchExpressions(), this.fetchProducts()]).then(result=> {
+                this.addProductsToGraph(createdProductsArray);
+                this.createProductOverlay.close();
+            }).catch(error=> {
+                alert(error);
+            });
+        });
+        this.createProductOverlay.show();
     }
 
-    addProductToProductJoin(options) {
-        var productJoinName = options.productJoinName;
-        var productName = options.productName;
-        var updatedProductJoin = {}
-        updatedProductJoin['name'] = productJoinName;
-        updatedProductJoin['childType'] = 1;
-        updatedProductJoin['child'] = productName;
-        this.productJoinModel.add({
-            dataObject: updatedProductJoin,
-            success: (data) => {
-                var productJoin = this.getProductJoinWithName(productJoinName);
-                if (!productJoin) {
-                    this.productJoins.push(data);
-                } else {
-                    productJoin.productList.push(productName);
-                }
-                this.addProductJoinsToGraph([data]);
-            },
-            error: function (data) {
-                alert('Error adding product to join');
-            }
-        });
-    }
-
-    addProduct() {
+    createProductJoin() {
         var that = this;
-        var newProduct = {}
-        var processName = this.$el.find('#new_process').find(':selected').data('process-name');
-        var unitName = this.$el.find('#grade-expression').find(':selected').data('unit-name');
-        var unitId = this.$el.find('#grade-expression').find(':selected').data('unit-id');
-        var unitType = this.$el.find('#grade-expression').find(':selected').data('unit-type');
-        newProduct['name'] = processName + '_' + this.$el.find('#product_name').val();
-        var process = this.getModelWithName(processName);
-        newProduct['modelId'] = process.id;
-        newProduct['unitType'] = unitType;
-        newProduct['unitId'] = unitId;
-        this.productModel.add({
-            dataObject: newProduct,
-            success: function (data) {
-                that.products.push(data);
-                that.addProductsToGraph([data]);
-                that.$el.find('#product_name').val('');
-            },
-            error: function (data) {
-                alert('Error creating product');
-            }
+        this.createProductJoinOverlay = new CreateProductJoinOverlay({
+            projectId: this.projectId,
+            products: this.products
         });
-        console.log(newProduct.name + ':' + newProduct.modelId + ':' + newProduct.unitType + ':' + newProduct.unitId);
+        this.createProductJoinOverlay.on('submitted', productJoin=> {
+            this.fetchProductJoins().then(()=> {
+                this.addProductJoinsToGraph([productJoin]);
+                this.createProductJoinOverlay.close();
+            });
+        });
+        this.createProductJoinOverlay.show();
     }
 
     bindDragEvents() {
