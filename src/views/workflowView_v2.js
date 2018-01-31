@@ -1095,6 +1095,18 @@ export class WorkflowView_V2 extends View {
             $(event.currentTarget).addClass('active');
             this.applyPresetLayout();
         });
+
+        this.$el.find('#btnModelList').click(event=> {
+            var $button = $(event.currentTarget);
+            $button.toggleClass('active');
+            this.$el.find('.model-panel').toggle();
+            if ($button.hasClass('active')) {
+                this.$el.find('.canvas-panel').removeClass('col-xs-12').addClass('col-xs-10');
+            } else {
+                this.$el.find('.canvas-panel').removeClass('col-xs-10').addClass('col-xs-12');
+            }
+            this.resize();
+        });
         this.$el.find('#btnDirectedtLayout').click(event=> {
             this.$el.find('.btn-layout').removeClass('active');
             $(event.currentTarget).addClass('active');
@@ -1348,7 +1360,6 @@ export class WorkflowView_V2 extends View {
     }
 
     resize() {
-        console.log('Time to readjust canvas');
         var $viewport = this.$el.find('#viewport');
         setTimeout(()=> {
             $viewport.find('div').width($viewport.width());
