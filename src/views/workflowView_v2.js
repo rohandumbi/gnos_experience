@@ -474,7 +474,7 @@ export class WorkflowView_V2 extends View {
         unusedModels.forEach(function (model) {
             $li = $('<li data-model-id="' + model.id + '" draggable="true"><span class="glyphicon glyphicon-adjust"></span>&nbsp;<a>' + model.name + '</a></li>');
             $li.attr('title', model.name);
-            $li.addClass('list-group-item list-group-item-info unused-model');
+            $li.addClass('list-group-item unused-model');
             $liGroup.append($li);
         });
         return unusedModels;
@@ -1343,7 +1343,7 @@ export class WorkflowView_V2 extends View {
     addModelToDraggableList(model) {
         var $li = $('<li data-model-id="' + model.id + '" draggable="true"><span class="glyphicon glyphicon-adjust"></span>&nbsp;<a>' + model.name + '</a></li>');
         $li.attr('title', model.name);
-        $li.addClass('list-group-item list-group-item-info unused-model');
+        $li.addClass('list-group-item unused-model');
         this.$el.find('.list-group').append($li);
     }
 

@@ -631,6 +631,7 @@ body {
         border-color: black transparent transparent transparent;
     }*/
   /* Rounded sliders */
+  /*list of unused models*/
 }
 #workflowView .colorCode {
   height: 14px;
@@ -744,6 +745,12 @@ body {
 }
 #workflowView .slider.round:before {
   border-radius: 50%;
+}
+#workflowView .unused-model {
+  color: #4b4a5a;
+}
+#workflowView .unused-model a {
+  color: #4b4a5a;
 }
 #scenarioDefinitionView hr {
   border-top: 1px solid #333;
@@ -925,13 +932,13 @@ body {
   /*border: 1px solid black;*/
 }
 .gnos-overlay {
-    position: absolute !important;
+  position: absolute !important;
 }
 .unselectable {
-    -webkit-touch-callout: none !important;
-    -webkit-user-select: none !important;
-    -khtml-user-select: none !important;
-    -moz-user-select: none !important;
-    -ms-user-select: none !important;
-    user-select: none !important;
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  -khtml-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
 }
