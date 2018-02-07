@@ -1,0 +1,59 @@
+<div id="dumpDependencyView">
+    <form class="form-inline">
+        <div class="form-group">
+            <label for="scenario_name">Scenario In Use:</label>
+            <input type="text" class="form-control" id="scenario_name" value="<%= name %>">
+        </div>
+    </form>
+    <table id="datatype-grid-basic" class="table table-condensed table-hover table-striped">
+        <thead>
+        <tr>
+            <th data-identifier="true" data-formatter="id" data-column-id="dependencyId" data-width="5px"></th>
+            <th data-column-id="firstPitName" data-formatter="first_pit" data-width="100px">First Pit</th>
+            <th data-column-id="firstPitGroupName" data-formatter="first_pit_group" data-width="100px">First Pit Group
+            </th>
+            <th data-column-id="firstDumpName" data-formatter="first_dump" data-width="100px">First Dump</th>
+            <th data-column-id="dependentDumpName" data-formatter="dependent_dump" data-width="100px">Dependent Dump
+            </th>
+            <th data-column-id="inUse" data-formatter="in_use" data-width="70px">In Use</th>
+            <th data-column-id="description" data-formatter="description" data-width="300px">Description</th>
+        </tr>
+        </thead>
+        <tbody id="tableBody">
+        </tbody>
+    </table>
+    <!--Modal Dialog for model definition-->
+    <!--Modal Dialog for model definition-->
+    <div class="modal fade" id="dumpDependencyModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Pit Dependency</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form">
+                        <div id="first_pit_list" class="form-group">
+                            <label>First Pit Name:</label>
+                        </div>
+                        <div id="first_pit_group_list" class="form-group">
+                            <label>First Pit Group Name:</label>
+                        </div>
+                        <div id="first_dump_list" class="form-group">
+                            <label>First Dump Name:</label>
+                        </div>
+                        <div id="dependent_dump_list" class="form-group">
+                            <label>Dependent Dump Name:</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="addDumpDependency" type="button" class="btn btn-primary" data-dismiss="modal">Add
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

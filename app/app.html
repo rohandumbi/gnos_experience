@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>GNOS Scheduler</title>
+    <!-- jQuery library -->
+    <script>
+        window.$ = window.jQuery = require('./helpers/jquery.js');
+        window.Dropzone = require('./helpers/dropzone/dropZone.js');
+    </script>
+
+    <link href="stylesheets/main.css" rel="stylesheet" type="text/css">
+    <link href="stylesheets/jquery.bootgrid.css" rel="stylesheet" type="text/css">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="stylesheets/bootstrap.css">
+    <link rel="stylesheet" href="stylesheets/jquery-ui.css">
+    <link rel="stylesheet" href="stylesheets/dropzone.css">
+
+    <!--<link rel="stylesheet" href="stylesheets/jquery.dataTables.min.css">-->
+    <link rel="stylesheet" href="stylesheets/dataTables.bootstrap.min.css">
+
+    <script src="helpers/jquery.dataTables.min.js"></script>
+    <script src="helpers/dataTables.bootstrap.min.js"></script>
+    <script src="helpers/dataTables.scroller.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="helpers/bootstrap.js"></script>
+
+    <script src="helpers/context_menu.js"></script>
+    <script src="helpers/external_links.js"></script>
+    <script src="helpers/jquery-ui.js"></script>
+    <script src="helpers/jquery.bootgrid.js"></script>
+    <script src="helpers/jquery.bootgrid.fa.js"></script>
+
+    <script src="helpers/arbor/arbor.js"></script>
+    <script src="helpers/arbor/graphics.js"></script>
+    <script src="helpers/arbor/renderer.gnos.js"></script>
+
+    <script src="app.js"></script>
+    <script src="helpers/custom_context_menu.js"></script>
+    <script src="helpers/dropzone/dropZone.js"></script>
+    <script type="text/javascript">
+        $(document).keypress(function (e) {
+            if (e.which == 13) {
+                //alert('You pressed enter!');
+                e.preventDefault();
+            }
+        });
+    </script>
+</head>
+<body>
+    <div id="appWindow">
+    </div>
+</body>
+</html>
