@@ -87,13 +87,12 @@ export class ControlScreenView extends View{
 			dataObj.enableEquations = {};
             that.$el.find('#equations input:checkbox').each(function () {
                 dataObj.enableEquations[$(this).val()] = $(this).is(':checked');
-                ;
             });
             dataObj.period = that.$el.find('#period').val();
             var gapValue = that.$el.find('#gap').val();
             var intGap = parseInt(gapValue, 10);
-            if(!gapValue || intGap <= 0 || intGap> 100){
-                alert("The GAP value must be greater than 0 and less than 100");
+            if(!gapValue || intGap <= 0){
+                alert("The GAP value must be greater than 0");
                 return;
             }
             dataObj.gap = gapValue;
