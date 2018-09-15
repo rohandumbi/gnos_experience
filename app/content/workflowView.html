@@ -1,0 +1,339 @@
+<div id="workflowView" class="container-fluid" style="height:100%">
+    <div class="col-md-2" style="height:100%">
+        <div class="panel panel-primary" style="height:100%">
+            <div class="panel-heading" style="height:55px;">
+                <h3 class="panel-title">Models</h3>
+            </div>
+            <div class="panel-body" style="height:90%; overflow: auto">
+                <ul class="list-group"></ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-10" style="height:100%">
+        <div class="panel panel-primary" style="height:100%">
+            <div class="panel-heading">
+                <div class="btn-group">
+                    <button id="save-graph" data-toggle="modal" type="button" class="btn btn-success">Save State
+                    </button>
+                    <button data-toggle="modal" data-target="#processJoinModal" type="button" class="btn btn-info">
+                        Create Model Join
+                    </button>
+                    <button data-toggle="modal" data-target="#productModal" type="button" class="btn btn-info">Create
+                        Product
+                    </button>
+                    <button data-toggle="modal" id="btnCreateProductJoin" type="button" class="btn btn-info">Create
+                        Product Join
+                    </button>
+                    <button id="btn-zoomin" type="button" class="btn btn-default">Zoom In</button>
+                    <button id="btn-zoomout" type="button" class="btn btn-default">Zoom Out</button>
+                    <!--<button id="createMultiProduct" class="btn btn-primary">Create Multi</button>-->
+                </div>
+                <span class="label" style="background-color: red">BLOCK</span>
+                <span class="label" style="background-color: #4b4a5a">MODEL</span>
+                <span class="label" style="background-color: #e1d5d2">MODEL JOIN</span>
+                <span class="label" style="background-color: #a55540">PRODUCT</span>
+                <span class="label" style="background-color: #e79a58">PRODUCT JOIN</span>
+            </div>
+            <div class="panel-body" style="height:95%; overflow: auto; padding:0px;">
+                <div id="canvas-container" style="height:99%; width:100%; overflow: auto">
+                    <canvas id="viewport"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <span class="tooltiptext"></span>
+    <ul id="workflowContextMenu" class="dropdown-menu" role="menu" style="display:none">
+        <li><a tabindex="-1" href="#">Delete</a></li>
+        <!--<li><a tabindex="-1" href="#">Add product</a></li>-->
+        <li><a tabindex="-1" href="#">Add to process join</a></li>
+        <li><a tabindex="-1" href="#">Add to product join</a></li>
+        <li class="divider"></li>
+        <!--<li><a tabindex="-1" href="#">Add expression</a></li>
+        <li><a tabindex="-1" href="#">Add unit</a></li>-->
+        <li><a tabindex="-1" href="#">View grades</a></li>
+        <li><a tabindex="-1" href="#">Edit</a></li>
+    </ul>
+    <div class="modal fade" id="processJoinModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Join Definition</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-inline">
+                        <form class="form">
+                            <div class="form-group">
+                                <label for="join_name">Join Name:</label>
+                                <input type="text" class="form-control" id="join_name">
+                            </div>
+                            <br/>
+                        </form>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="join_processes" type="button" class="btn btn-primary" data-dismiss="modal">Add join
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="productJoinModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myProductLabel">Product Join Definition</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form">
+                        <form class="form">
+                            <div class="form-group">
+                                <label for="product_join_name">Product Join Name:</label>
+                                <input type="text" class="form-control" id="product_join_name">
+                            </div>
+                            <div class="form-group">
+                                <label for="productJoinModalProductList">List of Products:</label>
+                                <div id="productJoinModalProductList" style="max-height: 400px; overflow:auto"></div>
+                            </div>
+                            <br/>
+                        </form>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="join_products" type="button" class="btn btn-primary" data-dismiss="modal">Add join
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="productModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="productModalLabel">Product Definition</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form">
+                        <div class="form-group">
+                            <label for="product_name">Product Name:</label>
+                            <input type="text" class="form-control" id="product_name">
+                        </div>
+                        <br/>
+                        <div id="process-list" class="form-group">
+                            <label>Process:</label>
+                        </div>
+                        <br/>
+                        <div id="unit-list" class="form-group">
+                            <label>Unit:</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="add-product" type="button" class="btn btn-primary" data-dismiss="modal">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="productEditModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="productEditModalLabel">Product Edit</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-inline">
+                        <form class="form">
+                            <div class="form-group">
+                                <label for="edit-name">Product Name:</label>
+                                <input type="text" class="form-control" id="edit-name" disabled/>
+                            </div>
+                            <br/>
+                            <!--<div id="process-list" class="form-group">
+                                <label>Process:</label>
+                            </div>-->
+                            <br/>
+                            <div id="edit-unit-list" class="form-group">
+                                <label>Unit:</label>
+                            </div>
+                        </form>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="edit-product" type="button" class="btn btn-primary" data-dismiss="modal">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="addProcessToJoinModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Add Process</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-inline">
+                        <form class="form">
+                            <div class="form-group">
+                                <label for="target_join">Join Name:</label>
+                                <input type="text" class="form-control" id="target_join">
+                            </div>
+                            <br/>
+                        </form>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="add-to-join" type="button" class="btn btn-primary" data-dismiss="modal">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="addProductToJoinModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Add Product</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-inline">
+                        <form class="form">
+                            <div class="form-group">
+                                <label for="target_product_join">Product Join Name:</label>
+                                <input type="text" class="form-control" id="target_product_join">
+                            </div>
+                            <br/>
+                        </form>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="addProductToJoin" type="button" class="btn btn-primary" data-dismiss="modal">Add
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="addProductJoinToJoinModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Add Product Joins</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-inline">
+                        <form class="form">
+                            <div class="form-group">
+                                <label for="parent_product_join">Product Join Name:</label>
+                                <input type="text" class="form-control" id="parent_product_join">
+                            </div>
+                            <br/>
+                        </form>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="addProductJoinToJoin" type="button" class="btn btn-primary" data-dismiss="modal">Add
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addExpressionToProductModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Add Expressions</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-inline">
+                        <form class="form">
+                            <div id='expression-group' class="form-group">
+                                <!--<input type="text" class="form-control" id="parent_product_join">-->
+                            </div>
+                            <br/>
+                        </form>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="addExpressions" type="button" class="btn btn-primary" data-dismiss="modal">Add
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addUnitToProductModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Add Units</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-inline">
+                        <form class="form">
+                            <div id='unit-group' class="form-group">
+                                <!--<label for="parent_product_join">Select Units:</label>-->
+                                <!--<input type="text" class="form-control" id="parent_product_join">-->
+                            </div>
+                            <br/>
+                        </form>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="addUnits" type="button" class="btn btn-primary" data-dismiss="modal">Add
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="associatedGrades" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document" style="width:100%; overflow-x: auto">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">List of grades</h4>
+                </div>
+                <div class="modal-body" style="padding: 15px;">
+                    <form class="form-inline">
+                        <form class="form">
+                            <div id='grade-list' class="form-group">
+                                <!--<label for="parent_product_join">Select Units:</label>-->
+                                <!--<input type="text" class="form-control" id="parent_product_join">-->
+                            </div>
+                            <br/>
+                        </form>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

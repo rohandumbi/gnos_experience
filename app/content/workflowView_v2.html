@@ -1,0 +1,146 @@
+<div id="workflowView" class="container-fluid" style="height:100%">
+    <div class="col-xs-12" style="height:100%">
+        <div class="col-xs-12 panel panel-primary" style="height:100%;">
+            <div class="col-xs-12 btn-toolbar" style="padding: 0px;">
+                <div class="btn-group">
+                    <button id="save-graph" title="Save state" data-toggle="modal" type="button"
+                            class="btn btn-default">
+                        <span class="glyphicon glyphicon-floppy-disk"></span>
+                    </button>
+                    <div class="btn-group">
+                        <button class="btn btn-default dropdown-toggle" title="Create new" type="button"
+                                data-toggle="dropdown">
+                            <span class="glyphicon glyphicon-plus"></span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li id="btnCreateProcessJoin"><a href="#">Model Join</a></li>
+                            <li id="btnCreateProduct"><a href="#">Product</a></li>
+                            <li id="btnCreateProductJoin"><a href="#">Product Join</a></li>
+                        </ul>
+                    </div>
+                    <button id="btn-restore" title="Restore nodes" type="button" class="btn btn-default">
+                        <span class="glyphicon glyphicon-refresh"></span>
+                    </button>
+                    <button id="btn-zoomin" title="Zoom In" type="button" class="btn btn-default">
+                        <span class="glyphicon glyphicon-zoom-in"></span>
+                    </button>
+                    <button id="btn-zoomout" title="Zoom Out" type="button" class="btn btn-default">
+                        <span class="glyphicon glyphicon-zoom-out"></span>
+                    </button>
+                    <button id="btn-fitscreen" title="Fit Screen" type="button" class="btn btn-default">
+                        <span class="glyphicon glyphicon-fullscreen"></span>
+                    </button>
+                    <button id="btnModelList" title="Show/Hide models" type="button"
+                            class="btn btn-default active">
+                        <span class="glyphicon glyphicon-th-list"></span>
+                    </button>
+                    <!--<button id="createMultiProduct" class="btn btn-primary">Create Multi</button>-->
+                </div>
+                <div class="btn-group">
+                    <button id="btnPresetLayout" title="User Defined Layout" type="button"
+                            class="btn btn-default btn-layout active">
+                        <span class="glyphicon glyphicon-bookmark"></span>
+                    </button>
+                    <button id="btnDirectedtLayout" title="Tree Layout" type="button"
+                            class="btn btn-default btn-layout">
+                        <span class="glyphicon glyphicon-sort-by-alphabet"></span>
+                    </button>
+                    <button id="btnConcentricLayout" title="Concentric Layout" type="button"
+                            class="btn btn-default btn-layout">
+                        <span class="glyphicon glyphicon-record"></span>
+                    </button>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default">Filters</button>
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li style="position: relative;"><a href="#"><input id='blockFilter' style="margin-right: 5px;"
+                                                                           type="checkbox" checked/>Block<span
+                            class="colorCode block"></span></a></li>
+                        <li style="position: relative;"><a href="#"><input id='modelFilter' style="margin-right: 5px;"
+                                                                           type="checkbox" checked/>Model<span
+                            class="colorCode model"></span></a></li>
+                        <li style="position: relative;"><a href="#"><input id='mJoinFilter' style="margin-right: 5px;"
+                                                                           type="checkbox" checked/>Model Join<span
+                            class="colorCode modelJoin"></span></a></li>
+                        <li style="position: relative;"><a href="#"><input id='productFilter' style="margin-right: 5px;"
+                                                                           type="checkbox" checked/>Product<span
+                            class="colorCode product"></span></a></li>
+                        <li style="position: relative;"><a href="#"><input id='pJoinFilter' style="margin-right: 5px;"
+                                                                           type="checkbox" checked/>Product Join<span
+                            class="colorCode productJoin"></span></a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="canvas-panel col-xs-10 panel panel-default" style="height:95%; overflow: auto; padding:0px;">
+                <div class="col-xs-10" id="canvas-container" style="height:99%; width:100%; overflow: auto">
+                    <div id="viewport" style="height:100%; width:100%;"></div>
+                </div>
+            </div>
+            <div class="model-panel col-xs-2" style="height:95%; padding-right: 0px;">
+                <div class="panel panel-default" style="height:100%;">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Models</h3>
+                    </div>
+                    <div class="panel-body" style="height:90%; overflow: auto">
+                        <ul class="list-group"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="productEditModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="productEditModalLabel">Product Edit</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form">
+                        <div class="form-group">
+                            <label for="edit-name">Product Name:</label>
+                            <input type="text" class="form-control" id="edit-name" disabled/>
+                        </div>
+                        <br/>
+                        <br/>
+                        <div id="edit-unit-list" class="form-group">
+                            <label>Unit:</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="edit-product" type="button" class="btn btn-primary" data-dismiss="modal">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="associatedGradesModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document" style="width:100%; overflow-x: auto">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">List of grades</h4>
+                </div>
+                <div class="modal-body" style="padding: 15px;">
+                    <form class="form">
+                        <div id='grade-list' class="form-group"></div>
+                        <br/>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <span class="tooltiptext"></span>
+</div>

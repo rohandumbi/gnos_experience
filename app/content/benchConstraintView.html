@@ -1,0 +1,48 @@
+<div id="benchContraintView">
+    <form class="form-inline">
+        <div class="form-group">
+            <label for="scenario_name">Scenario In Use:</label>
+            <input type="text" class="form-control" id="scenario_name" value="<%= name %>">
+        </div>
+    </form>
+</div>
+<table id="datatype-grid-basic" class="table table-condensed table-hover table-striped">
+    <thead>
+    <tr>
+        <th data-identifier="true" data-formatter="pit_name" data-column-id="pitName">Pit Name</th>
+        <th data-column-id="inUse" data-formatter="inUse">In Use</th>
+        <th data-column-id="commands" data-formatter="commands" data-sortable="false">Commands</th>
+        <% var counter = timePeriod %>
+        <% for(var i=0; i< counter; i++) { %>
+        <th data-header-css-class="yearlyValueColumn" data-formatter="value" data-column-id="<%= (startYear + i) %>"><%=
+            (startYear + i) %>
+        </th>
+        <% } %>
+    </tr>
+    </thead>
+    <tbody id="tableBody">
+    </tbody>
+</table>
+<!--Modal Dialog for model definition-->
+<div class="modal fade" id="benchConstraintModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                    aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Bench Constraint</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form">
+                    <div id="pit_list" class="form-group">
+                        <label>Pit Name:</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button id="addData" type="button" class="btn btn-primary" data-dismiss="modal">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
